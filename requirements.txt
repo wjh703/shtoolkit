@@ -1,3 +1,4 @@
+cartopy
 numpy
 pandas
 pyshtools
