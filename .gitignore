@@ -1,0 +1,9 @@
+__pycache__/
+.vscode/
+build/
+data/
+dist/
+shtoolkit/__pycache__/
+shtoolkit.egg-info/
+备份/
+备份1/
