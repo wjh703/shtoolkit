@@ -6,7 +6,6 @@ import numpy as np
 
 # from tvg_toolkit.sh import Spharm
 
-# from sle_solver import sea_level_equation, sea_level_equation1
 from shtoolkit.shspecial import sea_level_equation
 
 from shtoolkit.shload import read_load_love_num
@@ -64,24 +63,6 @@ _, geo, upl, _ = sea_level_equation(ant, oc, lln, lmax, 'kgm2mass', True)
 print(time.time()-start)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 lon_x, lat_y = np.meshgrid(lon, lat)
 fig = plt.figure(layout='constrained')
 # fig, (ax1, ax2) = plt.subplots(2, 1, constrained_layout=True, subplot_kw={'projection': ccrs.PlateCarree()})
@@ -90,13 +71,13 @@ ax1 = fig.add_subplot(211, projection=ccrs.PlateCarree())
 ax1.spines['geo'].set_linewidth(0.8)
 ax1.set_global()
 ax1.coastlines() # type: ignore
-p = ax1.pcolormesh(lon_x, lat_y, ant_geo, transform=ccrs.PlateCarree(), cmap='jet')
+p = ax1.pcolormesh(lon_x, lat_y, ant_upl-ant_upl_norot, transform=ccrs.PlateCarree(), cmap='jet')
 # fig.colorbar(p, ax=ax, orientation='horizontal', extend='both')
 ax2= fig.add_subplot(212, projection=ccrs.PlateCarree())
 ax2.spines['geo'].set_linewidth(0.8)
 ax2.set_global()
 ax2.coastlines() # type: ignore
-ax2.pcolormesh(lon_x, lat_y, geo, transform=ccrs.PlateCarree(), cmap='jet', norm=p.norm)
+ax2.pcolormesh(lon_x, lat_y, upl-upl_norot, transform=ccrs.PlateCarree(), cmap='jet', norm=p.norm)
 
 # ax = fig.add_subplot(224)
 cbar = fig.colorbar(p, ax=[ax1, ax2], location='right', orientation='vertical', extend='both', shrink=0.6)
