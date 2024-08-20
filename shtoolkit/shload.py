@@ -1,18 +1,20 @@
 import re
 from pathlib import Path
-from typing import TextIO, TypedDict
+from typing import TextIO
 
 import numpy as np
-import pandas as pd # type: ignore
-from pyshtools.shio import SHCilmToVector, SHVectorToCilm # type: ignore
+import pandas as pd
+from pyshtools.shio import SHCilmToVector, SHVectorToCilm
 
+from . import shtime
 from .shunit import LoadLoveNumDict
-from tvg_toolkit import tsgenerator # type: ignore
+
 
 __all__ = [
     'LoadLoveNumDict', 'read_load_love_num', 'read_icgem', 'read_non_icgem',
     'read_slr_5x5', 'read_technical_note_c20_c30', 'read_technical_note_deg1'
 ]
+
 
 def read_load_love_num(
         filepath: str | Path, 
@@ -66,8 +68,8 @@ def read_icgem(
                 if 'time_period_of_data' in line:
                     pattern = r'\d{8}'
                     matches = re.findall(pattern, line)[:2]
-                    start = tsgenerator.date_to_decimal_year(matches[0])
-                    end = tsgenerator.date_to_decimal_year(matches[1])
+                    start = shtime.date_to_decimal_year(matches[0])
+                    end = shtime.date_to_decimal_year(matches[1])
                     epoch = (start+end)/2
                     
                 if 'max_degree' in line:
@@ -81,10 +83,10 @@ def read_icgem(
         pattern = r'(?<=_)\d{4}|(?<=-)\d{2}'
         timestamp = re.findall(pattern, filename)
         if len(timestamp) == 1:
-            epoch = '20' + timestamp[0]
+            epoch_str = '20' + timestamp[0]
         else:
-            epoch = ''.join(timestamp)
-        epoch = tsgenerator.year_month_to_decimal_year(epoch)
+            epoch_str = ''.join(timestamp)
+        epoch = shtime.year_month_to_decimal_year(epoch_str)
         
         with open(filepath, 'r', encoding='utf-8') as f:
             for line in f:
@@ -128,11 +130,11 @@ def read_icgem(
         timestamp = re.findall(pattern, filename)
         
         if timestamp:
-            epoch = timestamp[0]
+            epoch_str = timestamp[0]
         else:
             raise ValueError('no time in file.stem')
         
-        epoch = tsgenerator.year_month_to_decimal_year(epoch)
+        epoch = shtime.year_month_to_decimal_year(epoch_str)
         
         with open(filepath, 'r', encoding='utf-8') as f:
             for line in f:
@@ -186,8 +188,8 @@ def read_non_icgem(
                 if epoch is None:
                     pattern = r"\b(\d{8})\b"
                     start, end = re.findall(pattern, line)
-                    start= tsgenerator.date_to_decimal_year(start)
-                    end = tsgenerator.date_to_decimal_year(end)
+                    start= shtime.date_to_decimal_year(start)
+                    end = shtime.date_to_decimal_year(end)
                     epoch = (start+end)/2
 
                 ls = line.lower().strip().split()
@@ -257,8 +259,8 @@ def read_technical_note_deg1(
         for line in f:
             ls = line.lower().strip().split()
             l, m = int(ls[1]), int(ls[2])
-            start = tsgenerator.date_to_decimal_year(int(ls[-2].split('.')[0]))
-            stop = tsgenerator.date_to_decimal_year(int(ls[-1].split('.')[0]))
+            start = shtime.date_to_decimal_year(int(ls[-2].split('.')[0]))
+            stop = shtime.date_to_decimal_year(int(ls[-1].split('.')[0]))
             epoch = (start+stop)/2
             if epoch not in epochs:
                 epochs.append(epoch)

@@ -1,5 +1,8 @@
 import numpy as np
-from pyshtools.expand import MakeGridDH, SHExpandDH # type: ignore
+from pyshtools.expand import (      
+        MakeGridDH,  
+        SHExpandDH
+    )
 
 
 __all__ = ['cilm2grid', 'grid2cilm']

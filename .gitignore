@@ -1,10 +1,4 @@
 __pycache__/
 .mypy_cache/
-.vscode/
-build/
-data/
-dist/
-shtoolkit/__pycache__/
+venv/
 shtoolkit.egg-info/
-备份/
-备份1/
