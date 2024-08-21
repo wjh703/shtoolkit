@@ -2,3 +2,4 @@ __pycache__/
 .mypy_cache/
 venv/
 shtoolkit.egg-info/
+shtoolkit/shunit/
