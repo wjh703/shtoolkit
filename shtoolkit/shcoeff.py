@@ -13,7 +13,8 @@ from .shload import (
     LoadLoveNumDict,
 )
 from .shtrans import cilm2grid
-from .shunit import SpharmUnit, convert
+from .shunit import convert
+from .shtype import SpharmUnit, SHSmoothKind, GIAModel
 
 __all__ = ["SpharmCoeff", "ReplaceCoeff"]
 
@@ -112,7 +113,7 @@ class SpharmCoeff:
 
     def corr_gia(
         self,
-        modelname: Literal["ICE6G-D", "ICE6G-C", "C18"],
+        modelname: GIAModel,
         filepath: str | Path,
         mode: Literal["add", "subtract"] = "subtract",
     ):
@@ -196,12 +197,10 @@ class SpharmCoeff:
         coeffs[:, 0, 2, 1] -= -1.551e-9 * (m1p - m1_gia) - 0.012e-9 * (m2p - m2_gia)
         coeffs[:, 1, 2, 1] -= 0.021e-9 * (m1p - m1_gia) - 1.505e-9 * (m2p - m2_gia)
 
-    def smooth(
-        self, kind: Literal["gs", "fs"] = "gs", radius: int = 300
-    ) -> "SpharmCoeff":
-        if kind == "gs":
+    def smooth(self, kind: SHSmoothKind = "gauss", radius: int = 300) -> "SpharmCoeff":
+        if kind == "gauss":
             weight = gs(self.lmax, radius)
-        elif kind == "fs":
+        elif kind == "fan":
             weight = fs(self.lmax, radius)
         coeffs = self.coeffs * weight
 

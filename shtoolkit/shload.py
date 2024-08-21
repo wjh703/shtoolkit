@@ -7,7 +7,7 @@ import pandas as pd
 from pyshtools.shio import SHCilmToVector, SHVectorToCilm
 
 from . import shtime
-from .shunit import LoadLoveNumDict
+from .shtype import LoadLoveNumDict
 
 
 __all__ = [
