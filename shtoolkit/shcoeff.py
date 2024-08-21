@@ -10,11 +10,10 @@ from .shload import (
     read_technical_note_c20_c30,
     read_technical_note_deg1,
     read_gia_model,
-    LoadLoveNumDict,
 )
 from .shtrans import cilm2grid
 from .shunit import convert
-from .shtype import SpharmUnit, SHSmoothKind, GIAModel
+from .shtype import SpharmUnit, SHSmoothKind, GIAModel, LoadLoveNumDict
 
 __all__ = ["SpharmCoeff", "ReplaceCoeff"]
 

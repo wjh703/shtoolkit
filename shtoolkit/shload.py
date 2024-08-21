@@ -11,7 +11,6 @@ from .shtype import LoadLoveNumDict
 
 
 __all__ = [
-    "LoadLoveNumDict",
     "read_load_love_num",
     "read_icgem",
     "read_non_icgem",

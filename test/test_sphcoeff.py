@@ -21,7 +21,7 @@ b = (
 )
 print(b.name)
 c = a.rplce(["C20", "C30"], file2).corr_gia("ICE6G-C", gia_file2)
-d = b.remove_mean_field().smooth("gauss") # type: ignore
+d = b.remove_mean_field().smooth("gauss")  # type: ignore
 e = d.expand(89)
 f = e.expand(60)
 print(np.allclose(d.coeffs, f.coeffs))
