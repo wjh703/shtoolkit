@@ -2,7 +2,9 @@ import numpy as np
 from pyshtools.shio import SHctor, SHrtoc
 
 from .shtrans import cilm2grid, grid2cilm
-from .shunit import SpharmUnit, LoadLoveNumDict, convert, SH_CONST, mass2geo, mass2upl
+from .shunit import convert, SH_CONST, mass2geo, mass2upl
+from .shtype import SpharmUnit, LoadLoveNumDict
+
 
 __all__ = ["sea_level_equation"]
 
@@ -43,7 +45,7 @@ def sea_level_equation(
         # T_upl_cilm = convert(T_cilm, 'kgm2mass', 'mupl', lln)
 
         if rot:
-            rot_geo_cilm, rot_upl_cilm = calc_rot(T_cilm)
+            rot_geo_cilm, rot_upl_cilm = _calc_rot(T_cilm)
             T_geo_cilm += rot_geo_cilm
             T_upl_cilm += rot_upl_cilm
 
@@ -70,7 +72,7 @@ def sea_level_equation(
     return sea_level_fingerprint, geo_conserve, upl_conserve, load_conserve
 
 
-def calc_rot(L_cilm_real: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+def _calc_rot(L_cilm_real: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     a = SH_CONST["a"]
     k2e = SH_CONST["k2e"]
     k2e_t = SH_CONST["k2e_t"]

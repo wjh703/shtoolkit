@@ -1,7 +1,8 @@
 import re
-from typing import Literal, TypedDict
+
 import numpy as np
 
+from .shtype import SpharmUnit, LoadLoveNumDict
 
 SH_CONST = {
     "gave": 9.81,
@@ -22,27 +23,6 @@ SH_CONST = {
     "kan": -0.0011,
     "cw_freq": 1.649e-7,  # Chandler wobble frequency (elastic earth)
 }
-
-
-SpharmUnit = Literal[
-    "mmewh",
-    "mewh",
-    "kmewh",
-    "mmgeo",
-    "mgeo",
-    "kmgeo",
-    "mmupl",
-    "mupl",
-    "kmupl",
-    "kgm2mass",
-    "stokes",
-]
-
-
-class LoadLoveNumDict(TypedDict):
-    h_el: np.ndarray
-    l_el: np.ndarray
-    k_el: np.ndarray
 
 
 def convert(
