@@ -215,6 +215,4 @@ ConvertCoefDict = {
 
 func_without_lln = set(["ewh2mass", "mass2ewh", "geo2stokes", "stokes2geo"])
 func_with_lln = set(ConvertCoefDict.keys()) - func_without_lln
-func_without_change = set(
-    ["ewh2ewh", "geo2geo", "upl2upl", "mass2mass", "stokes2stokes"]
-)
+func_without_change = set(["ewh2ewh", "geo2geo", "upl2upl", "mass2mass", "stokes2stokes"])

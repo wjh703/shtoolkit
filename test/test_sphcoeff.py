@@ -14,11 +14,7 @@ deg1_file = "D:\\tvg_toolkit\\tvg_toolkit1\\data\\TN-13_GEOC_CSR_RL0602.txt"
 file1 = [slr_file1, slr_file1]
 file2 = [slr_file2, slr_file2]
 a = SpharmCoeff.from_files(gsm_folder, 60, "CSR GRACE")
-b = (
-    a.rplce(["C20", "C30"], file1)
-    .corr_gia("ICE6G-D", gia_file1)
-    .rplce("DEG1", deg1_file)
-)
+b = a.rplce(["C20", "C30"], file1).corr_gia("ICE6G-D", gia_file1).rplce("DEG1", deg1_file)
 print(b.name)
 c = a.rplce(["C20", "C30"], file2).corr_gia("ICE6G-C", gia_file2)
 d = b.remove_mean_field().smooth("gauss")  # type: ignore

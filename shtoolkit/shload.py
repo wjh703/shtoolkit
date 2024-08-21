@@ -20,9 +20,7 @@ __all__ = [
 ]
 
 
-def read_load_love_num(
-    filepath: str | Path, lmax: int, frame: str = "CF"
-) -> LoadLoveNumDict:
+def read_load_love_num(filepath: str | Path, lmax: int, frame: str = "CF") -> LoadLoveNumDict:
     h_el = np.zeros(lmax + 1)
     l_el = np.zeros(lmax + 1)
     k_el = np.zeros(lmax + 1)

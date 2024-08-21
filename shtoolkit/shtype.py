@@ -24,3 +24,4 @@ SpharmUnit = Literal[
 ]
 GIAModel = Literal["ICE6G-D", "ICE6G-C", "C18"]
 SHSmoothKind = Literal["gauss", "fan"]
+MassConserveMode = Literal["eustatic", "sal", "sal_rot"]
