@@ -6,13 +6,12 @@ import numpy as np
 # from tvg_toolkit.sh import Spharm
 
 from shtoolkit.shspecial import sea_level_equation
-
+from shtoolkit.shgrid import SphereGrid
 from shtoolkit.shload import read_load_love_num
 from shtoolkit.shtrans import cilm2grid
 import cartopy.crs as ccrs
 
 # from cartopy.util import add_cyclic_point
-import time
 
 
 def read_file(path):
@@ -63,11 +62,17 @@ oc = np.loadtxt("D:\\tvg_toolkit\\tvg_toolkit\\data\\oc_func_100km.txt")[:, 2].r
 
 lln_file = "D:\\tvg_toolkit\\tvg_toolkit\\data\\lln_PREM.txt"
 lln = read_load_love_num(lln_file, lmax)
-_, geo_norot, upl_norot, _ = sea_level_equation(ant, oc, lln, lmax, "kgm2mass", False)
-start = time.time()
-_, geo, upl, _ = sea_level_equation(ant, oc, lln, lmax, "kgm2mass", True)
-print(time.time() - start)
+_, geo_norot, upl_norot, load_norot = sea_level_equation(ant, oc, lln, lmax, "kgm2mass", False)
+_, geo, upl, load = sea_level_equation(ant, oc, lln, lmax, "kgm2mass", True)
 
+sphgrid1 = SphereGrid(ant, np.array([1.0]), "kgm2mass")
+sphgrid2 = SphereGrid(np.array([ant, ant]), np.array([1.0, 2.0]), "kgm2mass")
+
+load1 = sphgrid1.conserve(oc, "sal", lln, lmax)
+load2 = sphgrid1.conserve(oc, "sal_rot", lln, lmax)
+load3 = sphgrid2.conserve(oc, "sal", lln, lmax)
+load4 = sphgrid2.conserve(oc, "sal_rot", lln, lmax)
+breakpoint()
 
 lon_x, lat_y = np.meshgrid(lon, lat)
 fig = plt.figure(layout="constrained")
@@ -77,13 +82,20 @@ ax1 = fig.add_subplot(211, projection=ccrs.PlateCarree())
 ax1.spines["geo"].set_linewidth(0.8)
 ax1.set_global()  # type: ignore
 ax1.coastlines()  # type: ignore
-p = ax1.pcolormesh(lon_x, lat_y, ant_upl - ant_upl_norot, transform=ccrs.PlateCarree(), cmap="jet")
+p = ax1.pcolormesh(lon_x, lat_y, load - load_norot, transform=ccrs.PlateCarree(), cmap="jet")
 # fig.colorbar(p, ax=ax, orientation='horizontal', extend='both')
 ax2 = fig.add_subplot(212, projection=ccrs.PlateCarree())
 ax2.spines["geo"].set_linewidth(0.8)
 ax2.set_global()  # type: ignore
 ax2.coastlines()  # type: ignore
-ax2.pcolormesh(lon_x, lat_y, upl - upl_norot, transform=ccrs.PlateCarree(), cmap="jet", norm=p.norm)
+ax2.pcolormesh(
+    lon_x,
+    lat_y,
+    load2.data - load1.data,
+    transform=ccrs.PlateCarree(),
+    cmap="jet",
+    norm=p.norm,
+)
 
 # ax = fig.add_subplot(224)
 cbar = fig.colorbar(

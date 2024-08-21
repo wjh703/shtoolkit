@@ -30,11 +30,11 @@ class SpharmCoeff:
     ):
         lmax = coeffs.shape[-2] - 1
         if coeffs.shape[0] != epochs.shape[0]:
-            msg = f"Invalid size of the first dim of coeffs <{coeffs.shape[0]}> and epochs <{epochs.shape[0]}>."
+            msg = "The number of 'coeffs' is unequal to that of 'epochs'"
             raise ValueError(msg)
         if errors is not None:
             if coeffs.shape != errors.shape:
-                msg = f"Invalid shape of coeffs <{coeffs.shape}> and errors <{errors.shape}>."
+                msg = f"The shape of 'coeffs' {coeffs.shape}, is unequal to that of 'errors' {errors.shape}"
                 raise ValueError(msg)
         if coeffs.ndim == 4:
             self.coeffs = coeffs.copy()

@@ -11,14 +11,10 @@ def cilm2grid(
     lmax_calc: int | None = None,
     sampling: int = 2,
 ) -> np.ndarray:
-    grid = MakeGridDH(
-        cilm, sampling=sampling, lmax=resol, lmax_calc=lmax_calc, extend=False
-    )
+    grid = MakeGridDH(cilm, sampling=sampling, lmax=resol, lmax_calc=lmax_calc, extend=False)
     return grid
 
 
-def grid2cilm(
-    grd: np.ndarray, lmax_calc: int | None = None, sampling: int = 2
-) -> np.ndarray:
+def grid2cilm(grd: np.ndarray, lmax_calc: int | None = None, sampling: int = 2) -> np.ndarray:
     cilm = SHExpandDH(grd, sampling=sampling, lmax_calc=lmax_calc)
     return cilm

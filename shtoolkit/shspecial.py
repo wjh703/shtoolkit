@@ -6,7 +6,17 @@ from .shunit import convert, SH_CONST, mass2geo, mass2upl
 from .shtype import SpharmUnit, LoadLoveNumDict
 
 
-__all__ = ["sea_level_equation"]
+__all__ = ["uniform_distributed", "sea_level_equation"]
+
+
+def uniform_distributed(
+    load_data: np.ndarray,
+    oceanmask: np.ndarray,
+) -> np.ndarray:
+    load_cilm = grid2cilm(load_data, 0)
+    oc_cilm = grid2cilm(oceanmask, 0)
+    load_conserve = -load_cilm[0, 0, 0] / oc_cilm[0, 0, 0] * oceanmask + load_data
+    return load_conserve
 
 
 def sea_level_equation(
@@ -37,8 +47,8 @@ def sea_level_equation(
     mass2upl_coef = mass2upl(lmax, lln)
 
     while chi >= epsilon and k < k_max:
-        T_cilm_m = load_cilm + S_cilm
-        T_cilm = T_cilm_m * ewh2mass_coef
+        T_cilm_h = load_cilm + S_cilm
+        T_cilm = T_cilm_h * ewh2mass_coef
         T_geo_cilm = T_cilm * mass2geo_coef
         T_upl_cilm = T_cilm * mass2upl_coef
         # T_geo_cilm = convert(T_cilm, 'kgm2mass', 'mgeo', lln)
@@ -59,8 +69,7 @@ def sea_level_equation(
 
         S_cilm_new = RO_cilm + delPhi_g * oc_cilm
         chi = np.abs(
-            (np.square(S_cilm_new).sum() - np.square(S_cilm).sum())
-            / np.square(S_cilm).sum()
+            (np.square(S_cilm_new).sum() - np.square(S_cilm).sum()) / np.square(S_cilm).sum()
         )
         S_cilm = S_cilm_new.copy()
         k += 1
@@ -68,7 +77,7 @@ def sea_level_equation(
     sea_level_fingerprint = RO
     geo_conserve = cilm2grid(T_geo_cilm, resol, lmax)
     upl_conserve = cilm2grid(T_upl_cilm, resol, lmax)
-    load_conserve = cilm2grid(T_cilm_m, resol, lmax)
+    load_conserve = cilm2grid(convert(S_cilm, "mewh", unit, lln), resol, lmax) + load_data
     return sea_level_fingerprint, geo_conserve, upl_conserve, load_conserve
 
 
@@ -97,9 +106,7 @@ def _calc_rot(L_cilm_real: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     # Calculate rotational potential, refer to Kindall et al. (2005).
     # Note that some modifications have been applied to match the pyshtool's CSH format.
     La_cilm_complex[0, 0, 0] = a**2 * omega**2 / 3 * (m1**2 + m2**2 + m3**2 + 2 * m3)
-    La_cilm_complex[0, 2, 0] = (
-        a**2 * omega**2 / (6 * 5**0.5) * (m1**2 + m2**2 - 2 * m3**2 - 4 * m3)
-    )
+    La_cilm_complex[0, 2, 0] = a**2 * omega**2 / (6 * 5**0.5) * (m1**2 + m2**2 - 2 * m3**2 - 4 * m3)
     La_cilm_complex[0, 2, 1] = a**2 * omega**2 / 30**0.5 * (m1 * (1 + m3))
     La_cilm_complex[1, 2, 1] = a**2 * omega**2 / 30**0.5 * (-m2 * (1 + m3))
     La_cilm_complex[0, 2, 2] = a**2 * omega**2 / (5**0.5 * 24**0.5) * (m2**2 - m1**2)
