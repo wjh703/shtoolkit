@@ -14,6 +14,7 @@ from .shload import (
 from .shtrans import cilm2grid
 from .shunit import convert
 from .shtype import SpharmUnit, SHSmoothKind, GIAModel, LoadLoveNumDict
+from .shfilter import gauss_smooth, fan_smooth
 
 __all__ = ["SpharmCoeff", "ReplaceCoeff"]
 
@@ -198,9 +199,9 @@ class SpharmCoeff:
 
     def smooth(self, kind: SHSmoothKind = "gauss", radius: int = 300) -> "SpharmCoeff":
         if kind == "gauss":
-            weight = gs(self.lmax, radius)
+            weight = gauss_smooth(self.lmax, radius)
         elif kind == "fan":
-            weight = fs(self.lmax, radius)
+            weight = fan_smooth(self.lmax, radius)
         coeffs = self.coeffs * weight
 
         sphcoef_attr = copy.deepcopy(self.__dict__)
@@ -360,31 +361,3 @@ class ReplaceCoeff:
         indice = tuple(zip((0, 1, 0), (0, 1, 1), (1, 1, 1)))
         epochs, deg1, deg1_sigma = read_technical_note_deg1(filepath)
         return cls(indice, deg1, epochs, "stokes", deg1_sigma, ("DEG1", "GRACE-OBP"))
-
-
-def gs(lmax: int, radius: int = 300) -> np.ndarray:
-    ww = np.zeros(lmax + 1, dtype=np.float64)
-    bb = np.log(2) / (1 - np.cos(radius / 6371))
-    ww[0] = 1
-    ww[1] = (1 + np.exp(-2 * bb)) / (1 - np.exp(-2 * bb)) - 1 / bb
-    for i in range(2, len(ww)):
-        ww[i] = -(2 * i - 1) / bb * ww[i - 1] + ww[i - 2]
-    gauss_ww = np.zeros((lmax + 1, lmax + 1), dtype=np.float64)
-    for i in range(lmax + 1):
-        j = np.arange(i + 1)
-        gauss_ww[i, j] = ww[i]
-    return np.asarray([gauss_ww, gauss_ww])
-
-
-def fs(lmax: int, radius: int = 300) -> np.ndarray:
-    ww = np.zeros(lmax + 1, dtype=np.float64)
-    bb = np.log(2) / (1 - np.cos(radius / 6371))
-    ww[0] = 1
-    ww[1] = (1 + np.exp(-2 * bb)) / (1 - np.exp(-2 * bb)) - 1 / bb
-    for i in range(2, len(ww)):
-        ww[i] = -(2 * i - 1) / bb * ww[i - 1] + ww[i - 2]
-    fan_ww = np.zeros((lmax + 1, lmax + 1), dtype=np.float64)
-    for i in range(lmax + 1):
-        j = np.arange(i + 1)
-        fan_ww[i, j] = ww[i] * ww[j]
-    return np.asarray([fan_ww, fan_ww])
