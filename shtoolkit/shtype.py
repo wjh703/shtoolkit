@@ -9,6 +9,11 @@ class LoadLoveNumDict(TypedDict):
     k_el: np.ndarray
 
 
+class LeakCorrMethod(TypedDict):
+    method: Literal["buf", "buf_gs", "buf_fs", "FM_gs", "FM_fs"]
+    radius: int | None
+
+
 SpharmUnit = Literal[
     "mmewh",
     "mewh",
