@@ -1,4 +1,5 @@
 import re
+from typing import Sequence
 
 import numpy as np
 import tqdm
@@ -6,7 +7,7 @@ from pyshtools.shio import SHctor, SHrtoc
 
 from .shtrans import cilm2grid, grid2cilm, fnalf
 from .shunit import convert, SH_CONST, mass2geo, mass2upl
-from .shtype import SpharmUnit, LoadLoveNumDict, LeakCorrMethod, MassConserveMode
+from .shtype import SpharmUnit, LoadLoveNumDict, LeakCorrMethod, MassConserveMode, SHSmoothKind
 from .shfilter import gauss_smooth, fan_smooth
 
 __all__ = ["uniform_distributed", "sea_level_equation"]
@@ -143,15 +144,15 @@ def standard(
         lmax = coeffs.shape[-2] - 1
     resol = oceanmask.shape[0] // 2 - 1
 
-    leakcorr_method = re.findall(r"buf|FM", leakage["method"])
-    smooth_kind = re.findall(r"gs|fs", leakage["method"])
+    leakcorr_method = re.search(r"buf|FM", leakage["method"]).group()
+    smooth_kind = re.search(r"gs|fs", leakage["method"]).group()
     smooth_coef_func = {"gs": gauss_smooth, "fs": fan_smooth}
     if smooth_kind:
         radius = leakage["radius"]
         if radius is None:
             msg = "The key value of 'radius' in 'leakage' needs 'int' object, rather than None."
             raise ValueError(msg)
-        coeffg = smooth_coef_func[smooth_kind[0]](lmax, radius)
+        coeffg = smooth_coef_func[smooth_kind](lmax, radius)
     else:
         coeffg = None
 
@@ -202,19 +203,27 @@ def standard(
         ocean_mas_i = mas_i * oceanmask
         land_mas_i = mas_i * landmask
 
-        # if leakcorr_method == 'FM' and coeffg is not None:
-        #     land_mas_i = _FM(land_mas_i, land_msk, oc_msk, sph, coeffg, cilm_set_zero=cilm_set_zero)  # type: ignore
-        #     clm_leak_i = sph.grd2spec(land_mas_i) * coeffg
-        #     leak_mas_i = sph.spec2grd(clm_leak_i) * oc_msk
-        #     ocean_mas_i -= leak_mas_i
+        if leakcorr_method == "FM":
+            land_mas_i = foward_modelling(
+                land_mas_i,
+                landmask,
+                oceanmask,
+                smooth_kind,
+                radius,
+                lmax,
+                setzero_indices,
+            )
+            cilm_leakage_i = grid2cilm(land_mas_i, lmax) * coeffg
+            leak_mas_i = cilm2grid(cilm_leakage_i, resol, lmax) * oceanmask
+            ocean_mas_i -= leak_mas_i
 
         g_iv = grid2cilm(ocean_mas_i, 2)[*calc_indices]
 
         for j in range(4):
             if "sal" in mode:
                 # ex_mas_i = sea_level_equation(land_mas_i, oceanmask, lln, lmax, "kgm2mass")[-1] * oceanmask
-
-                ex_ewh_i = sea_level_equation(land_mas_i, oceanmask, lln, lmax, "kgm2mass")[0]
+                is_rot = "rot" in mode
+                ex_ewh_i = sea_level_equation(land_mas_i, oceanmask, lln, lmax, "kgm2mass", is_rot)[0]
                 ex_mas_i = ex_ewh_i * 1000
             else:
                 ex_mas_i = uniform_distributed(land_mas_i, oceanmask) * oceanmask
@@ -225,9 +234,47 @@ def standard(
 
             if j + 1 < 4:
                 land_mas_i = cilm2grid(cilm_mas_i, resol, lmax) * landmask
-                # if leakcorr_method == 'FM':
-                #     land_mas_i = _FM(sph.spec2grd(cilm_mas_i)*land_msk, land_msk, oc_msk, sph, coeffg)  # type: ignore
-                # else:
-                #     land_mas_i = sph.spec2grd(cilm_mas_i)*land_msk
+                if leakcorr_method == "FM":
+                    land_mas_i = foward_modelling(
+                        land_mas_i, landmask, oceanmask, smooth_kind, radius, lmax
+                    )
+
         cilm[i, *calc_indices] = convert(cilm_mas_i, "kgm2mass", unit, lln)[*calc_indices]
     return cilm
+
+
+def foward_modelling(
+    load_data: np.ndarray,
+    loadmask: np.ndarray,
+    oceanmask: np.ndarray,
+    smooth: SHSmoothKind,
+    radius: int,
+    lmax: int | None = None,
+    setzero_indices: Sequence[int] | Sequence[Sequence[int]] = (0, 0, 0),
+) -> np.ndarray:
+
+    if not np.allclose(load_data.shape, loadmask.shape, oceanmask.shape):
+        msg = "The shape of 'load_data', 'landmask' and 'oceanmask' are unequal"
+        raise ValueError(msg)
+    resol = load_data.shape[0] // 2 - 1
+    if lmax is None:
+        lmax = resol
+    smooth_coef_func = {"gs": gauss_smooth, "fs": fan_smooth}
+    coeffg = smooth_coef_func[smooth](lmax, radius)
+    # 将真值进行一次截断和滤波作为循环初
+    obs = load_data
+    m_tru = np.copy(obs)
+
+    for _ in range(100):
+        glo_grid = uniform_distributed(m_tru, oceanmask)
+        glo_cilm = grid2cilm(glo_grid, lmax)
+
+        glo_cilm_smoothed = glo_cilm * coeffg
+        glo_cilm_smoothed[*setzero_indices] = 0.0
+
+        pre = cilm2grid(glo_cilm_smoothed, resol, lmax) * loadmask
+        delta = obs - pre
+        m_tru += delta * 1.2
+        # rmse = np.sqrt(np.sum(delta ** 2) / delta[delta != 0].size)
+        # print(rmse)
+    return m_tru
