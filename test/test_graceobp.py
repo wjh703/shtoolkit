@@ -24,10 +24,17 @@ b = a.rplce(["C20", "C30"], file1).corr_gia("ICE6G-D", gia_file1).remove_mean_fi
 
 c = a.rplce(["C20", "C30"], file2).corr_gia("ICE6G-C", gia_file2).rplce("DEG1", deg1_file)
 c.coeffs -= c.coeffs[:100].mean(axis=0)
-oc = np.loadtxt("D:\\tvg_toolkit\\tvg_toolkit\\data\\oc_func_300km.txt")[:, 2].reshape(180, 360)
+oc = np.loadtxt("D:\\tvg_toolkit\\masking\\data\\land_mask\\buffer50km.txt")[:, 2].reshape(
+    180, 360
+)
 coeffs = standard(b.coeffs, b.unit, oc, lln, lmax, {"method": "FM_fs", "radius": 300}, mode="sal")
 coeffs = coeffs[:, *list(zip([0, 1, 0], [0, 1, 1], [1, 1, 1]))]
 coeffs -= coeffs[:100].mean(axis=0)
+
+# coeffs1 = standard(b.coeffs, b.unit, oc, lln, lmax, {"method": "buf_fs", "radius": 300}, mode="sal")
+# coeffs1 = coeffs1[:, *list(zip([0, 1, 0], [0, 1, 1], [1, 1, 1]))]
+# coeffs1 -= coeffs1[:100].mean(axis=0)
+
 deg1 = np.loadtxt(
     "D:/wjh_code/My_code/my_code_data/output/真实结果/CSR/GSM_like/buffer_300km.txt",
     delimiter=",",
@@ -40,12 +47,15 @@ deg1 -= deg1[:100].mean(axis=0)
 plt.plot(c.epochs, c.coeffs[:, 0, 1, 0])
 plt.plot(deg1_time, deg1[:, 1])
 plt.plot(b.epochs, coeffs[:, 0])
+# plt.plot(b.epochs, coeffs1[:, 0])
 plt.show()
 plt.plot(c.epochs, c.coeffs[:, 0, 1, 1])
 plt.plot(deg1_time, deg1[:, 2])
 plt.plot(b.epochs, coeffs[:, 1])
+# plt.plot(b.epochs, coeffs1[:, 1])
 plt.show()
 plt.plot(c.epochs, c.coeffs[:, 1, 1, 1])
 plt.plot(deg1_time, deg1[:, 3])
 plt.plot(b.epochs, coeffs[:, 2])
+# plt.plot(b.epochs, coeffs1[:, 2])
 plt.show()

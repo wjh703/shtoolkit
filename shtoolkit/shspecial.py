@@ -144,8 +144,8 @@ def standard(
         lmax = coeffs.shape[-2] - 1
     resol = oceanmask.shape[0] // 2 - 1
 
-    leakcorr_method = re.search(r"buf|FM", leakage["method"]).group()
-    smooth_kind = re.search(r"gs|fs", leakage["method"]).group()
+    leakcorr_method = re.search(r"buf|FM", leakage["method"]).group()  # type: ignore
+    smooth_kind = re.search(r"gs|fs", leakage["method"]).group()  # type: ignore
     smooth_coef_func = {"gs": gauss_smooth, "fs": fan_smooth}
     if smooth_kind:
         radius = leakage["radius"]
@@ -208,22 +208,23 @@ def standard(
                 land_mas_i,
                 landmask,
                 oceanmask,
-                smooth_kind,
+                smooth_kind,  # type: ignore
                 radius,
                 lmax,
                 setzero_indices,
             )
             cilm_leakage_i = grid2cilm(land_mas_i, lmax) * coeffg
             leak_mas_i = cilm2grid(cilm_leakage_i, resol, lmax) * oceanmask
-            ocean_mas_i -= leak_mas_i
+            ocean_mas_i -= leak_mas_i  # type: ignore
 
         g_iv = grid2cilm(ocean_mas_i, 2)[*calc_indices]
 
         for j in range(4):
             if "sal" in mode:
-                # ex_mas_i = sea_level_equation(land_mas_i, oceanmask, lln, lmax, "kgm2mass")[-1] * oceanmask
                 is_rot = "rot" in mode
-                ex_ewh_i = sea_level_equation(land_mas_i, oceanmask, lln, lmax, "kgm2mass", is_rot)[0]
+                ex_ewh_i = sea_level_equation(land_mas_i, oceanmask, lln, lmax, "kgm2mass", is_rot)[
+                    0
+                ]
                 ex_mas_i = ex_ewh_i * 1000
             else:
                 ex_mas_i = uniform_distributed(land_mas_i, oceanmask) * oceanmask
@@ -236,7 +237,7 @@ def standard(
                 land_mas_i = cilm2grid(cilm_mas_i, resol, lmax) * landmask
                 if leakcorr_method == "FM":
                     land_mas_i = foward_modelling(
-                        land_mas_i, landmask, oceanmask, smooth_kind, radius, lmax
+                        land_mas_i, landmask, oceanmask, smooth_kind, radius, lmax  # type: ignore
                     )
 
         cilm[i, *calc_indices] = convert(cilm_mas_i, "kgm2mass", unit, lln)[*calc_indices]
@@ -253,7 +254,10 @@ def foward_modelling(
     setzero_indices: Sequence[int] | Sequence[Sequence[int]] = (0, 0, 0),
 ) -> np.ndarray:
 
-    if not np.allclose(load_data.shape, loadmask.shape, oceanmask.shape):
+    if not (
+        np.allclose(load_data.shape, loadmask.shape)
+        and np.allclose(oceanmask.shape, loadmask.shape)
+    ):
         msg = "The shape of 'load_data', 'landmask' and 'oceanmask' are unequal"
         raise ValueError(msg)
     resol = load_data.shape[0] // 2 - 1
