@@ -319,7 +319,7 @@ class ReplaceCoeff:
                 continue
             residual = np.abs(self.epochs - t)
             if np.nanmin(residual) > 0.05:
-                msg = f"Invalid value of epoch '{t:.4f}', which cannot be found in ReplaceCoeff.epochs."
+                msg = f"Invalid value of epoch '{t:.4f}', which cannot be found in {self.name} epochs."
                 raise ValueError(msg)
             rp_idx = np.nanargmin(residual)
             coeffs[ori_idx, *self.indice] = self.coeffs[rp_idx]
