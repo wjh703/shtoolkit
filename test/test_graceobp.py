@@ -24,7 +24,9 @@ b = a.rplce(["C20", "C30"], file1).corr_gia("ICE6G-D", gia_file1).remove_mean_fi
 
 c = a.rplce(["C20", "C30"], file2).corr_gia("ICE6G-C", gia_file2).rplce("DEG1", deg1_file)
 c.coeffs -= c.coeffs[:100].mean(axis=0)
-oc = np.loadtxt("D:\\tvg_toolkit\\masking\\data\\mask\\oceanmask\\ocean_buf300.txt")[:, 2].reshape(180, 360)
+oc = np.loadtxt("D:\\tvg_toolkit\\masking\\data\\mask\\oceanmask\\ocean_buf300.txt")[:, 2].reshape(
+    180, 360
+)
 coeffs = standard(b.coeffs, b.unit, oc, lln, lmax, {"method": "buf_fs", "radius": 300}, mode="sal")
 coeffs = coeffs[:, *list(zip([0, 1, 0], [0, 1, 1], [1, 1, 1]))]
 coeffs -= coeffs[:100].mean(axis=0)
