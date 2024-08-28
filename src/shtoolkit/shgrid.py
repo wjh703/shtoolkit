@@ -2,7 +2,7 @@ from functools import partial
 
 import numpy as np
 
-from .shtrans import grid2cilm
+from .shtrans.transform import grid2cilm
 from .shtype import SpharmUnit, MassConserveMode, LoadLoveNumDict
 from .shspecial import sea_level_equation, uniform_distributed
 

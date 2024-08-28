@@ -11,7 +11,7 @@ from .shload import (
     read_technical_note_deg1,
     read_gia_model,
 )
-from .shtrans import cilm2grid
+from .shtrans.transform import cilm2grid
 from .shunit import convert
 from .shtype import SpharmUnit, SHSmoothKind, GIAModel, LoadLoveNumDict
 from .shfilter import gauss_smooth, fan_smooth
