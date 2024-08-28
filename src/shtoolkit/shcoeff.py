@@ -11,7 +11,7 @@ from .shload import (
     read_technical_note_deg1,
     read_gia_model,
 )
-from .shtrans import cilm2grid
+from .shtrans.transform import cilm2grid
 from .shunit import convert
 from .shtype import SpharmUnit, SHSmoothKind, GIAModel, LoadLoveNumDict
 from .shfilter import gauss_smooth, fan_smooth
@@ -319,7 +319,7 @@ class ReplaceCoeff:
                 continue
             residual = np.abs(self.epochs - t)
             if np.nanmin(residual) > 0.05:
-                msg = f"Invalid value of epoch '{t:.4f}', which cannot be found in ReplaceCoeff.epochs."
+                msg = f"Invalid value of epoch '{t:.4f}', which cannot be found in {self.name} epochs."
                 raise ValueError(msg)
             rp_idx = np.nanargmin(residual)
             coeffs[ori_idx, *self.indice] = self.coeffs[rp_idx]

@@ -5,7 +5,7 @@ import numpy as np
 import tqdm
 from pyshtools.shio import SHctor, SHrtoc
 
-from .shtrans import cilm2grid, grid2cilm, fnalf
+from .shtrans.transform import cilm2grid, grid2cilm, fnalf
 from .shunit import convert, SH_CONST, mass2geo, mass2upl
 from .shtype import SpharmUnit, LoadLoveNumDict, LeakCorrMethod, MassConserveMode, SHSmoothKind
 from .shfilter import gauss_smooth, fan_smooth

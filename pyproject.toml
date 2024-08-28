@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools", "Cython", "numpy"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "shtoolkit"
+authors = [{name = "wjh", email = "joycug@163.com"}]
+version = "1.0"
+description = "A python package for handling GRACE/SLR gravatitional spherical harmonic coefficients."
+dependencies = [
+    "numpy",
+    "pandas",
+    "pyshtools"
+]
+requires-python = ">=3.10"
+
+[project.optional-dependencies]
+cartopy = ["cartopy"]
+
+[tool.setuptools]
+packages = ["shtoolkit", "shtoolkit.shtrans"]
+package-dir = {"" = "src"}
+package-data = {"shtoolkit.shtrans" = ["*.pyx"]}
+
