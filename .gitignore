@@ -1,7 +1,10 @@
-__pycache__/
 .mypy_cache/
 venv/
 shtoolkit.egg-info/
-shtoolkit/shunit/
 FPA/
-shtrans1/
+build/
+dist/
+
+src/shtrans1/
+src/shtoolkit.egg-info/
+src/shtoolkit/__pycache__/
