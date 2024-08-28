@@ -3,9 +3,8 @@ from typing import Sequence
 
 import numpy as np
 import tqdm
-from pyshtools.shio import SHctor, SHrtoc
 
-from .shtrans.transform import cilm2grid, grid2cilm, fnalf
+from .shtrans import cilm2grid, grid2cilm, fnALFs, c2r, r2c
 from .shunit import convert, SH_CONST, mass2geo, mass2upl
 from .shtype import SpharmUnit, LoadLoveNumDict, LeakCorrMethod, MassConserveMode, SHSmoothKind
 from .shfilter import gauss_smooth, fan_smooth
@@ -96,7 +95,7 @@ def _calc_rot(L_cilm_real: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     moi_c = SH_CONST["moi_c"]
     gave = SH_CONST["gave"]
 
-    L_cilm_complex = SHrtoc(L_cilm_real)
+    L_cilm_complex = r2c(L_cilm_real)
     J13 = a**4 * np.pi * (32 / 15) ** 0.5 * L_cilm_complex[0, 2, 1]
     J23 = -(a**4) * np.pi * (32 / 15) ** 0.5 * L_cilm_complex[1, 2, 1]
     J33 = -(a**4) * np.pi * (8 / 3 / 5**0.5) * L_cilm_complex[0, 2, 0]
@@ -115,7 +114,7 @@ def _calc_rot(L_cilm_real: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     La_cilm_complex[1, 2, 1] = a**2 * omega**2 / 30**0.5 * (-m2 * (1 + m3))
     La_cilm_complex[0, 2, 2] = a**2 * omega**2 / (5**0.5 * 24**0.5) * (m2**2 - m1**2)
     La_cilm_complex[1, 2, 2] = a**2 * omega**2 / (5**0.5 * 24**0.5) * (2 * m1 * m2)
-    La_cilm_real = SHctor(La_cilm_complex)
+    La_cilm_real = c2r(La_cilm_complex)
 
     indices = tuple(zip([0, 2, 0], [0, 2, 1], [1, 2, 1], [0, 2, 2], [1, 2, 2]))
     La2geo = np.zeros_like(La_cilm_real)
@@ -172,7 +171,7 @@ def standard(
     rad_lon = np.deg2rad(lon)
     solid_angle = np.sin(rad_colat) * np.deg2rad(180 / nlat) * np.deg2rad(360 / nlon)
 
-    pilm = fnalf(rad_colat, 1)  # type: ignore
+    pilm = fnALFs(rad_colat, 1)  # type: ignore
     p10 = np.squeeze(pilm[:, 1, 0])
     p11 = np.squeeze(pilm[:, 1, 1])
     cos0phi = np.cos(0 * rad_lon)
