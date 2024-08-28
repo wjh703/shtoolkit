@@ -5,6 +5,6 @@ FPA/
 build/
 dist/
 
-src/shtrans1/
+src/shtoolkit/shtrans1/
 src/shtoolkit.egg-info/
 src/shtoolkit/__pycache__/
