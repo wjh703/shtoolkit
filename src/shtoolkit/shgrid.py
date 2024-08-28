@@ -2,7 +2,7 @@ from functools import partial
 
 import numpy as np
 
-from .shtrans.transform import grid2cilm
+from .shtrans import grid2cilm
 from .shtype import SpharmUnit, MassConserveMode, LoadLoveNumDict
 from .shspecial import sea_level_equation, uniform_distributed
 
@@ -70,7 +70,7 @@ class SphereGrid:
                 sea_level_equation, lln=lln, lmax=lmax, unit=self.unit, rot=True
             )
         else:
-            msg = f"Running 'mode': {mode} needs a specific 'lln'"
+            msg = f"'mode': {mode} needs a specific 'lln'"
             raise ValueError(msg)
 
         data = self.data

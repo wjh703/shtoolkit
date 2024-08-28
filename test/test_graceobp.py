@@ -13,7 +13,7 @@ slr_file2 = "D:\\tvg_toolkit\\tvg_toolkit\\data\\GSFC_SLR_TN14.txt"
 gsm_folder = Path("D:\\wjh_code\\TVG\\CSR\\unfilter")
 gia_file1 = "D:\\tvg_toolkit\\tvg_toolkit\\data\\ICE6G_D.txt"
 gia_file2 = "D:\\tvg_toolkit\\tvg_toolkit\\data\\Purcell16.txt"
-deg1_file = "D:\\tvg_toolkit\\tvg_toolkit1\\data\\TN-13_GEOC_CSR_RL0602.txt"
+deg1_file = "D:\\tvg_toolkit\\tvg_toolkit\\data\\TN-13_GEOC_CSR_RL0602.txt"
 file1 = [slr_file1, slr_file1]
 file2 = [slr_file2, slr_file2]
 lln_file = "D:\\tvg_toolkit\\tvg_toolkit\\data\\lln_PREM.txt"
@@ -24,8 +24,10 @@ b = a.rplce(["C20", "C30"], file1).corr_gia("ICE6G-D", gia_file1).remove_mean_fi
 
 c = a.rplce(["C20", "C30"], file2).corr_gia("ICE6G-C", gia_file2).rplce("DEG1", deg1_file)
 c.coeffs -= c.coeffs[:100].mean(axis=0)
-oc = np.loadtxt("D:\\tvg_toolkit\\masking\\data\\land_mask\\buffer50km.txt")[:, 2].reshape(180, 360)
-coeffs = standard(b.coeffs, b.unit, oc, lln, lmax, {"method": "FM_fs", "radius": 300}, mode="sal")
+oc = np.loadtxt("D:\\tvg_toolkit\\masking\\data\\mask\\oceanmask\\ocean_buf300.txt")[:, 2].reshape(
+    180, 360
+)
+coeffs = standard(b.coeffs, b.unit, oc, lln, lmax, {"method": "buf_fs", "radius": 300}, mode="sal")
 coeffs = coeffs[:, *list(zip([0, 1, 0], [0, 1, 1], [1, 1, 1]))]
 coeffs -= coeffs[:100].mean(axis=0)
 

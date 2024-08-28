@@ -68,7 +68,7 @@ cpdef cnp.ndarray[double, ndim=3] fnALFs(double[:] rad_colat, int lmax):
     return np.asarray(pilm)
 
 
-cdef cnp.ndarray[double, ndim=2] calc_yilm_mat(
+cpdef cnp.ndarray[double, ndim=2] calc_yilm_mat(
         cnp.ndarray[double, ndim=1] lat,
         cnp.ndarray[double, ndim=1] lon, 
         int lmax
@@ -82,7 +82,7 @@ cdef cnp.ndarray[double, ndim=2] calc_yilm_mat(
         double[:] rad_lon = np.deg2rad(lon)
         double[:,:,:] pilm = fnALFs(rad_colat, lmax)
         double[:,:,:] yilm = np.zeros((2, lmax + 1, lmax + 1))
-        double[:,:] yilm_mat = np.zeros((nlat * nlon, nvec))
+        cnp.ndarray[double, ndim=2] yilm_mat = np.zeros((nlat * nlon, nvec))
         Py_ssize_t i, j, m, k
     
     for i in range(nlat):
@@ -96,7 +96,7 @@ cdef cnp.ndarray[double, ndim=2] calc_yilm_mat(
                     yilm[0, k, m] *= ccos
                     yilm[1, k, m] *= ssin
             yilm_mat[i*nlon+j] = cilm2vector(yilm)
-    return np.asarray(yilm_mat)
+    return yilm_mat
 
 
 cpdef cnp.ndarray[double, ndim=1] cilm2vector(double[:,:,:] coeffs):
