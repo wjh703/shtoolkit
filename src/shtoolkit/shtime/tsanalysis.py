@@ -3,6 +3,7 @@ from numba import jit
 
 __all__ = ["lstsq_map", "cosine_fitting", "sine_fitting"]
 
+
 @jit(nopython=True)
 def lstsq_map(
     dtime: np.ndarray,

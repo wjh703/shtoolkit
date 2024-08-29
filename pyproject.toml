@@ -18,7 +18,7 @@ requires-python = ">=3.10"
 cartopy = ["cartopy"]
 
 [tool.setuptools]
-packages = ["shtoolkit", "shtoolkit.shtrans"]
+packages = ["shtoolkit", "shtoolkit.shtrans", "shtoolkit.shtime"]
 package-dir = {"" = "src"}
 package-data = {"shtoolkit.shtrans" = ["*.pyx"]}
 
