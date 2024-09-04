@@ -6,22 +6,22 @@
 
 from libc.math cimport sqrt, sin, cos
 from libc.stdlib cimport malloc, free
+
 import numpy as np
 cimport numpy as cnp
 
 cnp.import_array()
 
-cdef inline int plmidx(int degree, int order) except -1:
-    cdef int idx
-    idx = (degree * (degree + 1)) / 2 + order
-    return idx
+"""
+Reference
+---------
+[1] Xing, Z., Li, S., Tian, M. et al. Numerical experiments on column-wise recurrence 
+        formula to compute fully normalized associated Legendre functions of ultra-high 
+        degree and order. J Geod 94, 2 (2020). https://doi.org/10.1007/s00190-019-01331-0
+"""
+
 
 cpdef cnp.ndarray[double, ndim=3] fnALFs(double[:] rad_colat, int lmax):
-    """
-    Reference:
-        Xing, Z., Li, S., Tian, M. et al. Numerical experiments on column-wise recurrence formula to compute fully normalized
-            associated Legendre functions of ultra-high degree and order. J Geod 94, 2 (2020). https://doi.org/10.1007/s00190-019-01331-0
-    """
     cdef:
         int vecnum = plmidx(lmax, lmax) + 1
         double *al = <double *> malloc(sizeof(double) * (lmax+1))
@@ -71,3 +71,9 @@ cpdef cnp.ndarray[double, ndim=3] fnALFs(double[:] rad_colat, int lmax):
     free(dlm)
     free(elm)
     return np.asarray(pilm)
+
+
+cdef inline int plmidx(int degree, int order) except -1:
+    cdef int idx
+    idx = (degree * (degree + 1)) / 2 + order
+    return idx

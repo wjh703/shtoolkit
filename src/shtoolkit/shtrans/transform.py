@@ -4,8 +4,8 @@ import numpy as np
 # from pyshtools.expand import MakeGridDH, SHExpandDH
 # from pyshtools.legendre import legendre
 
-from .cilm2grid import cilm2grid_fft, cilm2grid_integral
-from .grid2cilm import grid2cilm_fft, grid2cilm_integral
+from ._cilm2grid import cilm2grid_fft, cilm2grid_integral
+from ._grid2cilm import grid2cilm_fft, grid2cilm_integral
 
 
 
@@ -25,7 +25,7 @@ def cilmtogrid(
     resol: int,
     lmax_calc: int = -1,
     pilm: np.ndarray | None = None,
-    mode: Literal['fft', 'intergal'] = 'fft'
+    mode: Literal['fft', 'integral'] = 'fft'
 ) -> np.ndarray:
     grid = Cilm2GridFunc[mode](cilm, resol, lmax_calc, pilm)
     return grid
@@ -35,7 +35,7 @@ def gridtocilm(
     grid: np.ndarray, 
     lmax_calc: int = -1,
     pilm: np.ndarray | None = None,
-    mode: Literal['fft', 'intergal'] = 'fft'
+    mode: Literal['fft', 'integral'] = 'fft'
 ) -> np.ndarray:
     cilm = Grid2CilmFunc[mode](grid, lmax_calc, pilm)
     return cilm

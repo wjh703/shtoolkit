@@ -10,6 +10,15 @@ import scipy
 
 from .legendre cimport fnALFs
 
+"""
+Reference
+---------
+[1] Wieczorek, M. A., & Meschede, M. (2018). SHTools: Tools for working 
+        with spherical harmonics. Geochemistry, Geophysics, Geosystems, 
+        19, 2574-2592. https://doi.org/10.1029/2018GC007529
+"""
+
+
 def cilm2grid_fft(
         double[:,:,:] cilm,
         int resol,
@@ -44,6 +53,7 @@ def cilm2grid_fft(
                 am += cilm[0, l, m] * pilm[k, l, m]
                 bm += cilm[1, l, m] * pilm[k, l, m]
             fcoef[k, m] = am-1j*bm
+
     return scipy.fft.ifft(fcoef, nlon, axis=1, norm='forward').real
 
 

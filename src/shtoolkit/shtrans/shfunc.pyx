@@ -6,8 +6,12 @@
 
 from libc.math cimport sqrt, sin, cos
 from libc.stdlib cimport malloc, free
+
 import numpy as np
 cimport numpy as cnp
+
+from .legendre import fnALFs
+
 cnp.import_array()
 
 cpdef cnp.ndarray[double, ndim=2] calc_yilm_mat(
