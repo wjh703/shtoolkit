@@ -24,15 +24,15 @@ Reference
 cpdef cnp.ndarray[double, ndim=3] fnALFs(double[:] rad_colat, int lmax):
     cdef:
         int vecnum = plmidx(lmax, lmax) + 1
-        double *al = <double *> malloc(sizeof(double) * (lmax+1))
-        double *bl = <double *> malloc(sizeof(double) * (lmax+1))
+        double *al = <double *> malloc(sizeof(double) * (lmax + 1))
+        double *bl = <double *> malloc(sizeof(double) * (lmax + 1))
         double *clm = <double *> malloc(sizeof(double) * vecnum)
         double *dlm = <double *> malloc(sizeof(double) * vecnum)
         double *elm = <double *> malloc(sizeof(double) * vecnum)
         Py_ssize_t l, m
         int vecidx
 
-    for l in range(2, lmax+1):
+    for l in range(2, lmax + 1):
         al[l] = sqrt(<double>(2 * l + 1) / (2 * l - 1))
         bl[l] = sqrt(<double>(2 * (l - 1) * (2 * l + 1)) / (l * (2 * l - 1)))
         for m in range(l+1):

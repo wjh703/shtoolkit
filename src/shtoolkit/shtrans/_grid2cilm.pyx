@@ -43,7 +43,6 @@ def grid2cilm_fft(
         double complex[::1,:] lat_fft
         double[:,:,:] cilm
 
-
     if calc_lmax < 0:
         calc_lmax = resol
     elif calc_lmax > resol:
@@ -57,9 +56,9 @@ def grid2cilm_fft(
 
     weight = weight_dh(nlat)
     lat_fft = np.asarray(scipy.fft.rfft(grid, axis=1)[:, :calc_lmax+1], order='F')
-    cilm = np.zeros((2, calc_lmax+1, calc_lmax+1))
-    for l in range(calc_lmax+1):
-        for m in range(l+1):
+    cilm = np.zeros((2, calc_lmax + 1, calc_lmax + 1))
+    for l in range(calc_lmax + 1):
+        for m in range(l + 1):
             c = 0.0
             s = 0.0
             for k in range(nlat):
@@ -86,7 +85,7 @@ def grid2cilm_integral(
         Py_ssize_t k, l, m
         double[:] rad_colat = np.linspace(0, pi, nlat, endpoint=False)
         double[:] rad_lon = np.linspace(0, 2.0 * pi, nlon, endpoint=False)
-        double *weight = weight_dh(nlat)
+        double *weight
         double[:,:] ccos
         double[:,:] ssin
         double[::1,:] am
@@ -113,11 +112,12 @@ def grid2cilm_integral(
             ccos[k, m] = cos(rad_lon[k] * m)
             ssin[k, m] = sin(rad_lon[k] * m)
 
+    weight = weight_dh(nlat)
     am = np.asarray(np.dot(grid, ccos), order='F')
     bm = np.asarray(np.dot(grid, ssin), order='F')
-    cilm = np.zeros((2, calc_lmax+1, calc_lmax+1))
-    for l in range(calc_lmax+1):
-        for m in range(l+1):
+    cilm = np.zeros((2, calc_lmax + 1, calc_lmax + 1))
+    for l in range(calc_lmax + 1):
+        for m in range(l + 1):
             c = 0.0
             s = 0.0
             for k in range(nlat):
