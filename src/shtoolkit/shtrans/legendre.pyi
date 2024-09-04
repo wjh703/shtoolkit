@@ -1,0 +1,3 @@
+import numpy as np
+
+def fnALFs(rad_colat: np.ndarray , lmax: int) -> np.ndarray: ...
