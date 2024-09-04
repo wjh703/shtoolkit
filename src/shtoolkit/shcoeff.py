@@ -30,13 +30,6 @@ class SpharmCoeff:
         name: str | None = None,
     ):
         lmax = coeffs.shape[-2] - 1
-        if coeffs.shape[0] != epochs.shape[0]:
-            msg = "The number of 'coeffs' is unequal to that of 'epochs'"
-            raise ValueError(msg)
-        if errors is not None:
-            if coeffs.shape != errors.shape:
-                msg = f"The shape of 'coeffs' {coeffs.shape}, is unequal to that of 'errors' {errors.shape}"
-                raise ValueError(msg)
         if coeffs.ndim == 4:
             self.coeffs = coeffs.copy()
         elif coeffs.ndim == 3:
@@ -47,6 +40,14 @@ class SpharmCoeff:
                 + "must be 4: (n, 2, lmax+1, lmax+1) or 3: (2, lmax+1, lmax+1)"
             )
             raise ValueError(msg)
+        if self.coeffs.shape[0] != epochs.shape[0]:
+            msg = "The number of 'coeffs' is unequal to that of 'epochs'"
+            raise ValueError(msg)
+        if errors is not None:
+            if coeffs.shape != errors.shape:
+                msg = f"The shape of 'coeffs' {coeffs.shape}, is unequal to that of 'errors' {errors.shape}"
+                raise ValueError(msg)
+
         self.lmax = lmax
         self.epochs = epochs.copy()
         self.unit: SpharmUnit = unit
@@ -227,6 +228,10 @@ class SpharmCoeff:
         sphcoef_attr = copy.deepcopy(self.__dict__)
         del sphcoef_attr["lmax"]
         sphcoef_attr["coeffs"] = sphcoef_attr["coeffs"][index]
+        if isinstance(index, int):
+            sphcoef_attr["epochs"] = np.array([sphcoef_attr["epochs"][index]])
+        else:
+            sphcoef_attr["epochs"] = sphcoef_attr["epochs"][index]
         if sphcoef_attr["errors"] is not None:
             sphcoef_attr["errors"] = sphcoef_attr["errors"][index]
         return SpharmCoeff(**sphcoef_attr)
