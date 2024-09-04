@@ -27,8 +27,8 @@ def cilm2grid_fft(
     ):
 
     cdef: 
-        int nlat = 2*(resol+1)
-        int nlon = 2*nlat
+        int nlat = 2 * (resol + 1)
+        int nlon = 2 * nlat
         int lmax
         double complex[:,:] fcoef
         Py_ssize_t k, l, m
@@ -44,12 +44,12 @@ def cilm2grid_fft(
     if pilm.shape[0] != nlat:
         raise ValueError(f"The dimension-1 value of 'pilm' is unequal to 'nlat'")
     
-    fcoef = np.zeros((nlat, calc_lmax+1), dtype=np.complex128)
+    fcoef = np.zeros((nlat, calc_lmax + 1), dtype=np.complex128)
     for k in range(nlat):
-        for m in range(calc_lmax+1):
+        for m in range(calc_lmax+  1):
             am = 0.0
             bm = 0.0
-            for l in range(m, calc_lmax+1):
+            for l in range(m, calc_lmax + 1):
                 am += cilm[0, l, m] * pilm[k, l, m]
                 bm += cilm[1, l, m] * pilm[k, l, m]
             fcoef[k, m] = am-1j*bm
@@ -87,20 +87,20 @@ def cilm2grid_integral(
     if pilm.shape[0] != nlat:
         raise ValueError(f"The dimension-1 value of 'pilm' is unequal to 'nlat'")
 
-    am = np.zeros((nlat, calc_lmax+1))
-    bm = np.zeros((nlat, calc_lmax+1))
+    am = np.zeros((nlat, calc_lmax + 1))
+    bm = np.zeros((nlat, calc_lmax + 1))
     for k in range(nlat):
-        for m in range(calc_lmax+1):
+        for m in range(calc_lmax + 1):
             a = 0.0
             b = 0.0
-            for l in range(m, calc_lmax+1):
+            for l in range(m, calc_lmax + 1):
                 a += cilm[0, l, m] * pilm[k, l, m]
                 b += cilm[1, l, m] * pilm[k, l, m]
             am[k, m] = a
             bm[k, m] = b
 
-    ccos = np.zeros((calc_lmax+1, nlon))
-    ssin = np.zeros((calc_lmax+1, nlon))
+    ccos = np.zeros((calc_lmax + 1, nlon))
+    ssin = np.zeros((calc_lmax + 1, nlon))
     for l in range(calc_lmax+1):
         for k in range(nlon):
             ccos[l, k] = cos(l * rad_lon[k])
