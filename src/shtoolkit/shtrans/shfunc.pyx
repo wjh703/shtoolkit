@@ -10,7 +10,7 @@ from libc.stdlib cimport malloc, free
 import numpy as np
 cimport numpy as cnp
 
-from .legendre import fnALFs
+from .legendre cimport fnALFs
 
 cnp.import_array()
 
