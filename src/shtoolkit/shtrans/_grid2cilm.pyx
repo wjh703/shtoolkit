@@ -12,6 +12,20 @@ import scipy
 
 from .legendre cimport fnALFs
 
+
+"""
+Reference
+---------
+[1] Wieczorek, M. A., & Meschede, M. (2018). SHTools: Tools for working 
+        with spherical harmonics. Geochemistry, Geophysics, Geosystems, 
+        19, 2574-2592. https://doi.org/10.1029/2018GC007529
+[2] Rexer, M., Hirt, C. Ultra-high-Degree Surface Spherical Harmonic Analysis 
+        Using the Gauss-Legendre and the Driscoll/Healy Quadrature Theorem and 
+        Application to Planetary Topography Models of Earth, Mars and Moon. 
+        Surv Geophys 36, 803-830 (2015). https://doi.org/10.1007/s10712-015-9345-z
+"""
+
+
 def grid2cilm_fft(
     double[:,:] grid,
     int calc_lmax = -1,
@@ -66,14 +80,14 @@ def grid2cilm_integral(
     cdef: 
         int nlat = grid.shape[0] 
         int nlon = grid.shape[1]
-        double dlat = pi / nlat
-        double dlon = 2.0 * pi / nlon
+        # double dlat = pi / nlat
+        # double dlon = 2.0 * pi / nlon
         int resol = nlat / 2 - 1
         Py_ssize_t k, l, m
         double[:] rad_colat = np.linspace(0, pi, nlat, endpoint=False)
         double[:] rad_lon = np.linspace(0, 2.0 * pi, nlon, endpoint=False)
-        double *weight = <double *> malloc(sizeof(double) * nlat)
-        # double *weight = weight_dh(nlat)
+        # double *weight = <double *> malloc(sizeof(double) * nlat)
+        double *weight = weight_dh(nlat)
         double[:,:] ccos
         double[:,:] ssin
         double[:,:] am
@@ -93,8 +107,8 @@ def grid2cilm_integral(
     if pilm.shape[0] != nlat:
         raise ValueError(f"The dimension-1 value of 'pilm' is unequal to 'nlat'")
 
-    for k in range(nlat):
-       weight[k] = sin(rad_colat[k]) * dlat * dlon 
+    # for k in range(nlat):
+    #    weight[k] = sin(rad_colat[k]) * dlat * dlon 
 
     ccos = np.zeros((nlon, calc_lmax+1))
     ssin = np.zeros((nlon, calc_lmax+1))
@@ -125,7 +139,8 @@ cdef inline double *weight_dh(int nlat):
         int lmax = nlat // 2 -1 
         double *w = <double *> malloc(sizeof(double) * nlat)
         Py_ssize_t j, l
-        double s, colat
+        double s
+        double colat
         double dlon = pi / nlat
 
     for j in range(nlat):
