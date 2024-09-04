@@ -37,7 +37,10 @@ def gridtocilm(
     pilm: np.ndarray | None = None,
     mode: Literal['fft', 'integral'] = 'fft'
 ) -> np.ndarray:
-    cilm = Grid2CilmFunc[mode](grid, lmax_calc, pilm)
+    if pilm is not None:
+        cilm = Grid2CilmFunc[mode](grid, lmax_calc, pilm.transpose(1, 2, 0))
+    else:
+        cilm = Grid2CilmFunc[mode](grid, lmax_calc)
     return cilm
 
 

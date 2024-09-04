@@ -10,8 +10,7 @@ description = "A python package for handling GRACE/SLR gravatitional spherical h
 dependencies = [
     "numpy",
     "pandas",
-    "scipy",
-    "tqdm"
+    "scipy"
 ]
 requires-python = ">=3.10"
 
