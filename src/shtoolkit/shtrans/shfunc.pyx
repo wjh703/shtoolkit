@@ -4,69 +4,11 @@
 # cython: wraparound=False
 # cython: initializedcheck=False
 
-from libc.math cimport sqrt, sin, cos, pi
+from libc.math cimport sqrt, sin, cos
 from libc.stdlib cimport malloc, free
 import numpy as np
 cimport numpy as cnp
-import scipy
 cnp.import_array()
-
-cdef inline int plmidx(int degree, int order) except -1:
-    cdef int idx
-    idx = (degree * (degree + 1)) / 2 + order
-    return idx
-
-cpdef cnp.ndarray[double, ndim=3] fnALFs(double[:] rad_colat, int lmax):
-    cdef:
-        int vecnum = plmidx(lmax, lmax) + 1
-        double *al = <double *> malloc(sizeof(double) * (lmax+1))
-        double *bl = <double *> malloc(sizeof(double) * (lmax+1))
-        double *clm = <double *> malloc(sizeof(double) * vecnum)
-        double *dlm = <double *> malloc(sizeof(double) * vecnum)
-        double *elm = <double *> malloc(sizeof(double) * vecnum)
-        Py_ssize_t l, m
-        int vecidx
-
-    for l in range(2, lmax+1):
-        al[l] = sqrt(<double>(2 * l + 1) / (2 * l - 1))
-        bl[l] = sqrt(<double>(2 * (l - 1) * (2 * l + 1)) / (l * (2 * l - 1)))
-        for m in range(l+1):
-            vecidx = plmidx(l, m)
-            clm[vecidx] =  sqrt(<double>((2 * l + 1) * (l + m) * (l - m)) / (2 * l - 1)) / l
-            dlm[vecidx] = sqrt(<double>((2 * l + 1) * (l - m - 1) * (l - m)) / (2 * l - 1)) / (2 * l)
-            if m-1 == 0:
-                elm[vecidx] = sqrt(<double>(2 * (2 * l + 1) * (l + m - 1) * (l + m)) / ((2 - 1) * (2 * l - 1))) / (2 * l)
-            else:
-                elm[vecidx] = sqrt(<double>(2 * (2 * l + 1) * (l + m - 1) * (l + m)) / ((2 - 0) * (2 * l - 1))) / (2 * l)
-
-    cdef: 
-        int len_colat = rad_colat.shape[0]
-        double[:,:,:] pilm = np.zeros((len_colat, lmax+1, lmax+1))
-        double t, u
-        Py_ssize_t i
-    
-    for i in range(len_colat):
-        t = cos(rad_colat[i])
-        u = sin(rad_colat[i])
-        pilm[i, 0, 0] = 1.0
-        pilm[i, 1, 0] = sqrt(3) * t
-        pilm[i, 1, 1] = sqrt(3) * u
-        for l in range(2, lmax + 1):
-            for m in range(l + 1):
-                vecidx = plmidx(l, m)
-                if m == 0:
-                    pilm[i, l, m] = al[l]*t*pilm[i, l-1, 0]-bl[l]*(u/2)*pilm[i, l-1, 1]
-                elif m == lmax:
-                    pilm[i, l, m] = u*elm[vecidx]*pilm[i, l-1, m-1]
-                else:
-                    pilm[i, l, m] = clm[vecidx]*t*pilm[i, l-1, m] - u*(dlm[vecidx]*pilm[i, l-1, m+1]-elm[vecidx]*pilm[i, l-1, m-1])
-    free(al)
-    free(bl)
-    free(clm)
-    free(dlm)
-    free(elm)
-    return np.asarray(pilm)
-
 
 cpdef cnp.ndarray[double, ndim=2] calc_yilm_mat(
         cnp.ndarray[double, ndim=1] lat,
@@ -177,40 +119,3 @@ def c2r(double[:,:,:] cilm_complex):
                 cilm[1, i, j] = - cilm_complex[1, i, j] * sqrt2
     
     return np.asarray(cilm)
-
-
-cpdef cnp.ndarray[double, ndim=2] spec2grd_fft(
-        double[:,:,:] cilm,
-        int resol,
-        int calc_lmax = -1,
-        double[:,:,:] pilm = None
-    ):
-
-    cdef: 
-        int nlat = 2*(resol+1)
-        int nlon = 2*nlat
-        int lmax
-        double complex[:,:] fcoef
-        Py_ssize_t k, l, m
-        double am, bm
-
-    lmax = cilm.shape[1]-1
-    if calc_lmax == -1 or calc_lmax > lmax:
-        calc_lmax = lmax
-    
-    if pilm is None:
-        pilm = fnALFs(np.linspace(0, pi, nlat, endpoint=False), calc_lmax)
-        
-    if pilm.shape[0] != nlat:
-        raise ValueError(f"The dimension-1 value of 'pilm' is unequal to 'nlat'")
-    
-    fcoef = np.zeros((nlat, calc_lmax+1), dtype=np.complex128)
-    for k in range(nlat):
-        for m in range(calc_lmax+1):
-            am = 0.0
-            bm = 0.0
-            for l in range(m, calc_lmax+1):
-                am += cilm[0, l, m] * pilm[k, l, m]
-                bm += cilm[1, l, m] * pilm[k, l, m]
-            fcoef[k, m] = am-1j*bm
-    return scipy.fft.ifft(fcoef, nlon, axis=1, norm='forward').real

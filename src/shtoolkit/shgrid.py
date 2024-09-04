@@ -2,7 +2,7 @@ from functools import partial
 
 import numpy as np
 
-from .shtrans import grid2cilm
+from .shtrans import gridtocilm
 from .shtype import SpharmUnit, MassConserveMode, LoadLoveNumDict
 from .shspecial import sea_level_equation, uniform_distributed
 
@@ -41,13 +41,10 @@ class SphereGrid:
         self.error_kind = error_kind
         self.name = name
 
-    def expand(self, lmax_calc: int | None = None):
+    def expand(self, lmax_calc: int = -1):
         from .shcoeff import SpharmCoeff
 
-        if lmax_calc is not None:
-            coeffs = np.array([grid2cilm(grid, lmax_calc) for grid in self.data])
-        else:
-            coeffs = np.array([grid2cilm(grid, self.max_resol) for grid in self.data])
+        coeffs = np.array([gridtocilm(grid, lmax_calc) for grid in self.data])
         return SpharmCoeff(coeffs, self.epochs.copy(), self.unit)
 
     def conserve(

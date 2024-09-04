@@ -1,35 +1,43 @@
-import numpy as np
-from pyshtools.expand import MakeGridDH, SHExpandDH
+from typing import Literal
 
+import numpy as np
+# from pyshtools.expand import MakeGridDH, SHExpandDH
 # from pyshtools.legendre import legendre
 
+from .cilm2grid import cilm2grid_fft, cilm2grid_integral
+from .grid2cilm import grid2cilm_fft, grid2cilm_integral
 
-__all__ = ["cilm2grid", "grid2cilm"]
 
 
-def cilm2grid(
+__all__ = ["cilmtogrid", "gridtocilm"]
+
+Cilm2GridFunc = {
+    'fft': cilm2grid_fft,
+    'integral': cilm2grid_integral
+}
+Grid2CilmFunc = {
+    'fft': grid2cilm_fft,
+    'integral': grid2cilm_integral
+}
+
+def cilmtogrid(
     cilm: np.ndarray,
-    resol: int | None = None,
-    lmax_calc: int | None = None,
-    sampling: int = 2,
+    resol: int,
+    lmax_calc: int = -1,
+    pilm: np.ndarray | None = None,
+    mode: Literal['fft', 'intergal'] = 'fft'
 ) -> np.ndarray:
-    grid = MakeGridDH(cilm, sampling=sampling, lmax=resol, lmax_calc=lmax_calc, extend=False)
+    grid = Cilm2GridFunc[mode](cilm, resol, lmax_calc, pilm)
     return grid
 
 
-def grid2cilm(grd: np.ndarray, lmax_calc: int | None = None, sampling: int = 2) -> np.ndarray:
-    cilm = SHExpandDH(grd, sampling=sampling, lmax_calc=lmax_calc)
+def gridtocilm(
+    grid: np.ndarray, 
+    lmax_calc: int = -1,
+    pilm: np.ndarray | None = None,
+    mode: Literal['fft', 'intergal'] = 'fft'
+) -> np.ndarray:
+    cilm = Grid2CilmFunc[mode](grid, lmax_calc, pilm)
     return cilm
 
 
-# def fnalf(rad_colat: np.ndarray | list | float, lmax: int) -> np.ndarray:
-#     if isinstance(rad_colat, float):
-#         return legendre(lmax, np.cos(rad_colat))
-#     elif isinstance(rad_colat, np.ndarray | list):
-#         pilm = []
-#         for theta in rad_colat:
-#             pilm.append(legendre(lmax, np.cos(theta)))
-#         return np.asarray(pilm)
-#     else:
-#         msg = "'rad_colat' type should be 'Sequence[float]' or 'float' object"
-#         raise ValueError(msg)

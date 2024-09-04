@@ -4,7 +4,7 @@ from typing import Sequence
 import numpy as np
 import tqdm
 
-from .shtrans import cilm2grid, grid2cilm, fnALFs, c2r, r2c
+from .shtrans import cilmtogrid, gridtocilm, fnALFs, c2r, r2c
 from .shunit import convert, SH_CONST, mass2geo, mass2upl
 from .shtype import SpharmUnit, LoadLoveNumDict, LeakCorrMethod, MassConserveMode, SHSmoothKind
 from .shfilter import gauss_smooth, fan_smooth
@@ -16,8 +16,8 @@ def uniform_distributed(
     load_data: np.ndarray,
     oceanmask: np.ndarray,
 ) -> np.ndarray:
-    load_cilm = grid2cilm(load_data, 0)
-    oc_cilm = grid2cilm(oceanmask, 0)
+    load_cilm = gridtocilm(load_data, 0)
+    oc_cilm = gridtocilm(oceanmask, 0)
     load_conserve = -load_cilm[0, 0, 0] / oc_cilm[0, 0, 0] * oceanmask + load_data
     return load_conserve
 
@@ -38,10 +38,10 @@ def sea_level_equation(
 
     resol = load_data.shape[0] // 2 - 1
 
-    load_cilm = grid2cilm(load_data, lmax)
+    load_cilm = gridtocilm(load_data, lmax)
     load_cilm = convert(load_cilm, unit, "mewh", lln)
 
-    oc_cilm = grid2cilm(oceanmask, lmax)
+    oc_cilm = gridtocilm(oceanmask, lmax)
 
     S_cilm = -load_cilm[0, 0, 0] / oc_cilm[0, 0, 0] * oc_cilm
 
@@ -63,10 +63,10 @@ def sea_level_equation(
             T_upl_cilm += rot_upl_cilm
 
         T_rsl_cilm = T_geo_cilm - T_upl_cilm
-        T_rsl = cilm2grid(T_rsl_cilm, resol, lmax)
+        T_rsl = cilmtogrid(T_rsl_cilm, resol, lmax)
 
         RO = T_rsl * oceanmask
-        RO_cilm = grid2cilm(RO, lmax)
+        RO_cilm = gridtocilm(RO, lmax)
 
         delPhi_g = -(load_cilm[0, 0, 0] + RO_cilm[0, 0, 0]) / oc_cilm[0, 0, 0]
 
@@ -77,10 +77,10 @@ def sea_level_equation(
         S_cilm = S_cilm_new.copy()
         k += 1
 
-    sea_level_fingerprint = cilm2grid(S_cilm, resol, lmax) * oceanmask
-    geo_conserve = cilm2grid(T_geo_cilm, resol, lmax)
-    upl_conserve = cilm2grid(T_upl_cilm, resol, lmax)
-    load_conserve = cilm2grid(convert(S_cilm, "mewh", unit, lln), resol, lmax) + load_data
+    sea_level_fingerprint = cilmtogrid(S_cilm, resol, lmax) * oceanmask
+    geo_conserve = cilmtogrid(T_geo_cilm, resol, lmax)
+    upl_conserve = cilmtogrid(T_upl_cilm, resol, lmax)
+    load_conserve = cilmtogrid(convert(S_cilm, "mewh", unit, lln), resol, lmax) + load_data
     return sea_level_fingerprint, geo_conserve, upl_conserve, load_conserve
 
 
@@ -198,7 +198,7 @@ def standard(
             cilm_mas_i = convert(cilm_i * coeffg, unit, "kgm2mass", lln)
         else:
             cilm_mas_i = convert(cilm_i, unit, "kgm2mass", lln)
-        mas_i = cilm2grid(cilm_mas_i, resol, lmax)
+        mas_i = cilmtogrid(cilm_mas_i, resol, lmax)
         ocean_mas_i = mas_i * oceanmask
         land_mas_i = mas_i * landmask
 
@@ -212,11 +212,11 @@ def standard(
                 lmax,
                 setzero_indices,
             )
-            cilm_leakage_i = grid2cilm(land_mas_i, lmax) * coeffg
-            leak_mas_i = cilm2grid(cilm_leakage_i, resol, lmax) * oceanmask
+            cilm_leakage_i = gridtocilm(land_mas_i, lmax) * coeffg
+            leak_mas_i = cilmtogrid(cilm_leakage_i, resol, lmax) * oceanmask
             ocean_mas_i -= leak_mas_i  # type: ignore
 
-        g_iv = grid2cilm(ocean_mas_i, 2)[*calc_indices]
+        g_iv = gridtocilm(ocean_mas_i, 2)[*calc_indices]
 
         for j in range(4):
             if "sal" in mode:
@@ -227,13 +227,13 @@ def standard(
                 ex_mas_i = ex_ewh_i * 1000
             else:
                 ex_mas_i = uniform_distributed(land_mas_i, oceanmask) * oceanmask
-            ex_iv = grid2cilm(ex_mas_i, 2)[*calc_indices]
+            ex_iv = gridtocilm(ex_mas_i, 2)[*calc_indices]
             x = np.linalg.solve(im, ex_iv - g_iv)
 
             cilm_mas_i[*calc_indices] = x
 
             if j + 1 < 4:
-                land_mas_i = cilm2grid(cilm_mas_i, resol, lmax) * landmask
+                land_mas_i = cilmtogrid(cilm_mas_i, resol, lmax) * landmask
                 if leakcorr_method == "FM":
                     land_mas_i = foward_modelling(
                         land_mas_i, landmask, oceanmask, smooth_kind, radius, lmax  # type: ignore
@@ -270,12 +270,12 @@ def foward_modelling(
 
     for _ in range(100):
         glo_grid = uniform_distributed(m_tru, oceanmask)
-        glo_cilm = grid2cilm(glo_grid, lmax)
+        glo_cilm = gridtocilm(glo_grid, lmax)
 
         glo_cilm_smoothed = glo_cilm * coeffg
         glo_cilm_smoothed[*setzero_indices] = 0.0
 
-        pre = cilm2grid(glo_cilm_smoothed, resol, lmax) * loadmask
+        pre = cilmtogrid(glo_cilm_smoothed, resol, lmax) * loadmask
         delta = obs - pre
         m_tru += delta * 1.2
         # rmse = np.sqrt(np.sum(delta ** 2) / delta[delta != 0].size)

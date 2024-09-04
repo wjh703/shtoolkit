@@ -11,7 +11,7 @@ from .shload import (
     read_technical_note_deg1,
     read_gia_model,
 )
-from .shtrans import cilm2grid
+from .shtrans import cilmtogrid
 from .shunit import convert
 from .shtype import SpharmUnit, SHSmoothKind, GIAModel, LoadLoveNumDict
 from .shfilter import gauss_smooth, fan_smooth
@@ -210,10 +210,10 @@ class SpharmCoeff:
         sphcoef_attr["coeffs"] = coeffs
         return SpharmCoeff(**sphcoef_attr)
 
-    def expand(self, resol: int | None = None, lmax_calc: int | None = None):
+    def expand(self, resol: int, lmax_calc: int = -1):
         from .shgrid import SphereGrid
 
-        data = np.array([cilm2grid(cilm, resol, lmax_calc) for cilm in self.coeffs])
+        data = np.array([cilmtogrid(cilm, resol, lmax_calc) for cilm in self.coeffs])
         return SphereGrid(data, self.epochs.copy(), self.unit)
 
     def unitconvert(self, new_unit: SpharmUnit, lln: LoadLoveNumDict | None = None):
