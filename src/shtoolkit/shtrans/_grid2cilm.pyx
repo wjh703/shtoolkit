@@ -105,10 +105,10 @@ def grid2cilm_integral(
     if pilm.shape[2] != nlat:
         raise ValueError(f"The dimension-1 value of 'pilm' is unequal to 'nlat'")
 
-    ccos = np.zeros((nlon, calc_lmax+1))
-    ssin = np.zeros((nlon, calc_lmax+1))
+    ccos = np.zeros((nlon, calc_lmax + 1))
+    ssin = np.zeros((nlon, calc_lmax + 1))
     for k in range(nlon):
-        for m in range(calc_lmax+1):
+        for m in range(calc_lmax + 1):
             ccos[k, m] = cos(rad_lon[k] * m)
             ssin[k, m] = sin(rad_lon[k] * m)
 
