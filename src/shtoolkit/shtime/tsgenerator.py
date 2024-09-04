@@ -56,7 +56,7 @@ def time_uniform(
             argmin = np.argmin(residual)
             gdata[argmin] = data[i]
             ut[argmin] = np.inf
-    # print(f"numbers of gap are {np.isnan(gdata).sum(axis=0)}")
+    print(f"numbers of gap are {np.isnan(gdata).sum(axis=0)}")
     return outime, gdata
 
 

@@ -2,13 +2,13 @@
 # cython: cdivision=True
 # cython: boundscheck=False
 # cython: wraparound=False
-'''# cython: initializedcheck=False'''
+# cython: initializedcheck=False
 
-from libc.math cimport sqrt, sin, cos
+from libc.math cimport sqrt, sin, cos, pi
 from libc.stdlib cimport malloc, free
 import numpy as np
 cimport numpy as cnp
-
+import scipy
 cnp.import_array()
 
 cdef inline int plmidx(int degree, int order) except -1:
@@ -177,3 +177,40 @@ def c2r(double[:,:,:] cilm_complex):
                 cilm[1, i, j] = - cilm_complex[1, i, j] * sqrt2
     
     return np.asarray(cilm)
+
+
+cpdef cnp.ndarray[double, ndim=2] spec2grd_fft(
+        double[:,:,:] cilm,
+        int resol,
+        int calc_lmax = -1,
+        double[:,:,:] pilm = None
+    ):
+
+    cdef: 
+        int nlat = 2*(resol+1)
+        int nlon = 2*nlat
+        int lmax
+        double complex[:,:] fcoef
+        Py_ssize_t k, l, m
+        double am, bm
+
+    lmax = cilm.shape[1]-1
+    if calc_lmax == -1 or calc_lmax > lmax:
+        calc_lmax = lmax
+    
+    if pilm is None:
+        pilm = fnALFs(np.linspace(0, pi, nlat, endpoint=False), calc_lmax)
+        
+    if pilm.shape[0] != nlat:
+        raise ValueError(f"The dimension-1 value of 'pilm' is unequal to 'nlat'")
+    
+    fcoef = np.zeros((nlat, calc_lmax+1), dtype=np.complex128)
+    for k in range(nlat):
+        for m in range(calc_lmax+1):
+            am = 0.0
+            bm = 0.0
+            for l in range(m, calc_lmax+1):
+                am += cilm[0, l, m] * pilm[k, l, m]
+                bm += cilm[1, l, m] * pilm[k, l, m]
+            fcoef[k, m] = am-1j*bm
+    return scipy.fft.ifft(fcoef, nlon, axis=1, norm='forward').real
