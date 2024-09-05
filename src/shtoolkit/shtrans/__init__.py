@@ -5,5 +5,5 @@ from .shfunc import (
     c2r, 
     r2c
 )
-from .legendre import fnALFs
+from .legendre import fnALFs, fnALFs_cache
 from .transform import *

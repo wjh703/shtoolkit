@@ -7,6 +7,7 @@
 from libc.math cimport sqrt, sin, cos
 from libc.stdlib cimport malloc, free
 
+from functools import cache
 import numpy as np
 cimport numpy as cnp
 
@@ -19,6 +20,12 @@ Reference
         formula to compute fully normalized associated Legendre functions of ultra-high 
         degree and order. J Geod 94, 2 (2020). https://doi.org/10.1007/s00190-019-01331-0
 """
+
+@cache
+def fnALFs_cache(tuple rad_colat, int lmax):
+    cdef double[:] colat
+    colat = np.asarray(rad_colat)
+    return fnALFs(colat, lmax)
 
 
 cpdef cnp.ndarray[double, ndim=3] fnALFs(double[:] rad_colat, int lmax):
