@@ -1,8 +1,8 @@
 import time
-
+import timeit
 import numpy as np
 
-from shtoolkit.shtrans import fnalf, fnALFs, vector2cilm, cilm2vector, calc_yilm_mat
+from shtoolkit.shtrans import fnALFs, vector2cilm, cilm2vector, calc_yilm_mat
 
 
 lat = np.linspace(90, -89, 180)
@@ -12,9 +12,8 @@ rad_lon = np.deg2rad(lon)
 
 lmax = 60
 
-start = time.time()
-p1 = fnalf(rad_colat, lmax)
-print(time.time() - start)
+callable_obj1 = lambda: np.linspace(0, np.pi, 360, endpoint=False)
+print(timeit.timeit(callable_obj1, number=1000))
 start = time.time()
 p2 = fnALFs(rad_colat, lmax)
 print(time.time() - start)
@@ -22,4 +21,4 @@ print(time.time() - start)
 start = time.time()
 ylm = calc_yilm_mat(lat, lon, lmax)
 print(time.time() - start)
-breakpoint()
+
