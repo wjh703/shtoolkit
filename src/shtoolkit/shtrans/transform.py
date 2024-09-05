@@ -1,15 +1,16 @@
 from typing import Literal
 
 import numpy as np
-# from pyshtools.expand import MakeGridDH, SHExpandDH
-# from pyshtools.legendre import legendre
 
 from ._cilm2grid import cilm2grid_fft, cilm2grid_integral
 from ._grid2cilm import grid2cilm_fft, grid2cilm_integral
 
-
+"""
+Python wrappers for the spherical harmonic analysis and synthesis
+"""
 
 __all__ = ["cilmtogrid", "gridtocilm"]
+
 
 Cilm2GridFunc = {
     'fft': cilm2grid_fft,

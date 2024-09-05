@@ -52,7 +52,7 @@ def cilm2grid_fft(
             for l in range(m, calc_lmax + 1):
                 am += cilm[0, l, m] * pilm[k, l, m]
                 bm += cilm[1, l, m] * pilm[k, l, m]
-            fcoef[k, m] = am-1j*bm
+            fcoef[k, m] = am - 1j * bm
 
     return scipy.fft.ifft(fcoef, nlon, axis=1, norm='forward').real
 
@@ -74,7 +74,7 @@ def cilm2grid_integral(
         double[:,:] ssin
         double a, b
         double[:] rad_colat = np.linspace(0, pi, nlat, endpoint=False)
-        double[:] rad_lon = np.linspace(0, 2*pi, nlon, endpoint=False)
+        double[:] rad_lon = np.linspace(0, 2 * pi, nlon, endpoint=False)
 
     lmax = cilm.shape[1] - 1
 
