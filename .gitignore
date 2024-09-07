@@ -13,4 +13,6 @@ src/shtoolkit/shtrans/*.html
 src/shtoolkit.egg-info/
 src/shtoolkit/__pycache__/
 src/shtoolkit/shtime/__pycache__/
+src/shtoolkit/shtime/*.pyx
+src/shtoolkit/shtime/*.pyd
 src/shtoolkit/shtime1.py
