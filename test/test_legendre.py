@@ -21,4 +21,3 @@ print(time.time() - start)
 start = time.time()
 ylm = calc_yilm_mat(lat, lon, lmax)
 print(time.time() - start)
-
