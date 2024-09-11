@@ -77,7 +77,7 @@ class SphereGrid:
                 s = f"convsered from eustatic sea-level\n"
             else:
                 data_conserve = conserve_func(data, oceanmask)[-1]
-                s = f"convsered from eustatic sea-level\n"
+                s = f"convsered from sea-level fingerprint\n"
             name = self.name + s if self.name is not None else s
         else:
             if mode == "eustatic":
