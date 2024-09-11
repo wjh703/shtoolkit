@@ -74,15 +74,17 @@ class SphereGrid:
         if data.ndim == 2:
             if mode == "eustatic":
                 data_conserve = conserve_func(data, oceanmask)
+                s = f"convsered from eustatic sea-level\n"
             else:
                 data_conserve = conserve_func(data, oceanmask)[-1]
-            s = f"convsered from eustatic sea-level\n"
+                s = f"convsered from eustatic sea-level\n"
             name = self.name + s if self.name is not None else s
         else:
             if mode == "eustatic":
                 data_conserve = np.array([conserve_func(i, oceanmask) for i in data])
+                s = f"convsered from eustatic sea-level\n"
             else:
                 data_conserve = np.array([conserve_func(i, oceanmask)[-1] for i in data])
-            s = f"convsered from sea-level fingerprint\n"
+                s = f"convsered from sea-level fingerprint\n"
             name = self.name + s if self.name is not None else s
         return SphereGrid(data_conserve, self.epochs.copy(), self.unit, name=name)  # type: ignore
