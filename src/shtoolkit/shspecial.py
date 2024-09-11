@@ -208,7 +208,7 @@ def standard(
                 landmask,
                 oceanmask,
                 smooth_kind,  # type: ignore
-                radius,
+                radius,  # type: ignore
                 lmax,
                 setzero_indices,
             )

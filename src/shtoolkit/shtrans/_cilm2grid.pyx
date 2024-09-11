@@ -46,7 +46,7 @@ def cilm2grid_fft(
     
     fcoef = np.zeros((nlat, calc_lmax + 1), dtype=np.complex128)
     for k in range(nlat):
-        for m in range(calc_lmax+  1):
+        for m in range(calc_lmax + 1):
             am = 0.0
             bm = 0.0
             for l in range(m, calc_lmax + 1):

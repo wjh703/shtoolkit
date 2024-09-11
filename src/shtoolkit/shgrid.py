@@ -60,11 +60,11 @@ class SphereGrid:
             conserve_func = uniform_distributed
         elif mode == "sal" and lln is not None:
             conserve_func = partial(
-                sea_level_equation, lln=lln, lmax=lmax, unit=self.unit, rot=False
+                sea_level_equation, lln=lln, lmax=lmax, unit=self.unit, rot=False  # type: ignore
             )
         elif mode == "sal_rot" and lln is not None:
             conserve_func = partial(
-                sea_level_equation, lln=lln, lmax=lmax, unit=self.unit, rot=True
+                sea_level_equation, lln=lln, lmax=lmax, unit=self.unit, rot=True  # type: ignore
             )
         else:
             msg = f"'mode': {mode} needs a specific 'lln'"

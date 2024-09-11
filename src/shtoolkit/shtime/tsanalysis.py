@@ -190,7 +190,7 @@ def sine_fitting(
     )
 
 
-@jit(nopython=True)
+@jit(nopython=True, cache=True)
 def cosine_fitting(
     dtime: np.ndarray, data: np.ndarray, reference_time: float = 2002.0014
 ) -> tuple[
@@ -199,8 +199,7 @@ def cosine_fitting(
     """fitting a1cos(2pit-phi) + a2cos(4pit-phi) + kt + b by the least square"""
     if dtime.size != data.size:
         raise ValueError(f"{dtime.size} != {data.size}")
-    # if data.ndim == 1:
-    #     data = data[:, np.newaxis]
+
     t = dtime - reference_time
     omega = 2.0 * np.pi
     d = np.copy(data)
@@ -216,18 +215,14 @@ def cosine_fitting(
             np.sin(omega * 2.0 * t),
         )
     )
-    # b = np.c_[np.ones_like(t), t, np.cos(omega * t), np.sin(omega * t), np.cos(omega * 2. * t), np.sin(omega * 2. * t)]
+
     # 计算BTB
     btb = b.T @ b
     # 计算协因数矩阵
     qxx = np.linalg.inv(btb)
     # 利用最小二乘求x
     x = qxx @ b.T @ d
-    # x = x.flatten()
-    # x = w @ data
-    # x = np.linalg.solve(btb, b.T @ d)
     # 2维转1维, (6,1) -> (6,)
-    # x = xx.flatten()
     # x[2] -> cos(phi1)
     # x[3] -> sin(phi1)
     amp1 = np.sqrt(x[2] ** 2 + x[3] ** 2)
