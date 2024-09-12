@@ -10,6 +10,7 @@ src/shtoolkit/shtrans/__pycache__/
 src/shtoolkit/shtrans/*.c
 src/shtoolkit/shtrans/*.pyd
 src/shtoolkit/shtrans/*.html
+src/shtoolkit/shtrans/*.txt
 src/shtoolkit.egg-info/
 src/shtoolkit/__pycache__/
 src/shtoolkit/shtime/__pycache__/
