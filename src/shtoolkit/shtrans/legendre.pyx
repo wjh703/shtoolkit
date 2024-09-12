@@ -138,6 +138,6 @@ cpdef cnp.ndarray[double, ndim=3] fnALFs(double[:] rad_colat, int lmax):
                 elif m == lmax:
                     pilm[i, l, m] = u * rc.elm[ivec] * pilm[i, l-1, m-1]
                 else:
-                    pilm[i, l, m] = rc.clm[ivec]* t * pilm[i, l-1, m] - u * (rc.dlm[ivec] * pilm[i, l-1, m+1] - rc.elm[ivec] * pilm[i, l-1, m-1])
+                    pilm[i, l, m] = rc.clm[ivec] * t * pilm[i, l-1, m] - u * (rc.dlm[ivec] * pilm[i, l-1, m+1] - rc.elm[ivec] * pilm[i, l-1, m-1])
     
     return np.asarray(pilm)
