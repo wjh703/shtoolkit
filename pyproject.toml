@@ -24,3 +24,5 @@ packages = ["shtoolkit", "shtoolkit.shtrans", "shtoolkit.shtime"]
 package-dir = {"" = "src"}
 package-data = {"shtoolkit.shtrans" = ["*.pyx", "*.pxd"]}
 
+[tool.mypy]
+ignore_missing_imports = true
