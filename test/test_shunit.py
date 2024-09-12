@@ -18,12 +18,7 @@ file2 = [slr_file2, slr_file2]
 
 lln = read_load_love_num(lln_file, 60)
 gsm = SpharmCoeff.from_files(gsm_folder, 60, "CSR GRACE")
-gsm_post = (
-    gsm.rplce(["C20", "C30"], file1)
-    .corr_gia("ICE6G-D", gia_file2)
-    .rplce("DEG1", deg1_file)
-    .remove_mean_field()
-)
+gsm_post = gsm.rplce(["C20", "C30"], file1).corr_gia("ICE6G-D", gia_file2).rplce("DEG1", deg1_file).remove_mean_field()
 print(gsm_post.name)
 gsm_post_convert = gsm_post.unitconvert("kgm2mass", lln)
 a = shunit.convert(gsm_post.coeffs, "kgm2mass", "mgeo", lln)

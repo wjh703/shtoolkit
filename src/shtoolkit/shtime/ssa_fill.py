@@ -105,9 +105,7 @@ def _ssa(x: np.ndarray, M: int, K: int) -> tuple[np.ndarray, np.ndarray]:
         Y[:, i] = x[i : i + M]
 
     U, s, Vh = np.linalg.svd(Y, full_matrices=False)
-    Z: list[np.ndarray] = [
-        s[i] * U[:, i][:, np.newaxis] @ Vh[i, :][np.newaxis, :] for i in range(K)
-    ]
+    Z: list[np.ndarray] = [s[i] * U[:, i][:, np.newaxis] @ Vh[i, :][np.newaxis, :] for i in range(K)]
 
     # r = np.linalg.matrix_rank(Y)
 

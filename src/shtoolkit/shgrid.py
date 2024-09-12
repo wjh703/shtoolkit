@@ -2,7 +2,7 @@ from functools import partial
 
 import numpy as np
 
-from .shtrans import gridtocilm
+from .shtrans import grid2cilm
 from .shtype import SpharmUnit, MassConserveMode, LoadLoveNumDict
 from .shspecial import sea_level_equation, uniform_distributed
 
@@ -44,7 +44,7 @@ class SphereGrid:
     def expand(self, lmax_calc: int = -1):
         from .shcoeff import SpharmCoeff
 
-        coeffs = np.array([gridtocilm(grid, lmax_calc) for grid in self.data])
+        coeffs = np.array([grid2cilm(grid, lmax_calc) for grid in self.data])
         return SpharmCoeff(coeffs, self.epochs.copy(), self.unit)
 
     def conserve(
@@ -59,13 +59,9 @@ class SphereGrid:
         if mode == "eustatic":
             conserve_func = uniform_distributed
         elif mode == "sal" and lln is not None:
-            conserve_func = partial(
-                sea_level_equation, lln=lln, lmax=lmax, unit=self.unit, rot=False  # type: ignore
-            )
+            conserve_func = partial(sea_level_equation, lln=lln, lmax=lmax, unit=self.unit, rot=False)  # type: ignore
         elif mode == "sal_rot" and lln is not None:
-            conserve_func = partial(
-                sea_level_equation, lln=lln, lmax=lmax, unit=self.unit, rot=True  # type: ignore
-            )
+            conserve_func = partial(sea_level_equation, lln=lln, lmax=lmax, unit=self.unit, rot=True)  # type: ignore
         else:
             msg = f"'mode': {mode} needs a specific 'lln'"
             raise ValueError(msg)

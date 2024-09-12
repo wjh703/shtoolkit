@@ -1,3 +1,4 @@
+import re
 import copy
 from pathlib import Path
 from typing import Literal, Optional, Sequence
@@ -11,7 +12,7 @@ from .shload import (
     read_technical_note_deg1,
     read_gia_model,
 )
-from .shtrans import cilmtogrid
+from .shtrans import cilm2grid
 from .shunit import convert
 from .shtype import SpharmUnit, SHSmoothKind, GIAModel, LoadLoveNumDict
 from .shfilter import gauss_smooth, fan_smooth
@@ -23,35 +24,35 @@ class SpharmCoeff:
     def __init__(
         self,
         coeffs: np.ndarray,
-        epochs: np.ndarray,
+        epochs: np.ndarray | float, 
         unit: SpharmUnit,
         errors: np.ndarray | None = None,
         error_kind: str | None = None,
         name: str | None = None,
     ):
-        lmax = coeffs.shape[-2] - 1
-        if coeffs.ndim == 4:
-            self.coeffs = coeffs.copy()
-        elif coeffs.ndim == 3:
-            self.coeffs = coeffs.copy()[np.newaxis]
-        else:
-            msg = (
-                f"Invalid ndim of coeffs {coeffs.ndim}, "
-                + "must be 4: (n, 2, lmax+1, lmax+1) or 3: (2, lmax+1, lmax+1)"
-            )
-            raise ValueError(msg)
-        if self.coeffs.shape[0] != epochs.shape[0]:
-            msg = "The number of 'coeffs' is unequal to that of 'epochs'"
-            raise ValueError(msg)
         if errors is not None:
             if coeffs.shape != errors.shape:
                 msg = f"The shape of 'coeffs' {coeffs.shape}, is unequal to that of 'errors' {errors.shape}"
                 raise ValueError(msg)
-
-        self.lmax = lmax
-        self.epochs = epochs.copy()
+            
+        if coeffs.ndim == 4:
+            self.coeffs = coeffs.copy()
+            self.errors = errors.copy() if errors is not None else None
+        elif coeffs.ndim == 3:
+            self.coeffs = coeffs.copy()[np.newaxis]
+            self.errors = errors.copy()[np.newaxis] if errors is not None else None
+        else:
+            msg = f"Invalid ndim of 'coeffs' {coeffs.ndim}, must be 4 or 3"
+            raise ValueError(msg)
+        
+        epochs =  epochs.copy() if isinstance(epochs, np.ndarray) else np.array([epochs])
+        if self.coeffs.shape[0] != epochs.shape[0]:
+            msg = f"The number of 'coeffs' {self.coeffs.shape[0]} is unequal to that of 'epochs' {epochs.shape[0]}"
+            raise ValueError(msg)
+        
+        self.lmax = coeffs.shape[-2] - 1
+        self.epochs = epochs
         self.unit: SpharmUnit = unit
-        self.errors = copy.deepcopy(errors)
         self.error_kind = error_kind
         self.name = name
 
@@ -60,20 +61,21 @@ class SpharmCoeff:
         cls,
         folder: str | Path,
         lmax: int,
-        dataname: str | None = None,
         is_icgem: bool = True,
     ):
         if isinstance(folder, str):
             folder = Path(folder)
+
+        files = [file for file in folder.iterdir()]
+
         if is_icgem:
-            data = [read_icgem(file, lmax) for file in folder.iterdir()]
+            data = [read_icgem(file, lmax) for file in files]
         else:
-            data = [read_non_icgem(file, lmax) for file in folder.iterdir()]
+            data = [read_non_icgem(file, lmax) for file in files]
         epochs, coeffs, errors = map(np.array, zip(*data))
-        if isinstance(dataname, str):
-            name = f"GSM: {dataname}\n"
-        else:
-            name = None
+
+        center = re.findall(r"UTCSR|GFZOP|JPLEM|COSTG|GRGS|AIUB|ITSG|HUST|Tongji", files[0].stem)
+        name = f"GSM: {center[0]}\n" if center else None
         return cls(coeffs, epochs, "stokes", errors, name=name).sort()
 
     def rplce(
@@ -213,7 +215,7 @@ class SpharmCoeff:
     def expand(self, resol: int, lmax_calc: int = -1):
         from .shgrid import SphereGrid
 
-        data = np.array([cilmtogrid(cilm, resol, lmax_calc) for cilm in self.coeffs])
+        data = np.array([cilm2grid(cilm, resol, lmax_calc) for cilm in self.coeffs])
         return SphereGrid(data, self.epochs.copy(), self.unit)
 
     def unitconvert(self, new_unit: SpharmUnit, lln: LoadLoveNumDict | None = None):
@@ -244,9 +246,7 @@ class SpharmCoeff:
 
     def __add__(self, other):
         if isinstance(other, SpharmCoeff):
-            if self.coeffs.shape == other.coeffs.shape and np.allclose(
-                self.epochs, other.epochs, atol=0.5
-            ):
+            if self.coeffs.shape == other.coeffs.shape and np.allclose(self.epochs, other.epochs, atol=0.5):
                 coeffs = self.coeffs + other.coeffs
             elif self.coeffs.shape[1:] == other.coeffs.shape[1:]:
                 count = 0
@@ -271,9 +271,7 @@ class SpharmCoeff:
 
     def __sub__(self, other):
         if isinstance(other, SpharmCoeff):
-            if self.coeffs.shape == other.coeffs.shape and np.allclose(
-                self.epochs, other.epochs, atol=0.5
-            ):
+            if self.coeffs.shape == other.coeffs.shape and np.allclose(self.epochs, other.epochs, atol=0.5):
                 coeffs = self.coeffs + other.coeffs
             elif self.coeffs.shape[1:] == other.coeffs.shape[1:]:
                 count = 0

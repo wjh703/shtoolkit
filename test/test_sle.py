@@ -45,12 +45,8 @@ lmax = 60
 ant = read_file("D:\\tvg_toolkit\\fingerprint_approach\\测试sle\\ant_001.mas")
 ant_geo_ilm = read_field("D:\\tvg_toolkit\\fingerprint_approach\\测试sle\\ant_001_rotation.geo", 60)
 ant_upl_ilm = read_field("D:\\tvg_toolkit\\fingerprint_approach\\测试sle\\ant_001_rotation.upl", 60)
-ant_geo_norot_ilm = read_field(
-    "D:\\tvg_toolkit\\fingerprint_approach\\测试sle\\ant_001_no_rotation.geo", 60
-)
-ant_upl_norot_ilm = read_field(
-    "D:\\tvg_toolkit\\fingerprint_approach\\测试sle\\ant_001_no_rotation.upl", 60
-)
+ant_geo_norot_ilm = read_field("D:\\tvg_toolkit\\fingerprint_approach\\测试sle\\ant_001_no_rotation.geo", 60)
+ant_upl_norot_ilm = read_field("D:\\tvg_toolkit\\fingerprint_approach\\测试sle\\ant_001_no_rotation.upl", 60)
 ant_geo = cilm2grid(ant_geo_ilm, 89, lmax)
 ant_upl = cilm2grid(ant_upl_ilm, 89, lmax)
 ant_geo_norot = cilm2grid(ant_geo_norot_ilm, 89, lmax)

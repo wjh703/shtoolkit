@@ -16,9 +16,7 @@ def load_ldc():
     import datetime
     from astropy.time import Time
 
-    ldc = loadmat(
-        "C:\\Users\\huan\\Desktop\\基金本子\\参考文献\\LDCmgm90_20200108_GSM_GAA_GAB_GAC_GAD.mat"
-    )
+    ldc = loadmat("C:\\Users\\huan\\Desktop\\基金本子\\参考文献\\LDCmgm90_20200108_GSM_GAA_GAB_GAC_GAD.mat")
     ldc_clm = ldc["LDCmgm_GSM_Cnm"]
     ldc_slm = ldc["LDCmgm_GSM_Snm"]
     ldc_epochs = ldc["LDCmgm_Epoch"].ravel()
@@ -35,7 +33,7 @@ def load_ldc():
     breakpoint()
 
 
-load_ldc()
+# load_ldc()
 lmax = 60
 slr_file1 = "D:\\tvg_toolkit\\tvg_toolkit\\data\\CSR_SLR_TN11E_TN11E.txt"
 slr_file2 = "D:\\tvg_toolkit\\tvg_toolkit\\data\\GSFC_SLR_TN14.txt"
@@ -48,15 +46,13 @@ file2 = [slr_file2, slr_file2]
 lln_file = "D:\\tvg_toolkit\\tvg_toolkit\\data\\lln_PREM.txt"
 lln = read_load_love_num(lln_file, lmax)
 
-gsm = SpharmCoeff.from_files(gsm_folder, lmax, "CSR GRACE")
+gsm = SpharmCoeff.from_files(gsm_folder, lmax)
 
 b = gsm.rplce(["C20", "C30"], file1).corr_gia("ICE6G-D", gia_file1).remove_mean_field()
 c = gsm.rplce("DEG1", deg1_file)
 c.coeffs -= c.coeffs[:100].mean(axis=0)
-oc = np.loadtxt("D:\\tvg_toolkit\\masking\\data\\mask\\oceanmask\\ocean_buf100.txt")[:, 2].reshape(
-    180, 360
-)
-coeffs = standard(b.coeffs, b.unit, oc, lln, lmax, {"method": "FM_fs", "radius": 300}, mode="sal")
+oc = np.loadtxt("D:\\tvg_toolkit\\masking\\data\\mask\\oceanmask\\ocean_buf300.txt")[:, 2].reshape(180, 360)
+coeffs = standard(b.coeffs, b.unit, oc, lln, lmax, {"method": "buf_fs", "radius": 300}, mode="sal")
 coeffs = coeffs[:, *list(zip([0, 1, 0], [0, 1, 1], [1, 1, 1]))]
 coeffs -= coeffs[:100].mean(axis=0)
 

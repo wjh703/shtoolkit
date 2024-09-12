@@ -3,7 +3,7 @@ import timeit
 import numpy as np
 from pyshtools.expand import SHExpandDH, MakeGridDH
 
-from shtoolkit.shtrans import fnALFs, cilmtogrid
+from shtoolkit.shtrans import fnALFs, cilm2grid
 
 if __name__ == "__main__":
     lmax = 89
@@ -14,15 +14,13 @@ if __name__ == "__main__":
 
     cilm = SHExpandDH(grd, sampling=2, lmax_calc=lmax)
     a = MakeGridDH(cilm, sampling=2, lmax=resol, lmax_calc=lmax, extend=False)
-    b = cilmtogrid(cilm, resol, lmax)
-    c = cilmtogrid(cilm, resol, lmax, mode="integral")
+    b = cilm2grid(cilm, resol, lmax)
+    c = cilm2grid(cilm, resol, lmax, mode="integral")
     print(np.allclose(a, b))
     print(np.allclose(a, c))
-    callable_object1 = lambda: MakeGridDH(
-        cilm, sampling=2, lmax=resol, lmax_calc=lmax, extend=False
-    )
-    callable_object2 = lambda: cilmtogrid(cilm, resol, lmax)
-    callable_object3 = lambda: cilmtogrid(cilm, resol, lmax, mode="integral")
+    callable_object1 = lambda: MakeGridDH(cilm, sampling=2, lmax=resol, lmax_calc=lmax, extend=False)
+    callable_object2 = lambda: cilm2grid(cilm, resol, lmax)
+    callable_object3 = lambda: cilm2grid(cilm, resol, lmax, mode="integral")
     print(timeit.timeit(callable_object1, number=1000))
     print(timeit.timeit(callable_object2, number=1000))
     print(timeit.timeit(callable_object3, number=1000))

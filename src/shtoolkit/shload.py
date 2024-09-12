@@ -47,9 +47,7 @@ def read_load_love_num(filepath: str | Path, lmax: int, frame: str = "CF") -> Lo
     return lln
 
 
-def read_icgem(
-    filepath: str | Path, lmax: int | None = None
-) -> tuple[float, np.ndarray, np.ndarray]:
+def read_icgem(filepath: str | Path, lmax: int | None = None) -> tuple[float, np.ndarray, np.ndarray]:
     """read GRACE/GRACE-FO gravitional coefficients in icgem format, including GSM, GAC, GAB, GAA"""
     centers = r"UTCSR|GFZOP|JPLEM|COSTG|GRGS|AIUB|ITSG|HUST|Tongji"
     if isinstance(filepath, str):
@@ -154,9 +152,7 @@ def read_icgem(
     return epoch, clm, eclm
 
 
-def read_non_icgem(
-    filepath: str | Path, lmax: int | None = None
-) -> tuple[float, np.ndarray, np.ndarray]:
+def read_non_icgem(filepath: str | Path, lmax: int | None = None) -> tuple[float, np.ndarray, np.ndarray]:
     centers = r"GRGS|CNESG"
     if isinstance(filepath, str):
         filepath = Path(filepath)
@@ -393,13 +389,7 @@ def read_slr_5x5(filepath: str | Path) -> tuple[np.ndarray, np.ndarray]:
 
     vector = np.array([SHCilmToVector(c) for c in np.asarray(cilms)])
 
-    vector_df = (
-        pd.DataFrame(np.hstack((np.asarray(epochs)[np.newaxis], vector)))
-        .rolling(4)
-        .mean()
-        .dropna()
-        .to_numpy()
-    )
+    vector_df = pd.DataFrame(np.hstack((np.asarray(epochs)[np.newaxis], vector))).rolling(4).mean().dropna().to_numpy()
     epochs_28d = vector_df[:, 0]
     vector_28d = vector_df[:, 1:]
     cilms_28d = np.array([SHVectorToCilm(v) for v in vector_28d])

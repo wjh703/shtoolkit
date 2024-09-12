@@ -3,7 +3,7 @@ import timeit
 import numpy as np
 from pyshtools.expand import SHExpandDH
 
-from shtoolkit.shtrans import fnALFs, gridtocilm
+from shtoolkit.shtrans import fnALFs, grid2cilm
 
 if __name__ == "__main__":
     lmax = 60
@@ -13,13 +13,13 @@ if __name__ == "__main__":
     grd = np.random.random((2 * (resol + 1), 4 * (resol + 1)))
 
     a = SHExpandDH(grd, sampling=2, lmax_calc=lmax)
-    b = gridtocilm(grd, lmax)
-    c = gridtocilm(grd, lmax, mode="integral")
+    b = grid2cilm(grd, lmax)
+    c = grid2cilm(grd, lmax, mode="integral")
     print(np.allclose(a, b))
     print(np.allclose(a, c))
     callable_object1 = lambda: SHExpandDH(grd, sampling=2, lmax_calc=lmax)
-    callable_object2 = lambda: gridtocilm(grd, lmax)
-    callable_object3 = lambda: gridtocilm(grd, lmax, mode="integral")
+    callable_object2 = lambda: grid2cilm(grd, lmax)
+    callable_object3 = lambda: grid2cilm(grd, lmax, mode="integral")
     print(timeit.timeit(callable_object1, number=1000))
     print(timeit.timeit(callable_object2, number=1000))
     print(timeit.timeit(callable_object3, number=1000))

@@ -61,9 +61,7 @@ def lstsq_map(
 
 def sine_fitting(
     dtime: np.ndarray, data: np.ndarray, reference_time: float = 2002.0027
-) -> tuple[
-    float, float, float, float, float, float, float, float, float, float, np.ndarray, np.ndarray
-]:
+) -> tuple[float, float, float, float, float, float, float, float, float, float, np.ndarray, np.ndarray]:
     """fitting a1sin(2pit+phi) + a2sin(4pit+phi) + kt + b by the least square"""
     if dtime.size != data.size:
         raise ValueError(f"{dtime.size} != {data.size}")
@@ -193,9 +191,7 @@ def sine_fitting(
 @jit(nopython=True, cache=True)
 def cosine_fitting(
     dtime: np.ndarray, data: np.ndarray, reference_time: float = 2002.0014
-) -> tuple[
-    float, float, float, float, float, float, float, float, float, float, np.ndarray, np.ndarray
-]:
+) -> tuple[float, float, float, float, float, float, float, float, float, float, np.ndarray, np.ndarray]:
     """fitting a1cos(2pit-phi) + a2cos(4pit-phi) + kt + b by the least square"""
     if dtime.size != data.size:
         raise ValueError(f"{dtime.size} != {data.size}")
