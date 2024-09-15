@@ -4,10 +4,10 @@ from typing import TextIO
 
 import numpy as np
 import pandas as pd
-from pyshtools.shio import SHCilmToVector, SHVectorToCilm
 
 from . import shtime
 from .shtype import LoadLoveNumDict
+from .shtrans import cilm2vector, vector2cilm
 
 
 __all__ = [
@@ -387,11 +387,11 @@ def read_slr_5x5(filepath: str | Path) -> tuple[np.ndarray, np.ndarray]:
             epochs.append(float(ls[1]))
             cilms.append(read_gsfc_5x5(f))
 
-    vector = np.array([SHCilmToVector(c) for c in np.asarray(cilms)])
+    vector = np.array([cilm2vector(c) for c in np.asarray(cilms)])
 
     vector_df = pd.DataFrame(np.hstack((np.asarray(epochs)[np.newaxis], vector))).rolling(4).mean().dropna().to_numpy()
     epochs_28d = vector_df[:, 0]
     vector_28d = vector_df[:, 1:]
-    cilms_28d = np.array([SHVectorToCilm(v) for v in vector_28d])
+    cilms_28d = np.array([vector2cilm(v) for v in vector_28d])
 
     return epochs_28d, cilms_28d

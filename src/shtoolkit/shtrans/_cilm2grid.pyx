@@ -8,7 +8,7 @@ from libc.math cimport sin, cos, pi
 import numpy as np
 import scipy
 
-from .legendre cimport fnALFs
+from .legendre import fnALFs_cache
 
 """
 Reference
@@ -22,14 +22,15 @@ Reference
 def cilm2grid_fft(
         double[:,:,:] cilm,
         int resol,
-        int calc_lmax = -1,
-        double[:,:,:] pilm = None
+        int calc_lmax = -1
     ):
 
     cdef: 
         int nlat = 2 * (resol + 1)
         int nlon = 2 * nlat
         int lmax
+        tuple rad_colat = tuple(np.linspace(0, pi, nlat, endpoint=False))
+        double[:,:,:] pilm
         double complex[:,:] fcoef
         Py_ssize_t k, l, m
         double am, bm
@@ -38,8 +39,7 @@ def cilm2grid_fft(
     if calc_lmax < 0 or calc_lmax > lmax:
         calc_lmax = lmax
     
-    if pilm is None:
-        pilm = fnALFs(np.linspace(0, pi, nlat, endpoint=False), calc_lmax)
+    pilm = fnALFs_cache(rad_colat, calc_lmax)
         
     if pilm.shape[0] != nlat:
         raise ValueError(f"The dimension-1 value of 'pilm' is unequal to 'nlat'")
@@ -60,8 +60,7 @@ def cilm2grid_fft(
 def cilm2grid_integral(
         double[:,:,:] cilm,
         int resol,
-        int calc_lmax = -1,
-        double[:,:,:] pilm = None
+        int calc_lmax = -1
     ):
 
     cdef: 
@@ -73,16 +72,16 @@ def cilm2grid_integral(
         double[:,:] ccos
         double[:,:] ssin
         double a, b
-        double[:] rad_colat = np.linspace(0, pi, nlat, endpoint=False)
+        tuple rad_colat = tuple(np.linspace(0, pi, nlat, endpoint=False))
         double[:] rad_lon = np.linspace(0, 2 * pi, nlon, endpoint=False)
+        double[:,:,:] pilm
 
     lmax = cilm.shape[1] - 1
 
     if calc_lmax < 0 or calc_lmax > lmax:
         calc_lmax = lmax
     
-    if pilm is None:
-        pilm = fnALFs(rad_colat, calc_lmax)
+    pilm = fnALFs_cache(rad_colat, calc_lmax)
         
     if pilm.shape[0] != nlat:
         raise ValueError(f"The dimension-1 value of 'pilm' is unequal to 'nlat'")
