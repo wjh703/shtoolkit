@@ -56,7 +56,7 @@ class SphereGrid:
     ):
         if lmax is None:
             lmax = self.max_resol
-            
+
         if mode == "eustatic":
             conserve_func = uniform_distributed
         elif mode == "sal" and lln is not None:

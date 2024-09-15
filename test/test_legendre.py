@@ -18,7 +18,7 @@ rad_lon = np.deg2rad(lon)
 lmax = 89
 
 callable1 = lambda: fnALFs_cache(tuple(rad_colat), lmax)
-callable2 = lambda: np.asarray(fnALFs_cache(tuple(rad_colat), lmax).transpose(1, 2, 0), order='C')
+callable2 = lambda: np.asarray(fnALFs_cache(tuple(rad_colat), lmax).transpose(1, 2, 0), order="C")
 # callable2 = lambda: fnALF(rad_colat[10], lmax)
 print(timeit.timeit(callable1, number=100))
 print(timeit.timeit(callable2, number=100))

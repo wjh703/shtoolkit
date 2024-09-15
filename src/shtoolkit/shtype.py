@@ -3,11 +3,8 @@ from typing import Literal, TypedDict
 import numpy as np
 
 
-__all__ = [
-    "LoadLoveNumDict", "LeakCorrMethod", 
-    "SpharmUnit", "GIAModel", 
-    "SHSmoothKind", "MassConserveMode"
-]
+__all__ = ["LoadLoveNumDict", "LeakCorrMethod", "SpharmUnit", "GIAModel", "SHSmoothKind", "MassConserveMode"]
+
 
 class LoadLoveNumDict(TypedDict):
     h_el: np.ndarray

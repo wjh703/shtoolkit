@@ -24,7 +24,7 @@ class SpharmCoeff:
     def __init__(
         self,
         coeffs: np.ndarray,
-        epochs: np.ndarray | float, 
+        epochs: np.ndarray | float,
         unit: SpharmUnit,
         errors: np.ndarray | None = None,
         error_kind: str | None = None,
@@ -34,7 +34,7 @@ class SpharmCoeff:
             if coeffs.shape != errors.shape:
                 msg = f"The shape of 'coeffs' {coeffs.shape}, is unequal to that of 'errors' {errors.shape}"
                 raise ValueError(msg)
-            
+
         if coeffs.ndim == 4:
             self.coeffs = coeffs.copy()
             self.errors = errors.copy() if errors is not None else None
@@ -44,12 +44,12 @@ class SpharmCoeff:
         else:
             msg = f"Invalid ndim of 'coeffs' {coeffs.ndim}, must be 4 or 3"
             raise ValueError(msg)
-        
-        epochs =  epochs.copy() if isinstance(epochs, np.ndarray) else np.array([epochs])
+
+        epochs = epochs.copy() if isinstance(epochs, np.ndarray) else np.array([epochs])
         if self.coeffs.shape[0] != epochs.shape[0]:
             msg = f"The number of 'coeffs' {self.coeffs.shape[0]} is unequal to that of 'epochs' {epochs.shape[0]}"
             raise ValueError(msg)
-        
+
         self.lmax = coeffs.shape[-2] - 1
         self.epochs = epochs
         self.unit: SpharmUnit = unit
