@@ -239,10 +239,7 @@ class SpharmCoeff:
         return SpharmCoeff(**sphcoef_attr)
 
     def __len__(self):
-        if self.coeffs.ndim == 3:
-            return 1
-        else:
-            return self.coeffs.shape[0]
+        return self.coeffs.shape[0]
 
     def __add__(self, other):
         if isinstance(other, SpharmCoeff):
