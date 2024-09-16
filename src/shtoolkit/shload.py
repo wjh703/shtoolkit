@@ -10,16 +10,6 @@ from .shtype import LoadLoveNumDict
 from .shtrans import cilm2vector, vector2cilm
 
 
-__all__ = [
-    "read_load_love_num",
-    "read_icgem",
-    "read_non_icgem",
-    "read_slr_5x5",
-    "read_technical_note_c20_c30",
-    "read_technical_note_deg1",
-]
-
-
 def read_load_love_num(filepath: str | Path, lmax: int, frame: str = "CF") -> LoadLoveNumDict:
     h_el = np.zeros(lmax + 1)
     l_el = np.zeros(lmax + 1)
@@ -236,11 +226,11 @@ def read_technical_note_c20_c30(
             c20_sigma.append(float(ls[4]) * 1e-10)
             c30_sigma.append(float(ls[7]) * 1e-10)
     return (
-        np.array(dtime),
-        np.array(c20),
-        np.array(c20_sigma),
-        np.array(c30),
-        np.array(c30_sigma),
+        np.asarray(dtime),
+        np.asarray(c20),
+        np.asarray(c20_sigma),
+        np.asarray(c30),
+        np.asarray(c30_sigma),
         center,
     )
 
@@ -273,7 +263,7 @@ def read_technical_note_deg1(
                 s11_sigma.append(float(ls[6]))
     deg1 = np.c_[c10, c11, s11]
     deg1_sigma = np.c_[c10_sigma, c11_sigma, s11_sigma]
-    return np.array(epochs), deg1, deg1_sigma
+    return np.asarray(epochs), deg1, deg1_sigma
 
 
 def read_gia_model(filepath: str | Path, lmax: int, model: str = "P18") -> np.ndarray:
@@ -388,7 +378,13 @@ def read_slr_5x5(filepath: str | Path) -> tuple[np.ndarray, np.ndarray]:
 
     vector = np.array([cilm2vector(c) for c in np.asarray(cilms)])
 
-    vector_df = pd.DataFrame(np.hstack((np.asarray(epochs)[np.newaxis], vector))).rolling(4).mean().dropna().to_numpy()
+    vector_df = (
+        pd.DataFrame(np.hstack((np.asarray(epochs)[np.newaxis], vector)))
+        .rolling(4)
+        .mean()
+        .dropna()
+        .to_numpy()
+    )
     epochs_28d = vector_df[:, 0]
     vector_28d = vector_df[:, 1:]
     cilms_28d = np.array([vector2cilm(v) for v in vector_28d])
