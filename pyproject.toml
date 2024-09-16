@@ -30,4 +30,4 @@ ignore_missing_imports = true
 [tool.ruff]
 line-length = 120
 lint = {select = ["E", "F", "B"], ignore = ["E741", "B006"]}
-format = {quote-style = "double", indent-style = "tab"}
+format = {quote-style = "double"}
