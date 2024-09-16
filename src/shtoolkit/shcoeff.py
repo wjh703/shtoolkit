@@ -85,8 +85,8 @@ class SpharmCoeff:
         rpcoef: Optional["ReplaceCoeff"] = None,
     ) -> "SpharmCoeff":
         if self.unit != "stokes":
-            msg = "Inconsistent attribute 'unit', it only accepts 'stokes'"
-            raise AttributeError(msg)
+            msg = f"Invalid value of 'unit' attribute, (expected 'stokes', got '{self.unit}')."
+            raise ValueError(msg)
 
         if rpcoef is None:
             lowdeg_dict = {
@@ -242,7 +242,7 @@ class ReplaceCoeff:
                 continue
             residual = np.abs(self.epochs - t)
             if np.nanmin(residual) > 0.05:
-                msg = f"Invalid value of epoch '{t:.4f}', which cannot be found in replaced epochs."
+                msg = f"The epoch '{t:.4f}', which cannot be found in the replaced epoch array."
                 raise ValueError(msg)
             rp_idx = np.nanargmin(residual)
             coeffs[ori_idx, *self.indice] = self.coeffs[rp_idx]
