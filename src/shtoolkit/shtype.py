@@ -1,13 +1,19 @@
 from typing import Literal, TypedDict
+from pathlib import Path
 
 import numpy as np
 
 
 __all__ = [
-    "LoadLoveNumDict", "LeakCorrMethod", 
-    "SpharmUnit", "GIAModel", 
-    "SHSmoothKind", "MassConserveMode"
+    "LoadLoveNumDict",
+    "LeakCorrMethod",
+    "SpharmUnit",
+    "GIAModel",
+    "SHSmoothKind",
+    "MassConserveMode",
+    "RepLowDegDict",
 ]
+
 
 class LoadLoveNumDict(TypedDict):
     h_el: np.ndarray
@@ -18,6 +24,11 @@ class LoadLoveNumDict(TypedDict):
 class LeakCorrMethod(TypedDict):
     method: Literal["buf", "buf_gs", "buf_fs", "FM_gs", "FM_fs"]
     radius: int | None
+
+
+class RepLowDegDict(TypedDict):
+    rep: str
+    file: str | Path
 
 
 SpharmUnit = Literal[

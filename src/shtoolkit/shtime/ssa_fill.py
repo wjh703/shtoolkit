@@ -1,10 +1,7 @@
-from typing import TypedDict, Sequence
-from functools import partial
+from typing import TypedDict
 
 import numpy as np
 from scipy.signal import periodogram
-
-__all__ = ["ssa_gap_filling"]
 
 
 class SHcoeffWithGap(TypedDict):

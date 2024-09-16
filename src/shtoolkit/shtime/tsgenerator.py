@@ -39,9 +39,10 @@ GapBetweenGRACEandGFO = pd.period_range("201707", "201805", freq="M").strftime("
 
 
 def time_uniform(
-    inputime: np.ndarray, data: np.ndarray, trange: tuple[str, str] = ("200204", "202212")
+    inputime: np.ndarray,
+    data: np.ndarray,
+    trange: tuple[str, str] = ("200204", "202212"),
 ) -> tuple[np.ndarray, np.ndarray]:
-
     startime, endtime = trange
     ut = generate_time_series(startime, endtime)
     outime = np.copy(ut)

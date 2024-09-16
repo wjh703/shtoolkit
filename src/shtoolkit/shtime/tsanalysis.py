@@ -1,8 +1,6 @@
 import numpy as np
 from numba import jit
 
-__all__ = ["lstsq_map", "cosine_fitting", "sine_fitting"]
-
 
 @jit(nopython=True)
 def lstsq_map(
@@ -10,7 +8,6 @@ def lstsq_map(
     x: np.ndarray,
     reference_time: float = 2002.0027,
 ):
-
     n, nrow, ncol = x.shape
 
     amp1 = np.zeros((nrow, ncol))
@@ -61,7 +58,20 @@ def lstsq_map(
 
 def sine_fitting(
     dtime: np.ndarray, data: np.ndarray, reference_time: float = 2002.0027
-) -> tuple[float, float, float, float, float, float, float, float, float, float, np.ndarray, np.ndarray]:
+) -> tuple[
+    float,
+    float,
+    float,
+    float,
+    float,
+    float,
+    float,
+    float,
+    float,
+    float,
+    np.ndarray,
+    np.ndarray,
+]:
     """fitting a1sin(2pit+phi) + a2sin(4pit+phi) + kt + b by the least square"""
     if dtime.size != data.size:
         raise ValueError(f"{dtime.size} != {data.size}")
@@ -191,7 +201,20 @@ def sine_fitting(
 @jit(nopython=True, cache=True)
 def cosine_fitting(
     dtime: np.ndarray, data: np.ndarray, reference_time: float = 2002.0014
-) -> tuple[float, float, float, float, float, float, float, float, float, float, np.ndarray, np.ndarray]:
+) -> tuple[
+    float,
+    float,
+    float,
+    float,
+    float,
+    float,
+    float,
+    float,
+    float,
+    float,
+    np.ndarray,
+    np.ndarray,
+]:
     """fitting a1cos(2pit-phi) + a2cos(4pit-phi) + kt + b by the least square"""
     if dtime.size != data.size:
         raise ValueError(f"{dtime.size} != {data.size}")
@@ -299,4 +322,17 @@ def cosine_fitting(
         )
         phi2_std = np.rad2deg(2.0 * np.sqrt(phi2_var))
 
-    return amp1, amp1_std, phi1, phi1_std, amp2, amp2_std, phi2, phi2_std, k, k_std, linear, res
+    return (
+        amp1,
+        amp1_std,
+        phi1,
+        phi1_std,
+        amp2,
+        amp2_std,
+        phi2,
+        phi2_std,
+        k,
+        k_std,
+        linear,
+        res,
+    )

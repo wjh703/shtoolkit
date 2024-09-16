@@ -17,7 +17,7 @@ if __name__ == "__main__":
     print(np.allclose(a, b))
     print(np.allclose(a, c))
     del a, b, c
-    print(f'lmax={lmax}, resol={resol}')
+    print(f"lmax={lmax}, resol={resol}")
     callable_object1 = lambda: SHExpandDH(grd, sampling=2, lmax_calc=lmax)
     callable_object2 = lambda: grid2cilm(grd, lmax)
     callable_object3 = lambda: grid2cilm(grd, lmax, mode="integral")

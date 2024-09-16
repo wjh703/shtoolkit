@@ -161,7 +161,6 @@ def read_non_icgem(filepath: str | Path, lmax: int | None = None) -> tuple[float
     center = re.findall(centers, filename)[0]
 
     if center == "GRGS" or "CNESG":
-
         with open(filepath, "r", encoding="utf-8") as f:
             for line in f:
                 if "Tide convention" in line:

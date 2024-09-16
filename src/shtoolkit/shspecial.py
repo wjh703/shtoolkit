@@ -6,7 +6,13 @@ import tqdm
 
 from .shtrans import cilm2grid, grid2cilm, fnALFs, shcomplex2real, shreal2complex
 from .shunit import convert, SH_CONST, mass2geo, mass2upl
-from .shtype import SpharmUnit, LoadLoveNumDict, LeakCorrMethod, MassConserveMode, SHSmoothKind
+from .shtype import (
+    SpharmUnit,
+    LoadLoveNumDict,
+    LeakCorrMethod,
+    MassConserveMode,
+    SHSmoothKind,
+)
 from .shfilter import gauss_smooth, fan_smooth
 
 __all__ = ["uniform_distributed", "sea_level_equation"]
@@ -30,7 +36,6 @@ def sea_level_equation(
     unit: SpharmUnit,
     rot: bool = True,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
-
     k = 0
     k_max = 10
     epsilon = 1e-5
@@ -114,7 +119,7 @@ def _calc_rot(L_cilm_real: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     La_cilm_complex[1, 2, 2] = a**2 * omega**2 / (5**0.5 * 24**0.5) * (2 * m1 * m2)
     La_cilm_real = shcomplex2real(La_cilm_complex)
 
-    indices = tuple(zip([0, 2, 0], [0, 2, 1], [1, 2, 1], [0, 2, 2], [1, 2, 2]))
+    indices = tuple(zip([0, 2, 0], [0, 2, 1], [1, 2, 1], [0, 2, 2], [1, 2, 2], strict=False))
     La2geo = np.zeros_like(La_cilm_real)
     La2geo[0, 0, 0] = 1 / gave
     La2geo[*indices] = (1 + k2e_t) / gave
@@ -136,7 +141,6 @@ def standard(
     leakage: LeakCorrMethod = {"method": "buf", "radius": None},
     mode: MassConserveMode = "sal_rot",
 ):
-
     if lmax is None:
         lmax = coeffs.shape[-2] - 1
     resol = oceanmask.shape[0] // 2 - 1
@@ -153,8 +157,8 @@ def standard(
     else:
         coeffg = None
 
-    calc_indices = tuple(zip((0, 1, 0), (0, 1, 1), (1, 1, 1)))
-    setzero_indices = tuple(zip((0, 0, 0), (0, 1, 0), (0, 1, 1), (1, 1, 1)))
+    calc_indices = tuple(zip((0, 1, 0), (0, 1, 1), (1, 1, 1), strict=False))
+    setzero_indices = tuple(zip((0, 0, 0), (0, 1, 0), (0, 1, 1), (1, 1, 1), strict=False))
 
     cilm = np.copy(coeffs)
     cilm[:, *setzero_indices] = 0
@@ -232,7 +236,12 @@ def standard(
                 land_mas_i = cilm2grid(cilm_mas_i, resol, lmax) * landmask
                 if leakcorr_method == "FM":
                     land_mas_i = foward_modelling(
-                        land_mas_i, landmask, oceanmask, smooth_kind, radius, lmax  # type: ignore
+                        land_mas_i,
+                        landmask,
+                        oceanmask,
+                        smooth_kind,  # type: ignore
+                        radius,
+                        lmax,  # type: ignore
                     )
 
         cilm[i, *calc_indices] = convert(cilm_mas_i, "kgm2mass", unit, lln)[*calc_indices]
@@ -248,7 +257,6 @@ def foward_modelling(
     lmax: int | None = None,
     setzero_indices: Sequence[int] | Sequence[Sequence[int]] = (0, 0, 0),
 ) -> np.ndarray:
-
     if not (np.allclose(load_data.shape, loadmask.shape) and np.allclose(oceanmask.shape, loadmask.shape)):
         msg = "The shape of 'load_data', 'landmask' and 'oceanmask' are unequal"
         raise ValueError(msg)
