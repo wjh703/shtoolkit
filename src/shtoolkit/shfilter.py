@@ -1,9 +1,6 @@
 import numpy as np
 
 
-__all__ = ["gauss_smooth", "fan_smooth"]
-
-
 def gauss_smooth(lmax: int, radius: int = 300) -> np.ndarray:
     ww = np.zeros(lmax + 1, dtype=np.float64)
     bb = np.log(2) / (1 - np.cos(radius / 6371))

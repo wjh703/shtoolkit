@@ -3,7 +3,7 @@ from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
 
-from shtoolkit.shcoeff import SpharmCoeff
+from shtoolkit import SpharmCoeff
 
 slr_file1 = "D:\\tvg_toolkit\\tvg_toolkit\\data\\CSR_SLR_TN11E_TN11E.txt"
 slr_file2 = "D:\\tvg_toolkit\\tvg_toolkit\\data\\GSFC_SLR_TN14.txt"
@@ -18,7 +18,7 @@ rep_c20 = dict(rep="C20", file=slr_file1)
 rep_c30 = dict(rep="C30", file=slr_file1)
 rep_deg1 = dict(rep="DEG1", file=deg1_file)
 a = SpharmCoeff.from_files(gsm_folder, 60)
-b = a.replace([rep_c20, rep_c30, rep_deg1]).corr_gia("ICE6G-D", gia_file1) # type: ignore
+b = a.replace([rep_c20, rep_c30, rep_deg1]).corr_gia("ICE6G-D", gia_file1)  # type: ignore
 # b = a.rplce(["C20", "C30"], file1).corr_gia("ICE6G-D", gia_file1).rplce("DEG1", deg1_file)
 print(b.name)
 # c = a.rplce(["C20", "C30"], file2).corr_gia("ICE6G-C", gia_file2)

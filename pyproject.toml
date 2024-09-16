@@ -28,6 +28,6 @@ package-data = {"shtoolkit.shtrans" = ["*.pyx", "*.pxd"]}
 ignore_missing_imports = true
 
 [tool.ruff]
-line-length = 120
+line-length = 110
 lint = {select = ["E", "F", "B"], ignore = ["E741", "B006"]}
 format = {quote-style = "double"}

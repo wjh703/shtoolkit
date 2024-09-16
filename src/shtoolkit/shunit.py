@@ -66,7 +66,10 @@ def convert(
     elif func_name in func_without_change:
         coef = 1
     else:
-        msg = "Invalid unit for match 'ConvertCoefDict', check if both 'current_unit' and 'new_unit' are 'SpharmUnit"
+        msg = (
+            "Invalid unit for match 'ConvertCoefDict', "
+            + "check if both 'current_unit' and 'new_unit' are 'SpharmUnit"
+        )
         raise ValueError(msg)
 
     coeffs_new = coeffs_current * coef

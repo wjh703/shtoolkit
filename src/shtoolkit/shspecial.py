@@ -15,8 +15,6 @@ from .shtype import (
 )
 from .shfilter import gauss_smooth, fan_smooth
 
-__all__ = ["uniform_distributed", "sea_level_equation"]
-
 
 def uniform_distributed(
     load_data: np.ndarray,

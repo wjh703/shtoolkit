@@ -6,8 +6,6 @@ from .shtrans import grid2cilm
 from .shtype import SpharmUnit, MassConserveMode, LoadLoveNumDict
 from .shspecial import sea_level_equation, uniform_distributed
 
-__all__ = ["SphereGrid"]
-
 
 class SphereGrid:
     def __init__(
@@ -60,28 +58,30 @@ class SphereGrid:
         if mode == "eustatic":
             conserve_func = uniform_distributed
         elif mode == "sal" and lln is not None:
-            conserve_func = partial(sea_level_equation, lln=lln, lmax=lmax, unit=self.unit, rot=False)  # type: ignore
+            conserve_func = partial(sea_level_equation, lln=lln, lmax=lmax, unit=self.unit, rot=False)
         elif mode == "sal_rot" and lln is not None:
-            conserve_func = partial(sea_level_equation, lln=lln, lmax=lmax, unit=self.unit, rot=True)  # type: ignore
+            conserve_func = partial(sea_level_equation, lln=lln, lmax=lmax, unit=self.unit, rot=True)
         else:
-            msg = f"'mode': {mode} needs a specific 'lln'"
+            msg = (
+                f"Invalid value of 'mode' (expected 'eustatic', 'sal' or 'sal_rot', got '{mode}'), "
+                + "or 'lln' (expected 'LoadLoveNumDict', got None)"
+            )
             raise ValueError(msg)
 
         data = self.data
-        if data.ndim == 2:
-            if mode == "eustatic":
-                data_conserve = conserve_func(data, oceanmask)
-                s = "convsered from eustatic sea-level\n"
-            else:
-                data_conserve = conserve_func(data, oceanmask)[-1]
-                s = "convsered from sea-level fingerprint\n"
-            name = self.name + s if self.name is not None else s
+        if mode == "eustatic":
+            data_conserve = (
+                conserve_func(data, oceanmask)
+                if data.ndim == 2
+                else np.asarray([conserve_func(i, oceanmask) for i in data])
+            )
+            s = "convsered from eustatic sea-level\n"
         else:
-            if mode == "eustatic":
-                data_conserve = np.array([conserve_func(i, oceanmask) for i in data])
-                s = "convsered from eustatic sea-level\n"
-            else:
-                data_conserve = np.array([conserve_func(i, oceanmask)[-1] for i in data])
-                s = "convsered from sea-level fingerprint\n"
-            name = self.name + s if self.name is not None else s
+            data_conserve = (
+                conserve_func(data, oceanmask)[-1]
+                if data.ndim == 2
+                else np.asarray([conserve_func(i, oceanmask)[-1] for i in data])
+            )
+            s = "convsered from sea-level fingerprint\n"
+        name = self.name + s if self.name is not None else s
         return SphereGrid(data_conserve, self.epochs.copy(), self.unit, name=name)  # type: ignore
