@@ -6,8 +6,8 @@ import numpy as np
 import pandas as pd
 
 from . import shtime
-from .shtype import LoadLoveNumDict
 from .shtrans import cilm2vector, vector2cilm
+from .shtype import LoadLoveNumDict
 
 
 def read_load_love_num(filepath: str | Path, lmax: int, frame: str = "CF") -> LoadLoveNumDict:

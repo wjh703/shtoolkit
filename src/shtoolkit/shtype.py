@@ -1,5 +1,5 @@
-from typing import Literal, TypedDict
 from pathlib import Path
+from typing import Literal, TypedDict
 
 import numpy as np
 
