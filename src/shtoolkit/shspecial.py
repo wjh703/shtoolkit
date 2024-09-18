@@ -238,8 +238,8 @@ def standard(
                         landmask,
                         oceanmask,
                         smooth_kind,  # type: ignore
-                        radius,
-                        lmax,  # type: ignore
+                        radius,  # type: ignore
+                        lmax,
                     )
 
         cilm[i, *calc_indices] = convert(cilm_mas_i, "kgm2mass", unit, lln)[*calc_indices]
