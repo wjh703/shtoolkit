@@ -4,8 +4,7 @@
 # cython: wraparound=False
 # cython: initializedcheck=False
 
-from libc.math cimport sqrt, sin, cos, pi
-from libc.stdlib cimport malloc, free
+from libc.math cimport sin, cos, pi
 
 import numpy as np
 cimport numpy as cnp
