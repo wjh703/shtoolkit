@@ -50,8 +50,8 @@ rep_deg1 = dict(rep="DEG1", file=deg1_file)
 b = gsm.replace([rep_c20, rep_c30]).corr_gia("ICE6G-D", gia_file1).remove_mean_field() # type: ignore
 c = gsm.replace(rep_deg1) # type: ignore
 c.coeffs -= c.coeffs[:100].mean(axis=0)
-oc = np.loadtxt("D:\\tvg_toolkit\\masking\\data\\mask\\oceanmask\\ocean_buf50.txt")[:, 2].reshape(180, 360)
-coeffs = standard(b.coeffs, b.unit, oc, lln, lmax, {"method": "FM_fs", "radius": 300}, mode="sal_rot")
+oc = np.loadtxt("D:\\tvg_toolkit\\masking\\data\\mask\\oceanmask\\ocean_buf300.txt")[:, 2].reshape(180, 360)
+coeffs = standard(b.coeffs, b.unit, oc, lln, lmax, {"method": "buf_fs", "radius": 300}, mode="sal_rot")
 coeffs = coeffs[:, *list(zip([0, 1, 0], [0, 1, 1], [1, 1, 1]))]
 coeffs -= coeffs[:100].mean(axis=0)
 

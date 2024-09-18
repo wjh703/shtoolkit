@@ -15,9 +15,14 @@ class LeakCorrMethod(TypedDict):
     radius: int | None
 
 
-class RepLowDegDict(TypedDict):
+class RepFileDict(TypedDict):
     rep: str
     file: str | Path
+
+
+class RepInsDict(TypedDict):
+    rep: str
+    institute: str
 
 
 SpharmUnit = Literal[

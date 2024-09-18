@@ -14,7 +14,7 @@ from .shload import (
 )
 from .shtrans import cilm2grid
 from .shunit import convert
-from .shtype import SpharmUnit, SHSmoothKind, GIAModel, LoadLoveNumDict, RepLowDegDict
+from .shtype import SpharmUnit, SHSmoothKind, GIAModel, LoadLoveNumDict, RepFileDict, RepInsDict
 from .shfilter import gauss_smooth, fan_smooth
 
 
@@ -81,7 +81,7 @@ class SpharmCoeff:
 
     def replace(
         self,
-        replow: RepLowDegDict | Sequence[RepLowDegDict],
+        replow: RepFileDict | Sequence[RepFileDict],
         rpcoef: Optional["ReplaceCoeff"] = None,
     ) -> "SpharmCoeff":
         if self.unit != "stokes":
@@ -224,7 +224,7 @@ class ReplaceCoeff:
         epochs: np.ndarray,
         unit: SpharmUnit,
         errors: np.ndarray | None = None,
-        name: Sequence[str] | None = None,
+        name: RepInsDict | None = None,
     ) -> None:
         self.indice = indice
         self.coeffs = coeffs
@@ -242,20 +242,22 @@ class ReplaceCoeff:
                 continue
             residual = np.abs(self.epochs - t)
             if np.nanmin(residual) > 0.05:
-                msg = f"The epoch '{t:.4f}', which cannot be found in the replaced epoch array."
+                msg = f"The epoch '{t:.4f}' cannot be found in the replaced epoch array."
                 raise ValueError(msg)
             rp_idx = np.nanargmin(residual)
             coeffs[ori_idx, *self.indice] = self.coeffs[rp_idx]
             if self.errors is not None and errors is not None:
                 errors[ori_idx, *self.indice] = self.errors[rp_idx]
 
-        sphname = sphcoef.name
-        if isinstance(self.name, Sequence) and len(self.name) == 2:
-            print(f"{self.name[0]} was replaced by {self.name[1]}.")
-            if isinstance(sphname, str):
-                sphname += f"{self.name[0]}: {self.name[1]}\n"
+        if isinstance(self.name, dict):
+            print(f"{self.name['rep']} was replaced by {self.name['institute']}.")
+            sphname = (
+                sphcoef.name + f"{self.name['rep']}: {self.name['institute']}\n"
+                if sphcoef.name is not None
+                else None
+            )
         elif self.name is None:
-            print(f"The coeff at index {self.indice} was replaced.")
+            sphname = sphcoef.name
         else:
             msg = f"Invalid attribute of name <{self.name}>."
             raise AttributeError(msg)
@@ -267,16 +269,19 @@ class ReplaceCoeff:
     def from_technical_note_c20(cls, filepath):
         indice = (0, 2, 0)
         epochs, c20, c20_sigma, _, _, center = read_technical_note_c20_c30(filepath)
-        return cls(indice, c20, epochs, "stokes", c20_sigma, ("C20", center))
+        info: RepInsDict = {"rep": "C20", "institute": center}
+        return cls(indice, c20, epochs, "stokes", c20_sigma, info)
 
     @classmethod
     def from_technical_note_c30(cls, filepath):
         indice = (0, 3, 0)
         epochs, _, _, c30, c30_sigma, center = read_technical_note_c20_c30(filepath)
-        return cls(indice, c30, epochs, "stokes", c30_sigma, ("C30", center))
+        info: RepInsDict = {"rep": "C30", "institute": center}
+        return cls(indice, c30, epochs, "stokes", c30_sigma, info)
 
     @classmethod
     def from_technical_note_deg1(cls, filepath):
         indice = tuple(zip((0, 1, 0), (0, 1, 1), (1, 1, 1), strict=False))
         epochs, deg1, deg1_sigma = read_technical_note_deg1(filepath)
-        return cls(indice, deg1, epochs, "stokes", deg1_sigma, ("DEG1", "GRACE-OBP"))
+        info: RepInsDict = {"rep": "DEG1", "institute": "GRACE-OBP"}
+        return cls(indice, deg1, epochs, "stokes", deg1_sigma, info)
