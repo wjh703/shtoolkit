@@ -2,7 +2,7 @@ import re
 
 import numpy as np
 
-from .shtype import SpharmUnit, LoadLoveNumDict
+from .shtype import LoadLoveNumDict, SpharmUnit
 
 SH_CONST = {
     "gave": 9.81,

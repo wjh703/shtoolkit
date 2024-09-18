@@ -1,4 +1,4 @@
-from . import shcoeff, shgrid, shfilter, shload, shspecial, shtype, shunit
+from . import shcoeff, shfilter, shgrid, shload, shspecial, shtype, shunit
 from .shcoeff import SpharmCoeff
 from .shgrid import SphereGrid
 

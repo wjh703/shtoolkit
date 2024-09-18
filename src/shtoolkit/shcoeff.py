@@ -1,21 +1,21 @@
-import re
 import copy
+import re
 from pathlib import Path
 from typing import Literal, Optional, Sequence
 
 import numpy as np
 
+from .shfilter import fan_smooth, gauss_smooth
 from .shload import (
+    read_gia_model,
     read_icgem,
     read_non_icgem,
     read_technical_note_c20_c30,
     read_technical_note_deg1,
-    read_gia_model,
 )
 from .shtrans import cilm2grid
+from .shtype import GIAModel, LoadLoveNumDict, RepFileDict, RepInsDict, SHSmoothKind, SpharmUnit
 from .shunit import convert
-from .shtype import SpharmUnit, SHSmoothKind, GIAModel, LoadLoveNumDict, RepFileDict, RepInsDict
-from .shfilter import gauss_smooth, fan_smooth
 
 
 class SpharmCoeff:
