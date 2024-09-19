@@ -42,15 +42,15 @@ def grid2cilm_fft(
         double[:,:,:] pilm
         double[:,:,:] cilm
 
+    if nlat % 2 != 0:
+        raise ValueError(f"Invalid value of nlat: {nlat}, (expected even)")
+
     if calc_lmax < 0:
         calc_lmax = resol
     elif calc_lmax > resol:
         raise ValueError(f"Invalid value of calc_lmax: {calc_lmax}, must smaller than 'resol': {2*nlat-1}")
 
     pilm = fnALFs_cache(rad_colat, calc_lmax)
-        
-    if pilm.shape[0] != nlat:
-        raise ValueError(f"The dimension-1 value of 'pilm' is unequal to 'nlat'")
 
     weight = weight_dh(nlat)
     lat_fft = np.asarray(sp.fft.rfft(grid, axis=1), order='F')
@@ -70,6 +70,7 @@ def grid2cilm_fft(
     free(weight)
     return np.asarray(cilm)
 
+
 def grid2cilm_fft_refined(
     double[:,:] grid,
     int calc_lmax = -1
@@ -88,6 +89,9 @@ def grid2cilm_fft_refined(
         double[:,:,:] pilm
         double[:,:,:] cilm
         double[:,:] plm, plms
+        
+    if nlat % 2 != 0:
+        raise ValueError(f"Invalid value of nlat: {nlat}, (expected even)")
 
     if calc_lmax < 0:
         calc_lmax = resol
@@ -95,9 +99,6 @@ def grid2cilm_fft_refined(
         raise ValueError(f"Invalid value of calc_lmax: {calc_lmax}, must smaller than 'resol': {2*nlat-1}")
 
     pilm = fnALFs_cache(rad_colat, calc_lmax)
-        
-    if pilm.shape[0] != nlat:
-        raise ValueError(f"The dimension-1 value of 'pilm' is unequal to 'nlat'")
 
     weight = weight_dh(nlat)
     lat_fft = sp.fft.rfft(grid)
@@ -144,15 +145,15 @@ def grid2cilm_integral(
         double[:,:,:] pilm
         double[:,:,:] cilm
 
+    if nlat % 2 != 0:
+        raise ValueError(f"Invalid value of nlat: {nlat}, (expected even)")
+
     if calc_lmax < 0:
         calc_lmax = resol
     elif calc_lmax > resol:
         raise ValueError(f"Invalid value of calc_lmax: {calc_lmax}, must smaller than 'resol': {2*nlat-1}")
 
     pilm = fnALFs_cache(rad_colat, calc_lmax)
-        
-    if pilm.shape[0] != nlat:
-        raise ValueError(f"The dimension-1 value of 'pilm' is unequal to 'nlat'")
 
     ccos = np.zeros((nlon, calc_lmax + 1))
     ssin = np.zeros((nlon, calc_lmax + 1))
