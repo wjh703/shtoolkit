@@ -4,6 +4,7 @@ shtoolkit.egg-info/
 FPA/
 build/
 dist/
+.ruff_cache/
 
 src/shtoolkit/shtrans1/
 src/shtoolkit/shtrans/__pycache__/

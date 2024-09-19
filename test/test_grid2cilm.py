@@ -16,11 +16,11 @@ if __name__ == "__main__":
     c = grid2cilm(grd, lmax, mode="integral")
     print(np.allclose(a, b))
     print(np.allclose(a, c))
-    del a, b, c
+
     print(f"lmax={lmax}, resol={resol}")
     callable_object1 = lambda: SHExpandDH(grd, sampling=2, lmax_calc=lmax)
     callable_object2 = lambda: grid2cilm(grd, lmax)
     callable_object3 = lambda: grid2cilm(grd, lmax, mode="integral")
-    print(timeit.timeit(callable_object1, number=1000))
-    print(timeit.timeit(callable_object2, number=1000))
-    print(timeit.timeit(callable_object3, number=1000))
+    print(timeit.timeit(callable_object1, number=100))
+    print(timeit.timeit(callable_object2, number=100))
+    print(timeit.timeit(callable_object3, number=100))

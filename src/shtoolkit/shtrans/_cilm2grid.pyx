@@ -6,7 +6,7 @@
 from libc.math cimport sin, cos, pi
 
 import numpy as np
-import scipy
+import scipy as sp
 
 from .legendre import fnALFs_cache
 
@@ -52,10 +52,13 @@ def cilm2grid_fft(
             for l in range(m, calc_lmax + 1):
                 am += cilm[0, l, m] * pilm[k, l, m]
                 bm += cilm[1, l, m] * pilm[k, l, m]
-            fcoef[k, m] = am - 1j * bm
+            if m:
+                fcoef[k, m] = (am - 1j * bm) / 2
+            else:
+                fcoef[k, m] = am - 1j * bm
 
-    return scipy.fft.ifft(fcoef, nlon, axis=1, norm='forward').real
-
+    return sp.fft.irfft(fcoef, nlon, norm='forward')
+ 
 
 def cilm2grid_integral(
         double[:,:,:] cilm,
