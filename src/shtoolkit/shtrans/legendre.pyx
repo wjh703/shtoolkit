@@ -8,7 +8,7 @@ from libc.math cimport sqrt, sin, cos
 from libc.stdlib cimport malloc, free
 from cython cimport floating
 
-from functools import cache
+from functools import lru_cache
 import numpy as np
 cimport numpy as cnp
 
@@ -23,12 +23,12 @@ Reference
 """
 
 
-@cache
+@lru_cache(maxsize=1)
 def fnALFs_cache(tuple rad_colat, int lmax):
     return fnALFs(np.asarray(rad_colat), lmax)
 
 
-@cache
+@lru_cache(maxsize=1)
 def fnALF_cache(floating rad_colat, int lmax):
     return fnALF(rad_colat, lmax)
 

@@ -75,14 +75,14 @@ def cilm2grid_fft_refined(
         double[:,:,:] pilm
         double[:,:] plm, plms
         double complex[:,:] lat_fft
-        Py_ssize_t k, l, m
+        int k, ks, l, m
         double am, bm
         double ams, bms
 
     if nlat % 2 != 0:
         raise ValueError(f"Invalid value of nlat: {nlat}, (expected even)")
 
-    lmax = cilm.shape[1]-1
+    lmax = cilm.shape[1] - 1
     if calc_lmax < 0 or calc_lmax > lmax:
         calc_lmax = lmax
     
@@ -96,22 +96,30 @@ def cilm2grid_fft_refined(
         plm = pilm[k]
         plms = pilm[ks]
 
-        for m in range(calc_lmax + 1):
-            am = 0.0
-            bm = 0.0
-            ams = 0.0
-            bms = 0.0
+        am = 0
+        bm = 0
+        ams = 0
+        bms = 0
+        for l in range(calc_lmax + 1):
+            am += cilm[0, l, 0] * plm[l, 0]
+            bm += cilm[1, l, 0] * plm[l, 0]
+            ams += cilm[0, l, 0] * plms[l, 0]
+            bms += cilm[1, l, 0] * plms[l, 0]
+        lat_fft[k, 0] = am - 1j * bm
+        lat_fft[ks, 0] = ams - 1j * bms
+
+        for m in range(1, calc_lmax + 1):
+            am = 0
+            bm = 0
+            ams = 0
+            bms = 0
             for l in range(m, calc_lmax + 1):
                 am += cilm[0, l, m] * plm[l, m]
                 bm += cilm[1, l, m] * plm[l, m]
                 ams += cilm[0, l, m] * plms[l, m]
                 bms += cilm[1, l, m] * plms[l, m]
-            if m:
-                lat_fft[k, m] = (am - 1j * bm) / 2
-                lat_fft[ks, m] = (ams - 1j * bms) / 2
-            else:
-                lat_fft[k, m] = am - 1j * bm
-                lat_fft[ks, m] = ams - 1j * bms
+            lat_fft[k, m] = (am - 1j * bm) / 2
+            lat_fft[ks, m] = (ams - 1j * bms) / 2
 
     return sp.fft.irfft(lat_fft, nlon, norm='forward')
 
