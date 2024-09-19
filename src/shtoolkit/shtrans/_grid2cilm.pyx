@@ -80,8 +80,7 @@ def grid2cilm_fft_refined(
         int nlon = grid.shape[1]
         int resol = nlat // 2 - 1
         double c, s
-        int l, m
-        int k, ks
+        int k, ks, l, m
         tuple rad_colat = tuple(np.linspace(0, pi, nlat, endpoint=False))
         double *weight
         double complex[:,:] lat_fft
@@ -117,10 +116,12 @@ def grid2cilm_fft_refined(
         ws = weight[ks]
 
         for l in range(calc_lmax + 1):
-            for m in range(l + 1):
+            cilm[0, l, 0] += plm[l, 0] * fcoef[0].real * w + plms[l, 0] * fcoefs[0].real * ws
+            for m in range(1, l + 1):
                 cilm[0, l, m] += plm[l, m] * fcoef[m].real * w + plms[l, m] * fcoefs[m].real * ws
-                if m:
-                    cilm[1, l, m] += plm[l, m] * (- fcoef[m].imag) * w + plms[l, m] * (- fcoefs[m].imag) * ws
+                cilm[1, l, m] += plm[l, m] * (- fcoef[m].imag) * w + plms[l, m] * (- fcoefs[m].imag) * ws
+                # if m:
+                #     cilm[1, l, m] += plm[l, m] * (- fcoef[m].imag) * w + plms[l, m] * (- fcoefs[m].imag) * ws
 
     free(weight)
     return np.asarray(cilm)
