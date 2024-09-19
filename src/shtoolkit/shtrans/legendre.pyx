@@ -22,6 +22,7 @@ Reference
         degree and order. J Geod 94, 2 (2020). https://doi.org/10.1007/s00190-019-01331-0
 """
 
+
 @cache
 def fnALFs_cache(tuple rad_colat, int lmax):
     return fnALFs(np.asarray(rad_colat), lmax)

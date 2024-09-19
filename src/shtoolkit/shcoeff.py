@@ -46,8 +46,7 @@ class SpharmCoeff:
         epochs = epochs.copy() if isinstance(epochs, np.ndarray) else np.array([epochs])
         if self.coeffs.shape[0] != epochs.shape[0]:
             msg = (
-                f"The number of 'coeffs' {self.coeffs.shape[0]} ,"
-                + "is unequal to that of 'epochs' {epochs.shape[0]}"
+                f"The number of 'coeffs' {self.coeffs.shape[0]} ," + "is unequal to that of 'epochs' {epochs.shape[0]}"
             )
             raise ValueError(msg)
 
@@ -182,9 +181,7 @@ class SpharmCoeff:
         if self.errors is None:
             sphcoef_new = self.copy(coeffs=self.coeffs[index], epochs=self.epochs[index])
         else:
-            sphcoef_new = self.copy(
-                coeffs=self.coeffs[index], epochs=self.epochs[index], errors=self.errors[index]
-            )
+            sphcoef_new = self.copy(coeffs=self.coeffs[index], epochs=self.epochs[index], errors=self.errors[index])
         return sphcoef_new
 
     def __len__(self) -> int:
@@ -252,9 +249,7 @@ class ReplaceCoeff:
         if isinstance(self.name, dict):
             print(f"{self.name['rep']} was replaced by {self.name['institute']}.")
             sphname = (
-                sphcoef.name + f"{self.name['rep']}: {self.name['institute']}\n"
-                if sphcoef.name is not None
-                else None
+                sphcoef.name + f"{self.name['rep']}: {self.name['institute']}\n" if sphcoef.name is not None else None
             )
         elif self.name is None:
             sphname = sphcoef.name

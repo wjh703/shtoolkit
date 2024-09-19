@@ -8,7 +8,8 @@ from libc.math cimport sin, cos, pi, sqrt
 from libc.stdlib cimport malloc, free
 
 import numpy as np
-import scipy
+cimport numpy as cnp
+import scipy as sp
 
 from .legendre import fnALFs_cache
 
@@ -34,7 +35,6 @@ def grid2cilm_fft(
         int nlon = grid.shape[1]
         int resol = nlat / 2 - 1
         double c, s
-        double fpi = 4.0 * pi
         Py_ssize_t k, l, m
         tuple rad_colat = tuple(np.linspace(0, pi, nlat, endpoint=False))
         double *weight
@@ -53,7 +53,7 @@ def grid2cilm_fft(
         raise ValueError(f"The dimension-1 value of 'pilm' is unequal to 'nlat'")
 
     weight = weight_dh(nlat)
-    lat_fft = np.asarray(scipy.fft.rfft(grid, axis=1)[:, :calc_lmax+1], order='F')
+    lat_fft = np.asarray(sp.fft.rfft(grid, axis=1), order='F')
     cilm = np.zeros((2, calc_lmax + 1, calc_lmax + 1))
     for l in range(calc_lmax + 1):
         for m in range(l + 1):
@@ -70,6 +70,59 @@ def grid2cilm_fft(
     free(weight)
     return np.asarray(cilm)
 
+def grid2cilm_fft_refined(
+    double[:,:] grid,
+    int calc_lmax = -1
+):
+    cdef: 
+        int nlat = grid.shape[0]
+        int nlon = grid.shape[1]
+        int resol = nlat // 2 - 1
+        double c, s
+        int l, m
+        int k, ks
+        tuple rad_colat = tuple(np.linspace(0, pi, nlat, endpoint=False))
+        double *weight
+        double complex[:,:] lat_fft
+        double complex[:] fcoef, fcoefs
+        double[:,:,:] pilm
+        double[:,:,:] cilm
+        double[:,:] plm, plms
+
+    if calc_lmax < 0:
+        calc_lmax = resol
+    elif calc_lmax > resol:
+        raise ValueError(f"Invalid value of calc_lmax: {calc_lmax}, must smaller than 'resol': {2*nlat-1}")
+
+    pilm = fnALFs_cache(rad_colat, calc_lmax)
+        
+    if pilm.shape[0] != nlat:
+        raise ValueError(f"The dimension-1 value of 'pilm' is unequal to 'nlat'")
+
+    weight = weight_dh(nlat)
+    lat_fft = sp.fft.rfft(grid)
+    cilm = np.zeros((2, calc_lmax + 1, calc_lmax + 1))
+
+    for k in range(nlat // 2):
+        ks = nlat - 1 - k
+
+        fcoef = lat_fft[k]
+        fcoefs = lat_fft[ks]
+
+        plm = pilm[k]
+        plms = pilm[ks]
+
+        w = weight[k]
+        ws = weight[ks]
+
+        for l in range(calc_lmax + 1):
+            for m in range(l + 1):
+                cilm[0, l, m] += plm[l, m] * fcoef[m].real * w + plms[l, m] * fcoefs[m].real * ws
+                if m:
+                    cilm[1, l, m] += plm[l, m] * (- fcoef[m].imag) * w + plms[l, m] * (- fcoefs[m].imag) * ws
+
+    free(weight)
+    return np.asarray(cilm)
 
 def grid2cilm_integral(
     double[:,:] grid,
@@ -128,7 +181,7 @@ def grid2cilm_integral(
     return np.asarray(cilm)
 
 
-cdef inline double *weight_dh(int nlat):
+cdef inline double *weight_dh(int nlat) except NULL:
     cdef:
         int lmax = nlat // 2 -1 
         double *w = <double *> malloc(sizeof(double) * nlat)

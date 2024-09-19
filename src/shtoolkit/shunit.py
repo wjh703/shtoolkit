@@ -67,8 +67,7 @@ def convert(
         coef = 1
     else:
         msg = (
-            "Invalid unit for match 'ConvertCoefDict', "
-            + "check if both 'current_unit' and 'new_unit' are 'SpharmUnit"
+            "Invalid unit for match 'ConvertCoefDict', " + "check if both 'current_unit' and 'new_unit' are 'SpharmUnit"
         )
         raise ValueError(msg)
 
