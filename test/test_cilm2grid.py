@@ -21,8 +21,7 @@ if __name__ == "__main__":
     callable_object1 = lambda: MakeGridDH(cilm, sampling=2, lmax=resol, lmax_calc=lmax, extend=False)
     callable_object2 = lambda: cilm2grid(cilm, resol, lmax)
     callable_object3 = lambda: cilm2grid(cilm, resol, lmax, mode="integral")
-    print(f'lmax:{lmax}, resol:{resol}')
+    print(f"lmax:{lmax}, resol:{resol}")
     print(timeit.timeit(callable_object1, number=100))
     print(timeit.timeit(callable_object2, number=100))
     print(timeit.timeit(callable_object3, number=100))
-    

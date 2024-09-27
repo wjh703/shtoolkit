@@ -18,19 +18,19 @@ if __name__ == "__main__":
     b1[:, 1:] /= 2
     aa = np.fft.irfft(a1)
     bb = sp.fft.irfft(b1)
-    
-    rfftin = pyfftw.empty_aligned(shape, dtype='float64')
-    rfftout = pyfftw.empty_aligned((shape[0], shape[1]//2+1), dtype='complex128')
+
+    rfftin = pyfftw.empty_aligned(shape, dtype="float64")
+    rfftout = pyfftw.empty_aligned((shape[0], shape[1] // 2 + 1), dtype="complex128")
 
     rfft_object = pyfftw.FFTW(rfftin, rfftout)
     c = rfft_object(grd).copy()
     d = rfft_object(np.random.random(shape)).copy()
     c[:, 61:] = 0
     print(np.allclose(a, c))
-    
-    irfftin = pyfftw.empty_aligned((shape[0], shape[1]//2+1), dtype='complex128')
-    irfftout = pyfftw.empty_aligned(shape, dtype='float64')
-    irfft_object = pyfftw.FFTW(irfftin, irfftout, direction='FFTW_BACKWARD')
+
+    irfftin = pyfftw.empty_aligned((shape[0], shape[1] // 2 + 1), dtype="complex128")
+    irfftout = pyfftw.empty_aligned(shape, dtype="float64")
+    irfft_object = pyfftw.FFTW(irfftin, irfftout, direction="FFTW_BACKWARD")
     irfftin[:] = a1
     cc = irfft_object()
     print(np.allclose(aa, cc))
@@ -48,7 +48,7 @@ if __name__ == "__main__":
     print(timeit.timeit(callable4, number=1000))
     print(timeit.timeit(callable5, number=1000))
     print(timeit.timeit(callable6, number=1000))
-    
+
     callable7 = lambda: sp.fft.irfft(b1)
     callable8 = lambda: sp.fft.ifft(b).real
     print(timeit.timeit(callable7, number=1000))
