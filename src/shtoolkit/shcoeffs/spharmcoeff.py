@@ -1,3 +1,4 @@
+import copy
 import re
 from pathlib import Path
 from typing import Literal, Sequence
@@ -5,11 +6,7 @@ from typing import Literal, Sequence
 import numpy as np
 
 from ..shfilter import fan_smooth, gauss_smooth
-from ..shload import (
-    read_gia_model,
-    read_icgem,
-    read_non_icgem,
-)
+from ..shload import read_gia_model, read_icgem, read_non_icgem
 from ..shtrans import cilm2grid
 from ..shtype import GIAModel, LoadLoveNumDict, SHSmoothKind, SpharmUnit
 from ..shunit import unitconvert
@@ -35,7 +32,6 @@ class SpharmCoeff(Harmonic):
         lmax: int,
         is_icgem: bool = True,
     ):
-
         files = [file for file in Path(folder).iterdir()]
 
         if is_icgem:
@@ -139,3 +135,11 @@ class SpharmCoeff(Harmonic):
         coeffs = unitconvert(self.coeffs, self.unit, new_unit, lln)
         sphcoef_new = self.copy(coeffs=coeffs, unit=new_unit)
         return sphcoef_new
+
+    def copy(self, **kwargs):
+        copy_dict = copy.deepcopy(self.__dict__)
+        copy_dict.pop("lmax")
+        if kwargs:
+            for k, val in kwargs.items():
+                copy_dict[k] = val
+        return SpharmCoeff(**copy_dict)

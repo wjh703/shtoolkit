@@ -54,11 +54,7 @@ class Harmonic:
         self.info = info if info is not None else dict()
 
     def copy(self, **kwargs):
-        from .spharmcoeff import SpharmCoeff
-
         copy_dict = copy.deepcopy(self.__dict__)
-        if isinstance(self, SpharmCoeff):
-            copy_dict.pop("lmax")
         if kwargs:
             for k, val in kwargs.items():
                 copy_dict[k] = val

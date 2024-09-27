@@ -3,10 +3,7 @@ from typing import Sequence
 
 import numpy as np
 
-from ..shload import (
-    read_technical_note_c20_c30,
-    read_technical_note_deg1,
-)
+from ..shload import read_technical_note_c20_c30, read_technical_note_deg1
 from ..shtype import SpharmUnit
 from ._harmonic import Harmonic
 from .spharmcoeff import SpharmCoeff
@@ -69,3 +66,10 @@ class ReplaceCoeff(Harmonic):
         epochs, deg1, deg1_sigma = read_technical_note_deg1(filepath)
         info = {"coeff": "DEG1", "version": "GRACE-OBP"}
         return cls(indice, deg1, epochs, "stokes", deg1_sigma, info)
+
+    def copy(self, **kwargs):
+        copy_dict = copy.deepcopy(self.__dict__)
+        if kwargs:
+            for k, val in kwargs.items():
+                copy_dict[k] = val
+        return ReplaceCoeff(**copy_dict)

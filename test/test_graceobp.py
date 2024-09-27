@@ -4,7 +4,7 @@ import numpy as np
 from scipy.io import loadmat
 import matplotlib.pyplot as plt
 
-from shtoolkit.shcoeffs._harmonic import SpharmCoeff
+from shtoolkit.shcoeffs import SpharmCoeff
 from shtoolkit.shload import read_load_love_num
 from shtoolkit.shspecial import standard
 
@@ -36,7 +36,7 @@ ldc_deg1 = load_ldc()
 lmax = 60
 slr_file1 = "D:\\tvg_toolkit\\tvg_toolkit\\data\\CSR_SLR_TN11E_TN11E.txt"
 slr_file2 = "D:\\tvg_toolkit\\tvg_toolkit\\data\\GSFC_SLR_TN14.txt"
-gsm_folder = Path("D:\\wjh_code\\TVG\\CSR\\unfilter")
+gsm_folder = "D:\\wjh_code\\TVG\\CSR\\unfilter"
 gia_file1 = "D:\\tvg_toolkit\\tvg_toolkit\\data\\ICE6G_D.txt"
 gia_file2 = "D:\\tvg_toolkit\\tvg_toolkit\\data\\Purcell16.txt"
 deg1_file = "D:\\tvg_toolkit\\tvg_toolkit\\data\\TN-13_GEOC_CSR_RL0602.txt"
