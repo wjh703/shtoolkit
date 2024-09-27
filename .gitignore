@@ -6,6 +6,7 @@ build/
 dist/
 .ruff_cache/
 
+src/shtoolkit/shcoeffs/__pycache__/
 src/shtoolkit/shtrans1/
 src/shtoolkit/shtrans/__pycache__/
 src/shtoolkit/shtrans/*.c
@@ -17,6 +18,7 @@ src/shtoolkit/__pycache__/
 src/shtoolkit/shtime/__pycache__/
 src/shtoolkit/shtime/*.pyx
 src/shtoolkit/shtime/*.pyd
+src/shtoolkit/shtime/variance_component_estimate.py
 src/shtoolkit/shtime1.py
 test/__pycache__
 test/deg2toerp.py
