@@ -4,14 +4,16 @@ import numpy as np
 from scipy.io import loadmat
 import matplotlib.pyplot as plt
 
-from shtoolkit import SpharmCoeff
+from shtoolkit.shcoeffs import SpharmCoeff
 from shtoolkit.shload import read_load_love_num
 from shtoolkit.shspecial import standard
+
 
 def load_ldc():
     import re
     from astropy.time import Time
     from shtoolkit.shtime import date_to_decimal_year
+
     ldc = loadmat("C:\\Users\\huan\\Desktop\\基金本子\\参考文献\\LDCmgm90_20200108_GSM_GAA_GAB_GAC_GAD.mat")
     ldc_clm = ldc["LDCmgm_GSM_Cnm"]
     ldc_slm = ldc["LDCmgm_GSM_Snm"]
@@ -29,11 +31,12 @@ def load_ldc():
     ldc_deg1 -= ldc_deg1[:100].mean(axis=0)
     return np.hstack((np.asarray(t)[:, np.newaxis], ldc_deg1))
 
+
 ldc_deg1 = load_ldc()
 lmax = 60
 slr_file1 = "D:\\tvg_toolkit\\tvg_toolkit\\data\\CSR_SLR_TN11E_TN11E.txt"
 slr_file2 = "D:\\tvg_toolkit\\tvg_toolkit\\data\\GSFC_SLR_TN14.txt"
-gsm_folder = Path("D:\\wjh_code\\TVG\\CSR\\unfilter")
+gsm_folder = "D:\\wjh_code\\TVG\\CSR\\unfilter"
 gia_file1 = "D:\\tvg_toolkit\\tvg_toolkit\\data\\ICE6G_D.txt"
 gia_file2 = "D:\\tvg_toolkit\\tvg_toolkit\\data\\Purcell16.txt"
 deg1_file = "D:\\tvg_toolkit\\tvg_toolkit\\data\\TN-13_GEOC_CSR_RL0602.txt"
@@ -47,8 +50,8 @@ gsm = SpharmCoeff.from_files(gsm_folder, lmax)
 rep_c20 = dict(rep="C20", file=slr_file1)
 rep_c30 = dict(rep="C30", file=slr_file1)
 rep_deg1 = dict(rep="DEG1", file=deg1_file)
-b = gsm.replace([rep_c20, rep_c30]).corr_gia("ICE6G-D", gia_file1).remove_mean_field() # type: ignore
-c = gsm.replace(rep_deg1) # type: ignore
+b = gsm.replace([rep_c20, rep_c30]).corr_gia("ICE6G-D", gia_file1).remove_mean_field()  # type: ignore
+c = gsm.replace(rep_deg1)  # type: ignore
 c.coeffs -= c.coeffs[:100].mean(axis=0)
 oc = np.loadtxt("D:\\tvg_toolkit\\masking\\data\\mask\\oceanmask\\ocean_buf300.txt")[:, 2].reshape(180, 360)
 coeffs = standard(b.coeffs, b.unit, oc, lln, lmax, {"method": "buf_fs", "radius": 300}, mode="sal_rot")

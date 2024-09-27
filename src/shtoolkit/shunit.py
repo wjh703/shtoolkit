@@ -25,7 +25,7 @@ SH_CONST = {
 }
 
 
-def convert(
+def unitconvert(
     coeffs: np.ndarray,
     current_unit: SpharmUnit,
     new_unit: SpharmUnit,

@@ -13,7 +13,7 @@ from .shtype import (
     SHSmoothKind,
     SpharmUnit,
 )
-from .shunit import SH_CONST, convert, mass2geo, mass2upl
+from .shunit import SH_CONST, mass2geo, mass2upl, unitconvert
 
 
 def uniform_distributed(
@@ -42,7 +42,7 @@ def sea_level_equation(
     resol = load_data.shape[0] // 2 - 1
 
     load_cilm = grid2cilm(load_data, lmax)
-    load_cilm = convert(load_cilm, unit, "mewh", lln)
+    load_cilm = unitconvert(load_cilm, unit, "mewh", lln)
 
     oc_cilm = grid2cilm(oceanmask, lmax)
 
@@ -57,8 +57,8 @@ def sea_level_equation(
         T_cilm = T_cilm_h * ewh2mass_coef
         T_geo_cilm = T_cilm * mass2geo_coef
         T_upl_cilm = T_cilm * mass2upl_coef
-        # T_geo_cilm = convert(T_cilm, 'kgm2mass', 'mgeo', lln)
-        # T_upl_cilm = convert(T_cilm, 'kgm2mass', 'mupl', lln)
+        # T_geo_cilm = unitconvert(T_cilm, 'kgm2mass', 'mgeo', lln)
+        # T_upl_cilm = unitconvert(T_cilm, 'kgm2mass', 'mupl', lln)
 
         if rot:
             rot_geo_cilm, rot_upl_cilm = _calc_rot(T_cilm)
@@ -81,7 +81,7 @@ def sea_level_equation(
     sea_level_fingerprint = cilm2grid(S_cilm, resol, lmax) * oceanmask
     geo_conserve = cilm2grid(T_geo_cilm, resol, lmax)
     upl_conserve = cilm2grid(T_upl_cilm, resol, lmax)
-    load_conserve = cilm2grid(convert(S_cilm, "mewh", unit, lln), resol, lmax) + load_data
+    load_conserve = cilm2grid(unitconvert(S_cilm, "mewh", unit, lln), resol, lmax) + load_data
     return sea_level_fingerprint, geo_conserve, upl_conserve, load_conserve
 
 
@@ -195,9 +195,9 @@ def standard(
 
     for i, cilm_i in enumerate(tqdm.tqdm(cilm, desc="calc_deg1")):
         if coeffg is not None:
-            cilm_mas_i = convert(cilm_i * coeffg, unit, "kgm2mass", lln)
+            cilm_mas_i = unitconvert(cilm_i * coeffg, unit, "kgm2mass", lln)
         else:
-            cilm_mas_i = convert(cilm_i, unit, "kgm2mass", lln)
+            cilm_mas_i = unitconvert(cilm_i, unit, "kgm2mass", lln)
         mas_i = cilm2grid(cilm_mas_i, resol, lmax)
         ocean_mas_i = mas_i * oceanmask
         land_mas_i = mas_i * landmask
@@ -242,7 +242,7 @@ def standard(
                         lmax,
                     )
 
-        cilm[i, *calc_indices] = convert(cilm_mas_i, "kgm2mass", unit, lln)[*calc_indices]
+        cilm[i, *calc_indices] = unitconvert(cilm_mas_i, "kgm2mass", unit, lln)[*calc_indices]
     return cilm
 
 
