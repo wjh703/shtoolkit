@@ -188,7 +188,7 @@ class SpharmCoeff:
         return self.coeffs.shape[0]
 
     def __add__(self, other: "SpharmCoeff") -> "SpharmCoeff":
-        if self.coeffs.shape == other.coeffs.shape and np.allclose(self.epochs, other.epochs, atol=0.5):
+        if self.coeffs.shape == other.coeffs.shape and np.allclose(self.epochs, other.epochs, atol=0.05):
             coeffs = self.coeffs + other.coeffs
         else:
             msg = (
@@ -200,7 +200,7 @@ class SpharmCoeff:
         return sphcoef_new
 
     def __sub__(self, other: "SpharmCoeff") -> "SpharmCoeff":
-        if self.coeffs.shape == other.coeffs.shape and np.allclose(self.epochs, other.epochs, atol=0.5):
+        if self.coeffs.shape == other.coeffs.shape and np.allclose(self.epochs, other.epochs, atol=0.05):
             coeffs = self.coeffs - other.coeffs
         else:
             msg = (
@@ -216,19 +216,19 @@ class SpharmCoeff:
 class ReplaceCoeff:
     def __init__(
         self,
-        indice: Sequence[int] | Sequence[Sequence[int]],
+        indice: tuple[int, int, int] | Sequence[tuple[int, int, int]],
         coeffs: np.ndarray,
         epochs: np.ndarray,
         unit: SpharmUnit,
         errors: np.ndarray | None = None,
-        name: RepInsDict | None = None,
+        info: RepInsDict | None = None,
     ) -> None:
         self.indice = indice
         self.coeffs = coeffs
         self.epochs = epochs
         self.unit: SpharmUnit = unit
         self.errors = errors
-        self.name = name
+        self.info = info
 
     def apply_to(self, sphcoef: SpharmCoeff) -> SpharmCoeff:
         coeffs = np.copy(sphcoef.coeffs)
@@ -246,15 +246,15 @@ class ReplaceCoeff:
             if self.errors is not None and errors is not None:
                 errors[ori_idx, *self.indice] = self.errors[rp_idx]
 
-        if isinstance(self.name, dict):
-            print(f"{self.name['rep']} was replaced by {self.name['institute']}.")
+        if isinstance(self.info, dict):
+            print(f"{self.info['rep']} was replaced by {self.info['institute']}.")
             sphname = (
-                sphcoef.name + f"{self.name['rep']}: {self.name['institute']}\n" if sphcoef.name is not None else None
+                sphcoef.name + f"{self.info['rep']}: {self.info['institute']}\n" if sphcoef.name is not None else None
             )
-        elif self.name is None:
+        elif self.info is None:
             sphname = sphcoef.name
         else:
-            msg = f"Invalid attribute of name <{self.name}>."
+            msg = f"Invalid attribute of name <{self.info}>."
             raise AttributeError(msg)
 
         sphcoef_new = sphcoef.copy(coeffs=coeffs, errors=errors, name=sphname)

@@ -18,3 +18,7 @@ src/shtoolkit/shtime/__pycache__/
 src/shtoolkit/shtime/*.pyx
 src/shtoolkit/shtime/*.pyd
 src/shtoolkit/shtime1.py
+test/__pycache__
+test/deg2toerp.py
+test/improved_rec.py
+test/test_fpa.py

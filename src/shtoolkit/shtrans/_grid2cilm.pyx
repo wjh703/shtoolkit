@@ -61,10 +61,8 @@ def grid2cilm_fft(
             s = 0.0
             for k in range(nlat):
                 c += pilm[k, l, m] * lat_fft[k, m].real * weight[k]
-                # c += pilm[l, m, k] * lat_fft[k, m].real * weight[k]
                 if m:
                     s += pilm[k, l, m] * (-lat_fft[k, m].imag) * weight[k]
-                    # s += pilm[l, m, k] * (-lat_fft[k, m].imag) * weight[k]
             cilm[0, l, m] = c
             cilm[1, l, m] = s
     free(weight)
@@ -103,6 +101,7 @@ def grid2cilm_fft_refined(
     lat_fft = sp.fft.rfft(grid)
     cilm = np.zeros((2, calc_lmax + 1, calc_lmax + 1))
 
+    
     for k in range(nlat // 2):
         ks = nlat - 1 - k
 
@@ -120,8 +119,6 @@ def grid2cilm_fft_refined(
             for m in range(1, l + 1):
                 cilm[0, l, m] += plm[l, m] * fcoef[m].real * w + plms[l, m] * fcoefs[m].real * ws
                 cilm[1, l, m] += plm[l, m] * (- fcoef[m].imag) * w + plms[l, m] * (- fcoefs[m].imag) * ws
-                # if m:
-                #     cilm[1, l, m] += plm[l, m] * (- fcoef[m].imag) * w + plms[l, m] * (- fcoefs[m].imag) * ws
 
     free(weight)
     return np.asarray(cilm)
@@ -173,10 +170,8 @@ def grid2cilm_integral(
             s = 0.0
             for k in range(nlat):
                 c += pilm[k, l, m] * am[k, m] * weight[k]
-                # c += pilm[l, m, k] * am[k, m] * weight[k]
                 if m:
                     s += pilm[k, l, m] * bm[k, m] * weight[k]
-                    # s += pilm[l, m, k] * bm[k, m] * weight[k]
             cilm[0, l, m] = c
             cilm[1, l, m] = s
     free(weight)

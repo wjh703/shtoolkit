@@ -66,9 +66,9 @@ cdef class RecursiveCoef:
     cdef void compute(self):
         cdef:
             int ivec
-            Py_ssize_t l, m
+            int l, m
 
-        for l in range(self.lmax + 1):
+        for l in range(2, self.lmax + 1):
             self.al[l] = sqrt(<double>(2 * l + 1) / (2 * l - 1))
             self.bl[l] = sqrt(<double>(2 * (l - 1) * (2 * l + 1)) / (l * (2 * l - 1)))
             for m in range(l + 1):
@@ -93,7 +93,7 @@ cpdef cnp.ndarray[double, ndim=2] fnALF(double rad_colat, int lmax):
         RecursiveCoef rc = RecursiveCoef(lmax)
         double[:,:] plm = np.zeros((lmax + 1, lmax + 1))
         double t, u
-        Py_ssize_t l, m
+        int l, m
         int ivec
 
     rc.compute()
@@ -121,7 +121,7 @@ cpdef cnp.ndarray[double, ndim=3] fnALFs(double[:] rad_colat, int lmax):
         int nlat = rad_colat.shape[0]
         double[:,:,:] pilm = np.zeros((nlat, lmax + 1, lmax + 1))
         double t, u
-        Py_ssize_t l, m
+        int l, m
         int ivec
     
     rc.compute()
@@ -140,5 +140,31 @@ cpdef cnp.ndarray[double, ndim=3] fnALFs(double[:] rad_colat, int lmax):
                     pilm[i, l, m] = u * rc.elm[ivec] * pilm[i, l-1, m-1]
                 else:
                     pilm[i, l, m] = rc.clm[ivec] * t * pilm[i, l-1, m] - u * (rc.dlm[ivec] * pilm[i, l-1, m+1] - rc.elm[ivec] * pilm[i, l-1, m-1])
+    
+    return np.asarray(pilm)
+
+
+cpdef cnp.ndarray[double, ndim=3] fnALFs_refined(double[:] rad_colat, int lmax):
+    cdef:
+        RecursiveCoef rc = RecursiveCoef(lmax)
+        int nlat = rad_colat.shape[0]
+        double[:,:,:] pilm = np.zeros((nlat, lmax + 1, lmax + 1))
+        double t, u
+        int l, m
+        int ivec
+    
+    rc.compute()
+    for i in range(nlat):
+        t = cos(rad_colat[i])
+        u = sin(rad_colat[i])
+        pilm[i, 0, 0] = 1.0
+        pilm[i, 1, 0] = sqrt(3.0) * t
+        pilm[i, 1, 1] = sqrt(3.0) * u
+        for l in range(2, lmax + 1):
+            pilm[i, l, 0] = rc.al[l] * t * pilm[i, l-1, 0] - rc.bl[l] * (u / 2) * pilm[i, l-1, 1]
+            pilm[i, l, l] = u * rc.elm[plmidx(l, l)] * pilm[i, l-1, l-1]
+            for m in range(1, l):
+                ivec = plmidx(l, m)
+                pilm[i, l, m] = rc.clm[ivec] * t * pilm[i, l-1, m] - u * (rc.dlm[ivec] * pilm[i, l-1, m+1] - rc.elm[ivec] * pilm[i, l-1, m-1])
     
     return np.asarray(pilm)
