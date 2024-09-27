@@ -15,7 +15,7 @@ from .shload import (
 )
 from .shtrans import cilm2grid
 from .shtype import GIAModel, LoadLoveNumDict, RepFileDict, RepInsDict, SHSmoothKind, SpharmUnit
-from .shunit import convert
+from .shunit import unitconvert
 
 
 class SpharmCoeff:
@@ -165,7 +165,7 @@ class SpharmCoeff:
         return SphereGrid(data, self.epochs.copy(), self.unit)
 
     def unitconvert(self, new_unit: SpharmUnit, lln: LoadLoveNumDict | None = None) -> "SpharmCoeff":
-        coeffs = convert(self.coeffs, self.unit, new_unit, lln)
+        coeffs = unitconvert(self.coeffs, self.unit, new_unit, lln)
         sphcoef_new = self.copy(coeffs=coeffs, unit=new_unit)
         return sphcoef_new
 

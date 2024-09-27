@@ -1,15 +1,4 @@
-from . import shcoeff, shfilter, shgrid, shload, shspecial, shtype, shunit
-from .shcoeff import SpharmCoeff
+from . import shcoeff, shcoeffs, shfilter, shgrid, shload, shspecial, shtype, shunit
 from .shgrid import SphereGrid
 
-__all__ = [
-    "shcoeff",
-    "shgrid",
-    "shfilter",
-    "shload",
-    "shspecial",
-    "shtype",
-    "shunit",
-    "SpharmCoeff",
-    "SphereGrid",
-]
+__all__ = ["shcoeff", "shgrid", "shfilter", "shload", "shspecial", "shtype", "shunit", "SphereGrid", "shcoeffs"]

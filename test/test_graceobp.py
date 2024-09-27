@@ -4,14 +4,16 @@ import numpy as np
 from scipy.io import loadmat
 import matplotlib.pyplot as plt
 
-from shtoolkit import SpharmCoeff
+from shtoolkit.shcoeffs._harmonic import SpharmCoeff
 from shtoolkit.shload import read_load_love_num
 from shtoolkit.shspecial import standard
+
 
 def load_ldc():
     import re
     from astropy.time import Time
     from shtoolkit.shtime import date_to_decimal_year
+
     ldc = loadmat("C:\\Users\\huan\\Desktop\\基金本子\\参考文献\\LDCmgm90_20200108_GSM_GAA_GAB_GAC_GAD.mat")
     ldc_clm = ldc["LDCmgm_GSM_Cnm"]
     ldc_slm = ldc["LDCmgm_GSM_Snm"]
@@ -28,6 +30,7 @@ def load_ldc():
     ldc_deg1 = np.c_[ldc_clm[1], ldc_clm[2], ldc_slm[2]]
     ldc_deg1 -= ldc_deg1[:100].mean(axis=0)
     return np.hstack((np.asarray(t)[:, np.newaxis], ldc_deg1))
+
 
 ldc_deg1 = load_ldc()
 lmax = 60
@@ -47,8 +50,8 @@ gsm = SpharmCoeff.from_files(gsm_folder, lmax)
 rep_c20 = dict(rep="C20", file=slr_file1)
 rep_c30 = dict(rep="C30", file=slr_file1)
 rep_deg1 = dict(rep="DEG1", file=deg1_file)
-b = gsm.replace([rep_c20, rep_c30]).corr_gia("ICE6G-D", gia_file1).remove_mean_field() # type: ignore
-c = gsm.replace(rep_deg1) # type: ignore
+b = gsm.replace([rep_c20, rep_c30]).corr_gia("ICE6G-D", gia_file1).remove_mean_field()  # type: ignore
+c = gsm.replace(rep_deg1)  # type: ignore
 c.coeffs -= c.coeffs[:100].mean(axis=0)
 oc = np.loadtxt("D:\\tvg_toolkit\\masking\\data\\mask\\oceanmask\\ocean_buf300.txt")[:, 2].reshape(180, 360)
 coeffs = standard(b.coeffs, b.unit, oc, lln, lmax, {"method": "buf_fs", "radius": 300}, mode="sal_rot")
