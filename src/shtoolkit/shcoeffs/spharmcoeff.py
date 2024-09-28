@@ -10,7 +10,7 @@ from ..shload import read_gia_model, read_icgem, read_non_icgem
 from ..shtrans import cilm2grid
 from ..shtype import GIAModel, LoadLoveNumDict, SHSmoothKind, SpharmUnit
 from ..shunit import unitconvert
-from ._harmonic import Harmonic
+from .harmonic import Harmonic
 
 
 class SpharmCoeff(Harmonic):
@@ -49,7 +49,7 @@ class SpharmCoeff(Harmonic):
         replow: dict | Sequence[dict],
         rpcoef=None,
     ):
-        from .replacecoeff import ReplaceCoeff
+        from .lowdeg import C20, C30, Deg1
 
         if self.unit != "stokes":
             msg = f"Invalid value of 'unit' attribute, (expected 'stokes', got '{self.unit}')."
@@ -57,9 +57,9 @@ class SpharmCoeff(Harmonic):
 
         if rpcoef is None:
             lowdeg_dict = {
-                "C20": ReplaceCoeff.from_technical_note_c20,
-                "C30": ReplaceCoeff.from_technical_note_c30,
-                "DEG1": ReplaceCoeff.from_technical_note_deg1,
+                "C20": C20.from_technical_note_c20,
+                "C30": C30.from_technical_note_c30,
+                "DEG1": Deg1.from_technical_note_deg1,
             }
             if isinstance(replow, dict):
                 repcoef = lowdeg_dict[replow["rep"]](replow["file"])

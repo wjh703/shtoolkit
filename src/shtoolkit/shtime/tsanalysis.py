@@ -56,9 +56,7 @@ def lstsq_map(
     )
 
 
-def sine_fitting(
-    dtime: np.ndarray, data: np.ndarray, reference_time: float = 2002.0027
-) -> tuple[
+def sine_fitting(dtime: np.ndarray, data: np.ndarray, reference_time: float = 2002.0027) -> tuple[
     float,
     float,
     float,
@@ -199,9 +197,7 @@ def sine_fitting(
 
 
 @jit(nopython=True, cache=True)
-def cosine_fitting(
-    dtime: np.ndarray, data: np.ndarray, reference_time: float = 2002.0014
-) -> tuple[
+def cosine_fitting(dtime: np.ndarray, data: np.ndarray, reference_time: float = 2002.0014) -> tuple[
     float,
     float,
     float,
