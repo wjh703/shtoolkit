@@ -40,7 +40,7 @@ class SphereGrid:
         self.name = name
 
     def expand(self, lmax_calc: int = -1):
-        from .shcoeff import SpharmCoeff
+        from .shcoeffs import SpharmCoeff
 
         coeffs = np.array([grid2cilm(grid, lmax_calc) for grid in self.data])
         return SpharmCoeff(coeffs, self.epochs.copy(), self.unit)
