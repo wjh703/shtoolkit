@@ -70,20 +70,28 @@ class Harmonic:
     def __len__(self) -> int:
         return self.coeffs.shape[0]
 
-    def __add__(self, other: "Harmonic"):
-        if self.coeffs.shape == other.coeffs.shape and np.allclose(self.epochs, other.epochs, atol=0.05):
+    def __add__(self, other):
+        if (
+            self.coeffs.shape == other.coeffs.shape
+            and np.allclose(self.epochs, other.epochs, atol=0.05)
+            and self.__class__ == other.__class__
+        ):
             coeffs = self.coeffs + other.coeffs
         else:
             msg = (
                 f"The shape of 'coeffs' is unequal (got {self.coeffs.shape} and {other.coeffs.shape}), "
-                + "or the 'epochs' is not close."
+                + "or the 'epochs' is not close, or the two instances are not from same class."
             )
             raise ValueError(msg)
         harmonic_add = self.copy(coeffs=coeffs)
         return harmonic_add
 
-    def __sub__(self, other: "Harmonic"):
-        if self.coeffs.shape == other.coeffs.shape and np.allclose(self.epochs, other.epochs, atol=0.05):
+    def __sub__(self, other):
+        if (
+            self.coeffs.shape == other.coeffs.shape
+            and np.allclose(self.epochs, other.epochs, atol=0.05)
+            and self.__class__ == other.__class__
+        ):
             coeffs = self.coeffs - other.coeffs
         else:
             msg = (
