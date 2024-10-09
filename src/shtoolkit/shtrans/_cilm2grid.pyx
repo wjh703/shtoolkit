@@ -25,7 +25,6 @@ def cilm2grid_engine_by_pocketfft(
         int resol,
         int calc_lmax = -1
     ):
-
     cdef: 
         int nlat = 2 * (resol + 1)
         int nlon = 2 * nlat
@@ -37,7 +36,6 @@ def cilm2grid_engine_by_pocketfft(
         int k, ks, l, m
         double am, bm
         double ams, bms
-
     if nlat % 2 != 0:
         raise ValueError(f"Invalid value of nlat: {nlat}, (expected even)")
 
@@ -46,12 +44,9 @@ def cilm2grid_engine_by_pocketfft(
         calc_lmax = lmax
     
     pilm = fnALFs_cache(rad_colat, calc_lmax)
-    
     lat_fft = np.empty((nlat, calc_lmax + 1), dtype=np.complex128)
-
     for k in range(nlat // 2):
         ks = nlat - 1 - k
-
         plm = pilm[k]
         plms = pilm[ks]
 
@@ -89,7 +84,6 @@ def cilm2grid_engine_by_pyfftw(
         int calc_lmax = -1,
         object fftw_object = None
     ):
-
     cdef: 
         int nlat = 2 * (resol + 1)
         int nlon = 2 * nlat
@@ -101,7 +95,6 @@ def cilm2grid_engine_by_pyfftw(
         int k, ks, l, m
         double am, bm
         double ams, bms
-
     if nlat % 2 != 0:
         raise ValueError(f"Invalid value of nlat: {nlat}, (expected even)")
 
@@ -110,11 +103,9 @@ def cilm2grid_engine_by_pyfftw(
         calc_lmax = lmax
     
     pilm = fnALFs_cache(rad_colat, calc_lmax)
-    
     lat_fft = np.zeros((nlat, nlon // 2 + 1), dtype=np.complex128)
     for k in range(nlat // 2):
         ks = nlat - 1 - k
-
         plm = pilm[k]
         plms = pilm[ks]
 
@@ -151,7 +142,6 @@ def cilm2grid_integral(
         int resol,
         int calc_lmax = -1
     ):
-
     cdef: 
         int nlat = 2 * (resol + 1)
         int nlon = 2 * nlat
@@ -173,7 +163,6 @@ def cilm2grid_integral(
         calc_lmax = lmax
     
     pilm = fnALFs_cache(rad_colat, calc_lmax)
-
     am = np.zeros((nlat, calc_lmax + 1))
     bm = np.zeros((nlat, calc_lmax + 1))
     for k in range(nlat):
@@ -192,5 +181,4 @@ def cilm2grid_integral(
         for k in range(nlon):
             ccos[l, k] = cos(l * rad_lon[k])
             ssin[l, k] = sin(l * rad_lon[k])
-
     return np.dot(am, ccos) + np.dot(bm, ssin)

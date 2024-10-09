@@ -44,7 +44,6 @@ def __grid2cilm_fft(
         double complex[::1,:] lat_fft
         double[:,:,:] pilm
         double[:,:,:] cilm
-
     if nlat % 2 != 0:
         raise ValueError(f"Invalid value of nlat: {nlat}, (expected even)")
 
@@ -54,7 +53,6 @@ def __grid2cilm_fft(
         raise ValueError(f"Invalid value of calc_lmax: {calc_lmax}, must smaller than 'resol': {2*nlat-1}")
 
     pilm = fnALFs_cache(rad_colat, calc_lmax)
-
     weight = weight_dh(nlat)
     lat_fft = np.asarray(sp.fft.rfft(grid, axis=1), order='F')
     cilm = np.zeros((2, calc_lmax + 1, calc_lmax + 1))
@@ -89,7 +87,6 @@ def grid2cilm_engine_by_pocketfft(
         double[:,:,:] pilm
         double[:,:,:] cilm
         double[:,:] plm, plms
-        
     if nlat % 2 != 0:
         raise ValueError(f"Invalid value of nlat: {nlat}, (expected even)")
 
@@ -99,30 +96,23 @@ def grid2cilm_engine_by_pocketfft(
         raise ValueError(f"Invalid value of calc_lmax: {calc_lmax}, must smaller than 'resol': {2*nlat-1}")
 
     pilm = fnALFs_cache(rad_colat, calc_lmax)
-
     weight = weight_dh(nlat)
+
     lat_fft = sp.fft.rfft(grid)
     cilm = np.zeros((2, calc_lmax + 1, calc_lmax + 1))
-
-    
     for k in range(nlat // 2):
         ks = nlat - 1 - k
-
         fcoef = lat_fft[k]
         fcoefs = lat_fft[ks]
-
         plm = pilm[k]
         plms = pilm[ks]
-
         w = weight[k]
         ws = weight[ks]
-
         for l in range(calc_lmax + 1):
             cilm[0, l, 0] += plm[l, 0] * fcoef[0].real * w + plms[l, 0] * fcoefs[0].real * ws
             for m in range(1, l + 1):
                 cilm[0, l, m] += plm[l, m] * fcoef[m].real * w + plms[l, m] * fcoefs[m].real * ws
                 cilm[1, l, m] += plm[l, m] * (- fcoef[m].imag) * w + plms[l, m] * (- fcoefs[m].imag) * ws
-
     free(weight)
     return np.asarray(cilm)
 
@@ -145,7 +135,6 @@ def grid2cilm_engine_by_pyfftw(
         double[:,:,:] pilm
         double[:,:,:] cilm
         double[:,:] plm, plms
-        
     if nlat % 2 != 0:
         raise ValueError(f"Invalid value of nlat: {nlat}, (expected even)")
 
@@ -155,23 +144,18 @@ def grid2cilm_engine_by_pyfftw(
         raise ValueError(f"Invalid value of calc_lmax: {calc_lmax}, must smaller than 'resol': {2*nlat-1}")
 
     pilm = fnALFs_cache(rad_colat, calc_lmax)
-
     weight = weight_dh(nlat)
+
     lat_fft = fftw_object(grid)
     cilm = np.zeros((2, calc_lmax + 1, calc_lmax + 1))
-    
     for k in range(nlat // 2):
         ks = nlat - 1 - k
-
         fcoef = lat_fft[k]
         fcoefs = lat_fft[ks]
-
         plm = pilm[k]
         plms = pilm[ks]
-
         w = weight[k]
         ws = weight[ks]
-
         for l in range(calc_lmax + 1):
             cilm[0, l, 0] += plm[l, 0] * fcoef[0].real * w + plms[l, 0] * fcoefs[0].real * ws
             for m in range(1, l + 1):
@@ -200,7 +184,6 @@ def grid2cilm_integral(
         double c, s
         double[:,:,:] pilm
         double[:,:,:] cilm
-
     if nlat % 2 != 0:
         raise ValueError(f"Invalid value of nlat: {nlat}, (expected even)")
 
@@ -245,7 +228,6 @@ cdef inline double *weight_dh(int nlat) except NULL:
         double colat
         double dlon = pi / nlat
         double fpi = 4 * pi
-
     for j in range(nlat):
         s = 0
         colat = pi * j / nlat
