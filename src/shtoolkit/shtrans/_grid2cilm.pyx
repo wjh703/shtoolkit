@@ -26,10 +26,13 @@ Reference
 """
 
 
-def grid2cilm_fft(
+def __grid2cilm_fft(
     double[:,:] grid,
     int calc_lmax = -1
 ):
+    """
+    Deprecated
+    """
     cdef: 
         int nlat = grid.shape[0]
         int nlon = grid.shape[1]
@@ -69,7 +72,7 @@ def grid2cilm_fft(
     return np.asarray(cilm)
 
 
-def grid2cilm_fft_refined(
+def grid2cilm_engine_by_pocketfft(
     double[:,:] grid,
     int calc_lmax = -1
 ):
@@ -122,6 +125,61 @@ def grid2cilm_fft_refined(
 
     free(weight)
     return np.asarray(cilm)
+
+
+def grid2cilm_engine_by_pyfftw(
+    double[:,:] grid,
+    int calc_lmax = -1,
+    object fftw_object = None
+):
+    cdef: 
+        int nlat = grid.shape[0]
+        int nlon = grid.shape[1]
+        int resol = nlat // 2 - 1
+        double c, s
+        int k, ks, l, m
+        tuple rad_colat = tuple(np.linspace(0, pi, nlat, endpoint=False))
+        double *weight
+        double complex[:,:] lat_fft
+        double complex[:] fcoef, fcoefs
+        double[:,:,:] pilm
+        double[:,:,:] cilm
+        double[:,:] plm, plms
+        
+    if nlat % 2 != 0:
+        raise ValueError(f"Invalid value of nlat: {nlat}, (expected even)")
+
+    if calc_lmax < 0:
+        calc_lmax = resol
+    elif calc_lmax > resol:
+        raise ValueError(f"Invalid value of calc_lmax: {calc_lmax}, must smaller than 'resol': {2*nlat-1}")
+
+    pilm = fnALFs_cache(rad_colat, calc_lmax)
+
+    weight = weight_dh(nlat)
+    lat_fft = fftw_object(grid)
+    cilm = np.zeros((2, calc_lmax + 1, calc_lmax + 1))
+    
+    for k in range(nlat // 2):
+        ks = nlat - 1 - k
+
+        fcoef = lat_fft[k]
+        fcoefs = lat_fft[ks]
+
+        plm = pilm[k]
+        plms = pilm[ks]
+
+        w = weight[k]
+        ws = weight[ks]
+
+        for l in range(calc_lmax + 1):
+            cilm[0, l, 0] += plm[l, 0] * fcoef[0].real * w + plms[l, 0] * fcoefs[0].real * ws
+            for m in range(1, l + 1):
+                cilm[0, l, m] += plm[l, m] * fcoef[m].real * w + plms[l, m] * fcoefs[m].real * ws
+                cilm[1, l, m] += plm[l, m] * (- fcoef[m].imag) * w + plms[l, m] * (- fcoefs[m].imag) * ws
+    free(weight)
+    return np.asarray(cilm)
+
 
 def grid2cilm_integral(
     double[:,:] grid,

@@ -20,48 +20,7 @@ Reference
 """
 
 
-def cilm2grid_fft(
-        double[:,:,:] cilm,
-        int resol,
-        int calc_lmax = -1
-    ):
-
-    cdef: 
-        int nlat = 2 * (resol + 1)
-        int nlon = 2 * nlat
-        int lmax
-        tuple rad_colat = tuple(np.linspace(0, pi, nlat, endpoint=False))
-        double[:,:,:] pilm
-        double complex[:,:] fcoef
-        Py_ssize_t k, l, m
-        double am, bm
-
-    if nlat % 2 != 0:
-        raise ValueError(f"Invalid value of nlat: {nlat}, (expected even)")
-
-    lmax = cilm.shape[1]-1
-    if calc_lmax < 0 or calc_lmax > lmax:
-        calc_lmax = lmax
-    
-    pilm = fnALFs_cache(rad_colat, calc_lmax)
-    
-    fcoef = np.zeros((nlat, calc_lmax + 1), dtype=np.complex128)
-    for k in range(nlat):
-        for m in range(calc_lmax + 1):
-            am = 0.0
-            bm = 0.0
-            for l in range(m, calc_lmax + 1):
-                am += cilm[0, l, m] * pilm[k, l, m]
-                bm += cilm[1, l, m] * pilm[k, l, m]
-            if m:
-                fcoef[k, m] = (am - 1j * bm) / 2
-            else:
-                fcoef[k, m] = am - 1j * bm
-
-    return sp.fft.irfft(fcoef, nlon, norm='forward')
- 
-
-def cilm2grid_fft_refined(
+def cilm2grid_engine_by_pocketfft(
         double[:,:,:] cilm,
         int resol,
         int calc_lmax = -1
@@ -122,6 +81,69 @@ def cilm2grid_fft_refined(
             lat_fft[ks, m] = (ams - 1j * bms) / 2
 
     return sp.fft.irfft(lat_fft, nlon, norm='forward')
+
+
+def cilm2grid_engine_by_pyfftw(
+        double[:,:,:] cilm,
+        int resol,
+        int calc_lmax = -1,
+        object fftw_object = None
+    ):
+
+    cdef: 
+        int nlat = 2 * (resol + 1)
+        int nlon = 2 * nlat
+        int lmax
+        tuple rad_colat = tuple(np.linspace(0, pi, nlat, endpoint=False))
+        double[:,:,:] pilm
+        double[:,:] plm, plms
+        double complex[:,:] lat_fft
+        int k, ks, l, m
+        double am, bm
+        double ams, bms
+
+    if nlat % 2 != 0:
+        raise ValueError(f"Invalid value of nlat: {nlat}, (expected even)")
+
+    lmax = cilm.shape[1] - 1
+    if calc_lmax < 0 or calc_lmax > lmax:
+        calc_lmax = lmax
+    
+    pilm = fnALFs_cache(rad_colat, calc_lmax)
+    
+    lat_fft = np.zeros((nlat, nlon // 2 + 1), dtype=np.complex128)
+    for k in range(nlat // 2):
+        ks = nlat - 1 - k
+
+        plm = pilm[k]
+        plms = pilm[ks]
+
+        am = 0
+        bm = 0
+        ams = 0
+        bms = 0
+        for l in range(calc_lmax + 1):
+            am += cilm[0, l, 0] * plm[l, 0]
+            bm += cilm[1, l, 0] * plm[l, 0]
+            ams += cilm[0, l, 0] * plms[l, 0]
+            bms += cilm[1, l, 0] * plms[l, 0]
+        lat_fft[k, 0] = am - 1j * bm
+        lat_fft[ks, 0] = ams - 1j * bms
+
+        for m in range(1, calc_lmax + 1):
+            am = 0
+            bm = 0
+            ams = 0
+            bms = 0
+            for l in range(m, calc_lmax + 1):
+                am += cilm[0, l, m] * plm[l, m]
+                bm += cilm[1, l, m] * plm[l, m]
+                ams += cilm[0, l, m] * plms[l, m]
+                bms += cilm[1, l, m] * plms[l, m]
+            lat_fft[k, m] = (am - 1j * bm) / 2
+            lat_fft[ks, m] = (ams - 1j * bms) / 2
+
+    return fftw_object(lat_fft) * nlon
 
 
 def cilm2grid_integral(
