@@ -24,3 +24,6 @@ test/__pycache__
 test/deg2toerp.py
 test/improved_rec.py
 test/test_fpa.py
+test/fpa_10_08.py
+test/improved_rec_new.py
+test/improved_rec_new_new.py
