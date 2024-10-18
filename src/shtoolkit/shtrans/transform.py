@@ -23,15 +23,15 @@ def cilm2grid(
         input_shape = (nlat, nlon // 2 + 1)
         output_shape = (nlat, nlon)
         if (
-            any(item not in globals().keys() for item in ["fftw_c2r_input_shape", "fftw_c2r_output_shape", "fftw_c2r"])
+            any(key not in globals().keys() for key in ["fftw_c2r_input_shape", "fftw_c2r_output_shape", "fftw_c2r"])
             or globals().get("fftw_c2r_input_shape", 0) != input_shape
             or globals().get("fftw_c2r_output_shape", 0) != output_shape
         ):
             global fftw_c2r_input_shape, fftw_c2r_output_shape, fftw_c2r
-            fftw_c2r_input_shape = input_shape
-            fftw_c2r_output_shape = output_shape
-            fftw_c2r = _alloc_fftw_c2r(fftw_c2r_input_shape, fftw_c2r_output_shape)
-        grid = cilm2grid_engine_by_pyfftw(cilm, resol, lmax_calc, fftw_c2r)
+            fftw_c2r_input_shape = input_shape  # type: ignore
+            fftw_c2r_output_shape = output_shape  # type: ignore
+            fftw_c2r = _alloc_fftw_c2r(fftw_c2r_input_shape, fftw_c2r_output_shape)  # type: ignore
+        grid = cilm2grid_engine_by_pyfftw(cilm, resol, lmax_calc, fftw_c2r)  # type: ignore
     elif mode == "pocketfft":
         grid = cilm2grid_engine_by_pocketfft(cilm, resol, lmax_calc)
     elif mode == "integral":
@@ -48,15 +48,15 @@ def grid2cilm(
         input_shape = grid.shape
         output_shape = (grid.shape[0], grid.shape[1] // 2 + 1)
         if (
-            any(item not in globals().keys() for item in ["fftw_r2c_input_shape", "fftw_r2c_output_shape", "fftw_r2c"])
+            any(key not in globals().keys() for key in ["fftw_r2c_input_shape", "fftw_r2c_output_shape", "fftw_r2c"])
             or globals().get("fftw_r2c_input_shape", 0) != input_shape
             or globals().get("fftw_r2c_output_shape", 0) != output_shape
         ):
             global fftw_r2c_input_shape, fftw_r2c_output_shape, fftw_r2c
-            fftw_r2c_input_shape = input_shape
-            fftw_r2c_output_shape = output_shape
-            fftw_r2c = _alloc_fftw_r2c(fftw_r2c_input_shape, fftw_r2c_output_shape)
-        cilm = grid2cilm_engine_by_pyfftw(grid, lmax_calc, fftw_r2c)
+            fftw_r2c_input_shape = input_shape  # type: ignore
+            fftw_r2c_output_shape = output_shape  # type: ignore
+            fftw_r2c = _alloc_fftw_r2c(fftw_r2c_input_shape, fftw_r2c_output_shape)  # type: ignore
+        cilm = grid2cilm_engine_by_pyfftw(grid, lmax_calc, fftw_r2c)  # type: ignore
     elif mode == "pocketfft":
         cilm = grid2cilm_engine_by_pocketfft(grid, lmax_calc)
     elif mode == "integral":
