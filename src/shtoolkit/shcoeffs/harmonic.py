@@ -53,6 +53,20 @@ class Harmonic:
         self.unit: SpharmUnit = unit
         self.info = info if info is not None else dict()
 
+    def resample(self, resample_epochs):
+        current_epochs = self.epochs
+        boolean = np.zeros_like(current_epochs, dtype=bool)
+        for t in resample_epochs:
+            residual = np.abs(current_epochs - t)
+            min_diff_idx = residual.argmin()
+            if residual[min_diff_idx] > 0.05:
+                msg = f"Cannot resample to '{t}' in current_epochs"
+                raise ValueError(msg)
+            boolean[min_diff_idx] = True
+        resample_coeffs = self.coeffs[boolean]
+        resample_errors = self.errors[boolean] if self.errors is not None else None
+        return self.copy(coeffs=resample_coeffs, epochs=resample_epochs, errors=resample_errors)
+
     def copy(self, **kwargs):
         copy_dict = copy.deepcopy(self.__dict__)
         if kwargs:
