@@ -93,12 +93,13 @@ class ReplaceableCoeff(Harmonic):
         else:
             coeffs = self.coeffs - gia_pole_tide
 
-        coeffs -= coeffs.mean()
+        coeffs -= coeffs.mean() # type: ignore
         return self.copy(coeffs=coeffs)
 
     def copy(self, **kwargs):
         copy_dict = copy.deepcopy(self.__dict__)
-        if self.__class__ in ReplaceableCoeff.__subclasses__():
+        if issubclass(self.__class__, ReplaceableCoeff):
+            # if self.__class__ in ReplaceableCoeff.__subclasses__():
             copy_dict.pop("indice")
         if kwargs:
             for k, val in kwargs.items():
