@@ -8,6 +8,7 @@ from .tsgenerator import (
     time_uniform,
     year_month_to_decimal_year,
 )
+from .variance_component_estimate import helmert, vce
 
 # from . import lstsq_seasonal_trend
 
@@ -21,4 +22,6 @@ __all__ = [
     "time_uniform",
     "grace_time",
     "generate_time_series",
+    "helmert",
+    "vce",
 ]

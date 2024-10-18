@@ -133,8 +133,9 @@ class SpharmCoeff(Harmonic):
 
     def convert(self, new_unit: SpharmUnit, lln: LoadLoveNumDict | None = None):
         coeffs = unitconvert(self.coeffs, self.unit, new_unit, lln)
-        sphcoef_new = self.copy(coeffs=coeffs, unit=new_unit)
-        return sphcoef_new
+        errors = unitconvert(self.errors, self.unit, new_unit, lln) if self.errors is not None else None
+        # sphcoef_new = self.copy(coeffs=coeffs, errors=errors, unit=new_unit)
+        return self.copy(coeffs=coeffs, errors=errors, unit=new_unit)
 
     def copy(self, **kwargs):
         copy_dict = copy.deepcopy(self.__dict__)
