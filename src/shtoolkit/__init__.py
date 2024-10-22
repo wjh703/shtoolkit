@@ -1,4 +1,4 @@
-from . import shcoeffs, shfilter, shgrid, shload, shspecial, shtime, shtrans, shtype, shunit
+from . import shcoeffs, shfilter, shgrid, shload, shread, shspecial, shtime, shtrans, shtype, shunit
 from .shgrid import SphereGrid
 
 __all__ = [
@@ -12,4 +12,5 @@ __all__ = [
     "shcoeffs",
     "shtrans",
     "shtime",
+    "shread",
 ]
