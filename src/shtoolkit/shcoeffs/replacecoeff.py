@@ -4,7 +4,7 @@ from typing import Literal, Sequence
 
 import numpy as np
 
-from ..shload import read_gia_model
+from ..shread import read_gia_model
 from ..shtype import GIAModel, SpharmUnit
 from .harmonic import Harmonic
 from .spharmcoeff import SpharmCoeff
@@ -93,7 +93,7 @@ class ReplaceableCoeff(Harmonic):
         else:
             coeffs = self.coeffs - gia_pole_tide
 
-        coeffs -= coeffs.mean() # type: ignore
+        coeffs -= coeffs.mean()  # type: ignore
         return self.copy(coeffs=coeffs)
 
     def copy(self, **kwargs):
