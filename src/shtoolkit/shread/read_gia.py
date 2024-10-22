@@ -19,7 +19,7 @@ def read_gia_model(filepath: str | Path, lmax: int, model: str) -> np.ndarray:
                 r"GRACE Approximation/Absolute Sea-level Values for degrees > 2\s+"
                 r"((?:\s*\d+\s+\d+\s+[+\-\d\.E]+\s+[+\-\d\.E]+\s*)+)"
             )
-        else :
+        else:
             regex_deg_0_to_2 = (
                 r"GRACE Coefficients for degrees 0 to 2\s+((?:\s*\d+\s+\d+\s+[+\-\d\.E]+\s+[+\-\d\.E]+\s*)+)"
             )
@@ -47,13 +47,13 @@ def read_gia_model(filepath: str | Path, lmax: int, model: str) -> np.ndarray:
             if l > lmax:
                 continue
             gia[:, l, m] = float(ls[2]), float(ls[3])
-    elif model == 'C18':
-        regex_deg_full = r'\s*(\d+)\s+([+-]?\d+)\s+([+-]?\d+\.\d+e[+-]?\d+)\s*'
+    elif model == "C18":
+        regex_deg_full = r"\s*(\d+)\s+([+-]?\d+)\s+([+-]?\d+\.\d+e[+-]?\d+)\s*"
         deg_full = re.findall(regex_deg_full, content)
         if not deg_full:
             msg = "Do not match any cilms in C18 file"
             raise ValueError(msg)
-        
+
         for ls in deg_full:
             l, m = int(ls[0]), int(ls[1])
             if abs(m) > lmax:
@@ -67,5 +67,5 @@ def read_gia_model(filepath: str | Path, lmax: int, model: str) -> np.ndarray:
     else:
         msg = f"Invalid value of GIA model <{model}>."
         raise ValueError(msg)
-    
+
     return gia
