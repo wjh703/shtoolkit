@@ -7,7 +7,7 @@ import numpy as np
 
 from shtoolkit.shspecial import sea_level_equation
 
-from shtoolkit.shload import read_load_love_num
+from shtoolkit.shread import read_load_love_num
 from shtoolkit.shtrans import cilm2grid
 import cartopy.crs as ccrs
 

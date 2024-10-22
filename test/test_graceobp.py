@@ -5,7 +5,7 @@ from scipy.io import loadmat
 import matplotlib.pyplot as plt
 
 from shtoolkit.shcoeffs import SpharmCoeff
-from shtoolkit.shload import read_load_love_num
+from shtoolkit.shread import read_load_love_num
 from shtoolkit.shspecial import standard
 
 
@@ -47,22 +47,27 @@ lln = read_load_love_num(lln_file, lmax)
 
 gsm = SpharmCoeff.from_files(gsm_folder, lmax)
 
-rep_c20 = dict(rep="C20", file=slr_file1)
-rep_c30 = dict(rep="C30", file=slr_file1)
+rep_c20 = dict(rep="C20", file=slr_file2)
+rep_c30 = dict(rep="C30", file=slr_file2)
 rep_deg1 = dict(rep="DEG1", file=deg1_file)
 b = gsm.replace([rep_c20, rep_c30]).corr_gia("ICE6G-D", gia_file1).remove_mean_field()  # type: ignore
 c = gsm.replace(rep_deg1)  # type: ignore
 c.coeffs -= c.coeffs[:100].mean(axis=0)
-oc = np.loadtxt("D:\\tvg_toolkit\\masking\\data\\mask\\oceanmask\\ocean_buf300.txt")[:, 2].reshape(180, 360)
-coeffs = standard(b.coeffs, b.unit, oc, lln, lmax, {"method": "buf_fs", "radius": 300}, mode="sal_rot")
+oc = np.loadtxt("D:\\tvg_toolkit\\masking\\data\\mask\\oceanmask\\ocean_buf50.txt")[:, 2].reshape(180, 360)
+coeffs = standard(b.coeffs, b.unit, oc, lln, lmax, {"method": "FM_fs", "radius": 300}, mode="sal_rot")
 coeffs = coeffs[:, *list(zip([0, 1, 0], [0, 1, 1], [1, 1, 1]))]
 coeffs -= coeffs[:100].mean(axis=0)
 
 
+# deg1 = np.loadtxt(
+#     "D:/wjh_code/My_code/my_code_data/output/真实结果/CSR/GSM_like/buffer_300km.txt",
+#     delimiter=",",
+# )
 deg1 = np.loadtxt(
-    "D:/wjh_code/My_code/my_code_data/output/真实结果/CSR/GSM_like/buffer_300km.txt",
+    "D:/wjh_code/My_code/my_code_data/output/真实结果/finally/CSR_FM_MPIOM_RL07.txt",
     delimiter=",",
 )
+
 deg1_time = np.copy(deg1[:, 0])
 deg1 -= deg1[:100].mean(axis=0)
 
