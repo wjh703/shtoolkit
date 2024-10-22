@@ -1,5 +1,5 @@
 from .ssa_fill import ssa_gap_filling
-from .tsanalysis import cosine_fitting, sine_fitting
+from .tsanalysis import cosine_fitting, lstsq_map, sine_fitting
 from .tsgenerator import (
     date_to_decimal_year,
     generate_time_series,
@@ -24,4 +24,5 @@ __all__ = [
     "generate_time_series",
     "helmert",
     "vce",
+    "lstsq_map",
 ]

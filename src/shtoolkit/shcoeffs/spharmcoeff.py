@@ -6,7 +6,7 @@ from typing import Literal, Sequence
 import numpy as np
 
 from ..shfilter import fan_smooth, gauss_smooth
-from ..shload import read_gia_model, read_icgem, read_non_icgem
+from ..shread import read_gia_model, read_icgem, read_non_icgem
 from ..shtrans import cilm2grid
 from ..shtype import GIAModel, LoadLoveNumDict, SHSmoothKind, SpharmUnit
 from ..shunit import unitconvert
@@ -28,7 +28,7 @@ class SpharmCoeff(Harmonic):
     @classmethod
     def from_files(
         cls,
-        folder: str,
+        folder: str | Path,
         lmax: int,
         is_icgem: bool = True,
     ):

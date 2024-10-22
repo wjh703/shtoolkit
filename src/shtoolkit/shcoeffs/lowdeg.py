@@ -3,7 +3,7 @@ from typing import Sequence
 
 import numpy as np
 
-from ..shload import read_technical_note_c20_c30, read_technical_note_deg1
+from ..shread import read_technical_note_c20_c30, read_technical_note_deg1
 from ..shtype import SpharmUnit
 from ..shunit import SH_CONST
 from .replacecoeff import ReplaceableCoeff

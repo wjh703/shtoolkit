@@ -15,14 +15,15 @@ TN13_JPL_URL = (
 TN13_GFZ_URL = (
     "https://archive.podaac.earthdata.nasa.gov/podaac-ops-cumulus-docs/grace/open/docs/TN-13_GEOC_GFZ_RL0601.txt"
 )
+ICE6G_D_URL = r"https://agupubs.onlinelibrary.wiley.com/action/downloadSupplement?doi=10.1002%2F2016JB013844&file=jgrb52450-sup-0003-Data_S3.txt"
+
+
+DOWNLOAD_LIST = [TN11E_URL, TN14_URL, TN13_CSR_URL, TN13_JPL_URL, TN13_GFZ_URL]
 
 
 def download_technical_notes():
-    for k, v in globals().items():
-        if "TN" not in k or "URL" not in k:
-            continue
-        url = v
-        filename = url.split("/")[-1]
+    for url in DOWNLOAD_LIST:
+        filename = pathlib.Path(url).name
         local_filepath = pathlib.Path(__file__).absolute().parent / "data" / filename
         print(f"Downloading {filename}")
         try:

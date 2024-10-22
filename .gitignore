@@ -5,6 +5,7 @@ FPA/
 build/
 dist/
 .ruff_cache/
+data/
 
 src/shtoolkit/shcoeffs/__pycache__/
 src/shtoolkit/shtrans1/
@@ -18,6 +19,10 @@ src/shtoolkit/__pycache__/
 src/shtoolkit/shtime/__pycache__/
 src/shtoolkit/shtime/*.pyx
 src/shtoolkit/shtime/*.pyd
+src/shtoolkit/data/
+src/shtoolkit/shread/__pycache__/
+src/shtoolkit/shload.py
+
 test/__pycache__
 test/deg2toerp.py
 test/improved_rec.py
