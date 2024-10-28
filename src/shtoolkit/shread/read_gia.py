@@ -65,7 +65,7 @@ def read_gia_model(filepath: str | Path, lmax: int, model: str) -> np.ndarray:
             else:
                 gia[0, l, m] = float(ls[2])
     else:
-        msg = f"Invalid value of GIA model <{model}>."
+        msg = f"Invalid GIA model '{model}'."
         raise ValueError(msg)
 
     return gia
