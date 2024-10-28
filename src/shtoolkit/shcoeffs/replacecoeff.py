@@ -38,7 +38,6 @@ class ReplaceableCoeff(Harmonic):
             coeffs[ori_idx, *self.indice] = self.coeffs[rp_idx]
             if self.errors is not None and errors is not None:
                 errors[ori_idx, *self.indice] = self.errors[rp_idx]
-
         sphcoef_info = sphcoef.info.copy()
         if self.info:
             print(f"{self.info['coeff']} was replaced by {self.info['version']}.")
