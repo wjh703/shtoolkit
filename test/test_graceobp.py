@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 from shtoolkit.shcoeffs import SpharmCoeff
 from shtoolkit.shread import read_load_love_num
-from shtoolkit.shspecial import standard
+from shtoolkit.shspecial.grace_obp import standard
 
 
 def load_ldc():
@@ -35,7 +35,7 @@ def load_ldc():
 ldc_deg1 = load_ldc()
 lmax = 60
 slr_file1 = "D:\\tvg_toolkit\\tvg_toolkit\\data\\CSR_SLR_TN11E_TN11E.txt"
-slr_file2 = "D:\\tvg_toolkit\\tvg_toolkit\\data\\GSFC_SLR_TN14.txt"
+slr_file2 = "D:\\tvg_toolkit\\shtoolkit\\src\\shtoolkit\\data\\TN-14_C30_C20_GSFC_SLR.txt"
 gsm_folder = "D:\\wjh_code\\TVG\\CSR\\unfilter"
 gia_file1 = "D:\\tvg_toolkit\\tvg_toolkit\\data\\ICE6G_D.txt"
 gia_file2 = "D:\\tvg_toolkit\\tvg_toolkit\\data\\Purcell16.txt"
@@ -53,20 +53,20 @@ rep_deg1 = dict(rep="DEG1", file=deg1_file)
 b = gsm.replace([rep_c20, rep_c30]).corr_gia("ICE6G-D", gia_file1).remove_mean_field()  # type: ignore
 c = gsm.replace(rep_deg1)  # type: ignore
 c.coeffs -= c.coeffs[:100].mean(axis=0)
-oc = np.loadtxt("D:\\tvg_toolkit\\masking\\data\\mask\\oceanmask\\ocean_buf50.txt")[:, 2].reshape(180, 360)
-coeffs = standard(b.coeffs, b.unit, oc, lln, lmax, {"method": "FM_fs", "radius": 300}, mode="sal_rot")
+oc = np.loadtxt("D:\\tvg_toolkit\\masking\\data\\mask\\oceanmask\\ocean_buf300.txt")[:, 2].reshape(180, 360)
+coeffs = standard(b.coeffs, b.unit, oc, lln, lmax, {"method": "buf_fs", "radius": 300}, mode="sal_rot")
 coeffs = coeffs[:, *list(zip([0, 1, 0], [0, 1, 1], [1, 1, 1]))]
 coeffs -= coeffs[:100].mean(axis=0)
 
 
-# deg1 = np.loadtxt(
-#     "D:/wjh_code/My_code/my_code_data/output/真实结果/CSR/GSM_like/buffer_300km.txt",
-#     delimiter=",",
-# )
 deg1 = np.loadtxt(
-    "D:/wjh_code/My_code/my_code_data/output/真实结果/finally/CSR_FM_MPIOM_RL07.txt",
+    "D:/wjh_code/My_code/my_code_data/output/真实结果/CSR/GSM_like/buffer_300km.txt",
     delimiter=",",
 )
+# deg1 = np.loadtxt(
+#     "D:/wjh_code/My_code/my_code_data/output/真实结果/finally/CSR_FM_MPIOM_RL07.txt",
+#     delimiter=",",
+# )
 
 deg1_time = np.copy(deg1[:, 0])
 deg1 -= deg1[:100].mean(axis=0)
