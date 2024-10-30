@@ -2,7 +2,7 @@ from functools import partial
 
 import numpy as np
 
-from .shspecial import sea_level_equation, uniform_distributed
+from .shspecial import sea_level_equation
 from .shtrans import grid2cilm
 from .shtype import LoadLoveNumDict, MassConserveMode, SpharmUnit
 
@@ -56,11 +56,11 @@ class SphereGrid:
             lmax = self.max_resol
 
         if mode == "eustatic":
-            conserve_func = uniform_distributed
+            conserve_func = sea_level_equation.uniform
         elif mode == "sal" and lln is not None:
-            conserve_func = partial(sea_level_equation, lln=lln, lmax=lmax, unit=self.unit, rot=False)  # type: ignore
+            conserve_func = partial(sea_level_equation.non_uniform, lln=lln, lmax=lmax, unit=self.unit, rot=False)  # type: ignore
         elif mode == "sal_rot" and lln is not None:
-            conserve_func = partial(sea_level_equation, lln=lln, lmax=lmax, unit=self.unit, rot=True)  # type: ignore
+            conserve_func = partial(sea_level_equation.non_uniform, lln=lln, lmax=lmax, unit=self.unit, rot=True)  # type: ignore
         else:
             msg = (
                 f"Invalid value of 'mode' (expected 'eustatic', 'sal' or 'sal_rot', got '{mode}'), "
