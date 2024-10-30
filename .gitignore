@@ -22,6 +22,7 @@ src/shtoolkit/shtime/*.pyd
 src/shtoolkit/data/
 src/shtoolkit/shread/__pycache__/
 src/shtoolkit/shload.py
+src/shtoolkit/shspecial/__pycache__/
 
 test/__pycache__
 test/deg2toerp.py
