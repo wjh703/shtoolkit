@@ -12,16 +12,24 @@ dependencies = [
     "pandas",
     "scipy",
     "numba",
-    "tqdm"
+    "tqdm",
+    "pyfftw",
+    "pywt",
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 
 [project.optional-dependencies]
 cartopy = ["cartopy"]
 pyshtools = ["pyshtools"]
 
 [tool.setuptools]
-packages = ["shtoolkit", "shtoolkit.shcoeffs", "shtoolkit.shtrans", "shtoolkit.shtime"]
+packages = [
+    "shtoolkit", 
+    "shtoolkit.shcoeffs", 
+    "shcoeffs.shread", 
+    "shtoolkit.shtrans", 
+    "shtoolkit.shtime",
+]
 package-dir = {"" = "src"}
 package-data = {"shtoolkit.shtrans" = ["*.pyx", "*.pxd"]}
 
