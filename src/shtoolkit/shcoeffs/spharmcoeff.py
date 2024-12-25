@@ -40,7 +40,7 @@ class SpharmCoeff(Harmonic):
             data = [read_non_icgem(file, lmax) for file in files]
         epochs, coeffs, errors = map(np.array, zip(*data, strict=False))
 
-        center = re.findall(r"UTCSR|GFZOP|JPLEM|COSTG|GRGS|AIUB|ITSG|HUST|Tongji", files[0].stem)
+        center = re.findall(r"UTCSR|GFZOP|JPLEM|COSTG|GRGS|AIUB|ITSG|HUST|Tongji|IGG-SLR-HYBRID", files[0].stem)
         info = dict(GSM=center[0]) if center else None
         return cls(coeffs, epochs, "stokes", errors, info=info).sort()
 
