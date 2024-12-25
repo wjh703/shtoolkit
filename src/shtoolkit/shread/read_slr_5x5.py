@@ -29,10 +29,10 @@ def read_slr_5x5(filepath: str | Path) -> tuple[np.ndarray, np.ndarray]:
             cilms.append(read_gsfc_5x5(f))
 
     vector = np.array([cilm2vector(c) for c in np.asarray(cilms)])
-
-    vector_df = pd.DataFrame(np.hstack((np.asarray(epochs)[np.newaxis], vector))).rolling(4).mean().dropna().to_numpy()
+    vector_df = (
+        pd.DataFrame(np.hstack((np.asarray(epochs)[:, np.newaxis], vector))).rolling(4).mean().dropna().to_numpy()
+    )
     epochs_28d = vector_df[:, 0]
     vector_28d = vector_df[:, 1:]
     cilms_28d = np.array([vector2cilm(v) for v in vector_28d])
-
     return epochs_28d, cilms_28d

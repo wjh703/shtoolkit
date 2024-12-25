@@ -58,11 +58,12 @@ class Harmonic:
         boolean = np.zeros_like(current_epochs, dtype=bool)
         for t in resample_epochs:
             residual = np.abs(current_epochs - t)
-            min_diff_idx = residual.argmin()
-            if residual[min_diff_idx] > 0.05:
-                msg = f"Cannot resample to '{t}' in current_epochs"
+            if residual.min() > 0.0573:
+                e = current_epochs[residual.argmin()]
+                msg = f"Cannot resample to '{t}' in current_epochs, the cloest is '{e}'"
                 raise ValueError(msg)
-            boolean[min_diff_idx] = True
+            else:
+                boolean[residual.argmin()] = True
         resample_coeffs = self.coeffs[boolean]
         resample_errors = self.errors[boolean] if self.errors is not None else None
         return self.copy(coeffs=resample_coeffs, epochs=resample_epochs, errors=resample_errors)

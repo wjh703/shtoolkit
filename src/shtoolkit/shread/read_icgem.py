@@ -8,7 +8,7 @@ from .. import shtime
 
 def read_icgem(filepath: str | Path, lmax: int | None = None) -> tuple[float, np.ndarray, np.ndarray]:
     """read GRACE/GRACE-FO gravitional coefficients in icgem format, including GSM, GAC, GAB, GAA"""
-    centers_valid = r"UTCSR|GFZOP|JPLEM|COSTG|GRGS|AIUB|ITSG|HUST|Tongji"
+    centers_valid = r"UTCSR|GFZOP|JPLEM|COSTG|GRGS|AIUB|ITSG|HUST|Tongji|IGG-SLR-HYBRID"
     if isinstance(filepath, str):
         filepath = Path(filepath)
 
@@ -47,6 +47,15 @@ def read_icgem(filepath: str | Path, lmax: int | None = None) -> tuple[float, np
         else:
             raise ValueError("no time in file.stem")
         epoch = shtime.year_month_to_decimal_year(epoch_str)
+    elif center == "IGG-SLR-HYBRID":
+        pattern = r"(\d{4})-(\d{2})"
+        timestamp = re.findall(pattern, filename)
+        if timestamp:
+            epoch_str = "".join(timestamp[0])
+            epoch = shtime.year_month_to_decimal_year(epoch_str)
+        else:
+            msg = f"Do not match any valid epoch in the icgem filename ({center})"
+            raise ValueError(msg)
 
     cilm, ecilm = _read_file(filepath, lmax)
     return epoch, cilm, ecilm
