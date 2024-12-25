@@ -4,7 +4,7 @@ from urllib.request import urlretrieve
 
 TN11E_URL = "https://filedrop.csr.utexas.edu/pub/slr/TN11E/TN11E.txt"
 TN14_URL = (
-    "https://archive.podaac.earthdata.nasa.gov/podaac-ops-cumulus-docs/grace/open/docs/TN-14_C30_C20_GSFC_SLR.txt"
+    "https://archive.podaac.earthdata.nasa.gov/podaac-ops-cumulus-docs/gracefo/open/docs/TN-14_C30_C20_GSFC_SLR.txt"
 )
 TN13_CSR_URL = (
     "http://archive.podaac.earthdata.nasa.gov/podaac-ops-cumulus-docs/grace/open/docs/TN-13_GEOC_CSR_RL0602.txt"
@@ -28,8 +28,13 @@ def download_technical_notes():
         print(f"Downloading {filename}")
         try:
             urlretrieve(url, local_filepath)
+            print(f"Finish {filename}")
         except URLError:
             import ssl
 
             ssl._create_default_https_context = ssl._create_unverified_context
             urlretrieve(url, local_filepath)
+
+
+if __name__ == "__main__":
+    download_technical_notes()
