@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Literal, Sequence
 
 import numpy as np
+import numpy.typing as npt
 
 from ..shread import read_gia_model
 from ..shtype import GIAModel, SpharmUnit
@@ -14,10 +15,10 @@ class ReplaceableCoeff(Harmonic):
     def __init__(
         self,
         indice: tuple[int, int, int] | Sequence[tuple[int, int, int]],
-        coeffs: Sequence | np.ndarray,
-        epochs: Sequence | np.ndarray,
+        coeffs: npt.ArrayLike,
+        epochs: npt.ArrayLike,
         unit: SpharmUnit,
-        errors: Sequence | np.ndarray | None = None,
+        errors: npt.ArrayLike | None = None,
         info: dict | None = None,
     ) -> None:
         super().__init__(coeffs=coeffs, epochs=epochs, unit=unit, errors=errors, info=info)

@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Literal, Sequence
 
 import numpy as np
+import numpy.typing as npt
 
 from ..shfilter import fan_smooth, gauss_smooth
 from ..shread import read_gia_model, read_icgem, read_non_icgem
@@ -16,10 +17,10 @@ from .harmonic import Harmonic
 class SpharmCoeff(Harmonic):
     def __init__(
         self,
-        coeffs: Sequence | np.ndarray,
-        epochs: Sequence | np.ndarray,
+        coeffs: npt.ArrayLike,
+        epochs: npt.ArrayLike,
         unit: SpharmUnit,
-        errors: Sequence | np.ndarray | None = None,
+        errors: npt.ArrayLike | None = None,
         info: dict | None = None,
     ) -> None:
         super().__init__(coeffs=coeffs, epochs=epochs, unit=unit, errors=errors, info=info)
@@ -62,12 +63,12 @@ class SpharmCoeff(Harmonic):
                 "DEG1": Deg1.from_technical_note_deg1,
             }
             if isinstance(replow, dict):
-                repcoef = lowdeg_dict[replow["rep"]](replow["file"])
+                repcoef = lowdeg_dict[replow["name"]](replow["file"])
                 sphcoef = repcoef.apply_to(self)
             else:
                 sphcoef = self
                 for i in range(len(replow)):
-                    repcoef = lowdeg_dict[replow[i]["rep"]](replow[i]["file"])
+                    repcoef = lowdeg_dict[replow[i]["name"]](replow[i]["file"])
                     sphcoef = repcoef.apply_to(sphcoef)  # type: ignore
         else:
             sphcoef = rpcoef.apply_to(self)

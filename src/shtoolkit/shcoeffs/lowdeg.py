@@ -1,7 +1,7 @@
 import copy
-from typing import Sequence
 
 import numpy as np
+import numpy.typing as npt
 
 from ..shread import read_technical_note_c20_c30, read_technical_note_deg1
 from ..shtype import SpharmUnit
@@ -17,7 +17,7 @@ cmina = constant["cmina"]
 a = constant["a"]
 
 
-def c20tolod(c20: Sequence | np.ndarray):
+def c20tolod(c20: npt.ArrayLike):
     c20 = np.array(c20)
     factor = -(1 + k2e + kan) / (20**0.5 * m_e * a**2) * (3 * moi_cm / 0.997) / (1 + 1.125 * (k2e + kan))
     # factor = -2/3*M_e*a**2/moi_Cm
@@ -25,7 +25,7 @@ def c20tolod(c20: Sequence | np.ndarray):
     return lod
 
 
-def lodtoc20(lod: Sequence | np.ndarray):
+def lodtoc20(lod: npt.ArrayLike):
     lod = np.array(lod)
     factor = -(1 + k2e + kan) / (20**0.5 * m_e * a**2) * (3 * moi_cm / 0.997) / (1 + 1.125 * (k2e + kan))
     # factor = -2/3*M_e*a**2/moi_Cm
@@ -33,14 +33,14 @@ def lodtoc20(lod: Sequence | np.ndarray):
     return c20
 
 
-def cs21topm(cs21: Sequence | np.ndarray):
+def cs21topm(cs21: npt.ArrayLike):
     cs21 = np.array(cs21)
     factor = -(1 + k2e) * (3 / 5) ** 0.5 * cmina / (1.098 * m_e * a**2)
     pm = cs21 / factor * 206265 * 1000
     return pm
 
 
-def pmtocs21(pm: Sequence | np.ndarray):
+def pmtocs21(pm: npt.ArrayLike):
     pm = np.array(pm)
     factor = -(1 + k2e) * (3 / 5) ** 0.5 * cmina / (1.098 * m_e * a**2)
     cs21 = pm * factor / 206265 / 1000
@@ -50,10 +50,10 @@ def pmtocs21(pm: Sequence | np.ndarray):
 class Deg1(ReplaceableCoeff):
     def __init__(
         self,
-        coeffs: Sequence | np.ndarray,
-        epochs: Sequence | np.ndarray,
+        coeffs: npt.ArrayLike,
+        epochs: npt.ArrayLike,
         unit: SpharmUnit,
-        errors: Sequence | np.ndarray | None = None,
+        errors: npt.ArrayLike | None = None,
         info: dict | None = None,
     ) -> None:
         if unit != "stokes":
@@ -71,10 +71,10 @@ class Deg1(ReplaceableCoeff):
 class C20(ReplaceableCoeff):
     def __init__(
         self,
-        coeffs: Sequence | np.ndarray,
-        epochs: Sequence | np.ndarray,
+        coeffs: npt.ArrayLike,
+        epochs: npt.ArrayLike,
         unit: SpharmUnit,
-        errors: Sequence | np.ndarray | None = None,
+        errors: npt.ArrayLike | None = None,
         info: dict | None = None,
     ) -> None:
         if unit != "stokes":
@@ -88,7 +88,7 @@ class C20(ReplaceableCoeff):
         return cls(c20, epochs, "stokes", c20_sigma, info)
 
     @classmethod
-    def from_lod(cls, epochs: Sequence | np.ndarray, lod: Sequence | np.ndarray):
+    def from_lod(cls, epochs: npt.ArrayLike, lod: npt.ArrayLike):
         coeff = lodtoc20(lod)
         return cls(coeff, epochs, "stokes")
 
@@ -108,10 +108,10 @@ class C20(ReplaceableCoeff):
 class C30(ReplaceableCoeff):
     def __init__(
         self,
-        coeffs: Sequence | np.ndarray,
-        epochs: Sequence | np.ndarray,
+        coeffs: npt.ArrayLike,
+        epochs: npt.ArrayLike,
         unit: SpharmUnit,
-        errors: Sequence | np.ndarray | None = None,
+        errors: npt.ArrayLike | None = None,
         info: dict | None = None,
     ) -> None:
         if unit != "stokes":
@@ -128,10 +128,10 @@ class C30(ReplaceableCoeff):
 class C21(ReplaceableCoeff):
     def __init__(
         self,
-        coeffs: Sequence | np.ndarray,
-        epochs: Sequence | np.ndarray,
+        coeffs: npt.ArrayLike,
+        epochs: npt.ArrayLike,
         unit: SpharmUnit,
-        errors: Sequence | np.ndarray | None = None,
+        errors: npt.ArrayLike | None = None,
         info: dict | None = None,
     ) -> None:
         if unit != "stokes":
@@ -139,7 +139,7 @@ class C21(ReplaceableCoeff):
         super().__init__(indice=(0, 2, 1), coeffs=coeffs, epochs=epochs, unit=unit, errors=errors, info=info)
 
     @classmethod
-    def from_excitation(cls, epochs: Sequence | np.ndarray, excitation: Sequence | np.ndarray):
+    def from_excitation(cls, epochs: npt.ArrayLike, excitation: npt.ArrayLike):
         coeff = pmtocs21(excitation)
         return cls(coeff, epochs, "stokes")
 
@@ -151,10 +151,10 @@ class C21(ReplaceableCoeff):
 class S21(ReplaceableCoeff):
     def __init__(
         self,
-        coeffs: Sequence | np.ndarray,
-        epochs: Sequence | np.ndarray,
+        coeffs: npt.ArrayLike,
+        epochs: npt.ArrayLike,
         unit: SpharmUnit,
-        errors: Sequence | np.ndarray | None = None,
+        errors: npt.ArrayLike | None = None,
         info: dict | None = None,
     ) -> None:
         if unit != "stokes":
@@ -162,7 +162,7 @@ class S21(ReplaceableCoeff):
         super().__init__(indice=(1, 2, 1), coeffs=coeffs, epochs=epochs, unit=unit, errors=errors, info=info)
 
     @classmethod
-    def from_excitation(cls, epochs: Sequence | np.ndarray, excitation: Sequence | np.ndarray):
+    def from_excitation(cls, epochs: npt.ArrayLike, excitation: npt.ArrayLike):
         coeff = pmtocs21(excitation)
         return cls(coeff, epochs, "stokes")
 
