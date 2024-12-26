@@ -1,7 +1,7 @@
 import copy
-from typing import Sequence
 
 import numpy as np
+import numpy.typing as npt
 
 from ..shtype import SpharmUnit
 
@@ -9,10 +9,10 @@ from ..shtype import SpharmUnit
 class Harmonic:
     def __init__(
         self,
-        coeffs: Sequence | np.ndarray,
-        epochs: Sequence | np.ndarray,
+        coeffs: npt.ArrayLike,
+        epochs: npt.ArrayLike,
         unit: SpharmUnit,
-        errors: Sequence | np.ndarray | None = None,
+        errors: npt.ArrayLike | None = None,
         info: dict | None = None,
     ) -> None:
         """
