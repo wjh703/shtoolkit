@@ -31,3 +31,6 @@ test/test_fpa.py
 test/fpa_10_08.py
 test/improved_rec_new.py
 test/improved_rec_new_new.py
+test/compare_with_ldc_first_paper.py
+test/test_graceobp_diff_slr.py
+src/shtoolkit/shtrans/test.py
