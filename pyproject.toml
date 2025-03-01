@@ -22,18 +22,6 @@ requires-python = ">=3.11"
 cartopy = ["cartopy"]
 pyshtools = ["pyshtools"]
 
-[tool.setuptools]
-packages = [
-    "shtoolkit", 
-    "shtoolkit.shcoeffs", 
-    "shtoolkit.shread", 
-    "shtoolkit.shtrans", 
-    "shtoolkit.shtime",
-    "shtoolkit.shspecial",
-]
-package-dir = {"" = "src"}
-package-data = {"shtoolkit.shtrans" = ["*.pyx", "*.pxd"]}
-
 [tool.mypy]
 ignore_missing_imports = true
 

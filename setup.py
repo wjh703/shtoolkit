@@ -1,32 +1,36 @@
 import numpy as np
 from Cython.Build import cythonize
-from setuptools import Extension, setup
+from setuptools import Extension, find_namespace_packages, setup
 from setuptools.command.build_ext import build_ext
-
-extra_link_args_mingw32 = [
-    "-static-libgcc",
-    "-static-libstdc++",
-    "-Wl,-Bstatic,--whole-archive",
-    "-lwinpthread",
-    "-Wl,--no-whole-archive",
-]
 
 
 class BuildExtConfig(build_ext):
     def build_extensions(self):
         if self.compiler.compiler_type == "mingw32":
-            for e in self.extensions:
-                e.extra_compile_args = ["-O3"]
-                e.extra_link_args = extra_link_args_mingw32
+            for ext in self.extensions:
+                ext.extra_compile_args = ["-O3"]
+                ext.extra_link_args = [
+                    "-static-libgcc",
+                    "-static-libstdc++",
+                    "-Wl,-Bstatic,--whole-archive",
+                    "-lwinpthread",
+                    "-Wl,--no-whole-archive",
+                ]
         super(BuildExtConfig, self).build_extensions()
 
 
-extensions = [
-    Extension(
-        "shtoolkit.shtrans.*",
-        ["src/shtoolkit/shtrans/*.pyx"],
-        include_dirs=[np.get_include()],
-        define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
-    )
-]
-setup(ext_modules=cythonize(extensions, language_level=3), cmdclass={"build_ext": BuildExtConfig})
+setup(
+    packages=find_namespace_packages("src"),
+    package_dir={"": "src"},
+    package_data={"shtoolkit.shtrans": ["*.pyx", "*.pxd"]},
+    ext_modules=cythonize(
+        Extension(
+            "shtoolkit.shtrans.*",
+            ["src/shtoolkit/shtrans/*.pyx"],
+            include_dirs=[np.get_include()],
+            define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
+        ),
+        language_level=3,
+    ),
+    cmdclass={"build_ext": BuildExtConfig},
+)
