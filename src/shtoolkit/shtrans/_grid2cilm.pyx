@@ -36,7 +36,7 @@ def __grid2cilm_fft(
     cdef: 
         int nlat = grid.shape[0]
         int nlon = grid.shape[1]
-        int resol = nlat / 2 - 1
+        int resol = nlat // 2 - 1
         double c, s
         Py_ssize_t k, l, m
         tuple rad_colat = tuple(np.linspace(0, pi, nlat, endpoint=False))

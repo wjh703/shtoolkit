@@ -14,7 +14,7 @@ dependencies = [
     "numba",
     "tqdm",
     "pyfftw",
-    "pywt",
+    "PyWavelets",
 ]
 requires-python = ">=3.11"
 
@@ -26,9 +26,10 @@ pyshtools = ["pyshtools"]
 packages = [
     "shtoolkit", 
     "shtoolkit.shcoeffs", 
-    "shcoeffs.shread", 
+    "shtoolkit.shread", 
     "shtoolkit.shtrans", 
     "shtoolkit.shtime",
+    "shtoolkit.shspecial",
 ]
 package-dir = {"" = "src"}
 package-data = {"shtoolkit.shtrans" = ["*.pyx", "*.pxd"]}

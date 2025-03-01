@@ -47,9 +47,9 @@ lln = read_load_love_num(lln_file, lmax)
 
 gsm = SpharmCoeff.from_files(gsm_folder, lmax)
 
-rep_c20 = dict(rep="C20", file=slr_file2)
-rep_c30 = dict(rep="C30", file=slr_file2)
-rep_deg1 = dict(rep="DEG1", file=deg1_file)
+rep_c20 = dict(name="C20", file=slr_file2)
+rep_c30 = dict(name="C30", file=slr_file2)
+rep_deg1 = dict(name="DEG1", file=deg1_file)
 b = gsm.replace([rep_c20, rep_c30]).corr_gia("ICE6G-D", gia_file1).remove_mean_field()  # type: ignore
 c = gsm.replace(rep_deg1)  # type: ignore
 c.coeffs -= c.coeffs[:100].mean(axis=0)

@@ -2,6 +2,7 @@ import pathlib
 from urllib.error import URLError
 from urllib.request import urlretrieve
 
+
 TN11E_URL = "https://filedrop.csr.utexas.edu/pub/slr/TN11E/TN11E.txt"
 TN14_URL = (
     "https://archive.podaac.earthdata.nasa.gov/podaac-ops-cumulus-docs/gracefo/open/docs/TN-14_C30_C20_GSFC_SLR.txt"
@@ -38,3 +39,6 @@ def download_technical_notes():
 
 if __name__ == "__main__":
     download_technical_notes()
+    # import certifi
+    # r = requests.get(ICE6G_D_URL, verify=certifi.where())
+    # print(r.status_code)

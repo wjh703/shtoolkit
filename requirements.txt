@@ -1,5 +1,0 @@
-cartopy
-cython
-numpy
-pandas
-pyshtools

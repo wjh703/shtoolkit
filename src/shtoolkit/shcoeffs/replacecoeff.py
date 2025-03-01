@@ -32,7 +32,7 @@ class ReplaceableCoeff(Harmonic):
             if self.indice == (0, 3, 0) and t < 2018:
                 continue
             residual = np.abs(self.epochs - t)
-            if np.nanmin(residual) > 0.05:
+            if np.nanmin(residual) > 0.058:
                 msg = f"The epoch '{t:.4f}' cannot be found in the replaced epoch array."
                 raise ValueError(msg)
             rp_idx = np.nanargmin(residual)

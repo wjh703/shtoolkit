@@ -16,7 +16,7 @@ class Harmonic:
         info: dict | None = None,
     ) -> None:
         """
-        A base class working with time-varying spherical harmonic coefficients.
+        Base class for time-varying spherical harmonic coefficients.
         """
         coeffs_ndarray = np.array(coeffs)
         epochs_ndarray = np.array(epochs)
@@ -58,7 +58,7 @@ class Harmonic:
         boolean = np.zeros_like(current_epochs, dtype=bool)
         for t in resample_epochs:
             residual = np.abs(current_epochs - t)
-            if residual.min() > 0.0573:
+            if residual.min() > 0.059:
                 e = current_epochs[residual.argmin()]
                 msg = f"Cannot resample to '{t}' in current_epochs, the cloest is '{e}'"
                 raise ValueError(msg)
