@@ -2,7 +2,6 @@ import pathlib
 from urllib.error import URLError
 from urllib.request import urlretrieve
 
-
 TN11E_URL = "https://filedrop.csr.utexas.edu/pub/slr/TN11E/TN11E.txt"
 TN14_URL = (
     "https://archive.podaac.earthdata.nasa.gov/podaac-ops-cumulus-docs/gracefo/open/docs/TN-14_C30_C20_GSFC_SLR.txt"

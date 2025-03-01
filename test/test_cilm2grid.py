@@ -6,8 +6,8 @@ import numpy as np
 from shtoolkit.shtrans import fnALFs, cilm2grid, grid2cilm
 
 if __name__ == "__main__":
-    lmax = 89
-    resol = 89
+    lmax = 179
+    resol = 179
     rad_colat = np.linspace(0, np.pi, 2 * (resol + 1), endpoint=False)
     pilm = fnALFs(rad_colat, lmax)
     grd = np.random.random((2 * (resol + 1), 4 * (resol + 1)))
@@ -21,12 +21,12 @@ if __name__ == "__main__":
     # breakpoint()
     # breakpoint()
     # print(np.allclose(grd, a))
-    print(np.allclose(grd, b))
+    print(np.allclose(c, b))
     print(np.allclose(grd, c))
     # callable_object1 = lambda: MakeGridDH(cilm, sampling=2, lmax=resol, lmax_calc=lmax, extend=False)
     callable_object2 = lambda: cilm2grid(cilm, resol, lmax)
-    callable_object3 = lambda: cilm2grid(cilm, resol, lmax, mode="integral")
+    callable_object3 = lambda: cilm2grid(cilm, resol, lmax, mode="pocketfft")
     print(f"lmax:{lmax}, resol:{resol}")
     # print(timeit.timeit(callable_object1, number=100))
-    print(timeit.timeit(callable_object2, number=1000))
-    print(timeit.timeit(callable_object3, number=1000))
+    print(timeit.timeit(callable_object2, number=100))
+    print(timeit.timeit(callable_object3, number=100))
