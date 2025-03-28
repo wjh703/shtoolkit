@@ -44,11 +44,9 @@ def helmert(A1: np.ndarray, P1: np.ndarray, L1: np.ndarray, A2: np.ndarray, P2: 
 
 def vce(A1: np.ndarray, P1: np.ndarray, L1: np.ndarray, A2: np.ndarray, P2: np.ndarray, L2: np.ndarray):
     n1, n2 = len(L1), len(L2)
+    
+    var1, var2 = 1, 1
 
-    # rms1 = np.sqrt((L1**2).sum())
-    # rms2 = np.sqrt((L2**2).sum())
-    # var1, var2 = rms1 / rms1, rms1 / rms2
-    var1, var2 = 10, 1
     while True:
         N1 = (A1.T * P1 @ A1) / var1
         W1 = (A1.T * P1 @ L1) / var1
@@ -73,12 +71,12 @@ def vce(A1: np.ndarray, P1: np.ndarray, L1: np.ndarray, A2: np.ndarray, P2: np.n
 
         var = np.array([var1, var2])
         var_new = np.array([var1_new, var2_new])
-        # if any(var_new < 0):
-        #     breakpoint()
+
         if np.allclose(var, var_new, rtol=0.05):
             break
         else:
             var1, var2 = var1_new, var2_new
+    
     return x, var
 
 

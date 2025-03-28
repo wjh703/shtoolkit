@@ -8,7 +8,7 @@ class BuildExtConfig(build_ext):
     def build_extensions(self):
         if self.compiler.compiler_type == "mingw32":
             for ext in self.extensions:
-                ext.extra_compile_args = ["-O3"]
+                ext.extra_compile_args = ["-O3", "-march=native"]
                 ext.extra_link_args = [
                     "-static-libgcc",
                     "-static-libstdc++",
