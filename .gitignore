@@ -6,6 +6,9 @@ build/
 dist/
 .ruff_cache/
 data/
+.vscode/
+cstudy/
+test/test.py
 
 src/shtoolkit/shcoeffs/__pycache__/
 src/shtoolkit/shtrans1/
