@@ -7,7 +7,7 @@ dist/
 .ruff_cache/
 data/
 .vscode/
-csstudy/
+cstudy/
 test/test.py
 
 src/shtoolkit/shcoeffs/__pycache__/
