@@ -4,6 +4,7 @@ import numpy as np
 import scipy as sp
 
 from shtoolkit.shtrans.transform import _alloc_fftw_c2r, _alloc_fftw_r2c
+
 if __name__ == "__main__":
     shape = (360, 720)
     grd = np.random.random(shape)
@@ -18,10 +19,10 @@ if __name__ == "__main__":
     aa = np.fft.irfft(a1)
     bb = sp.fft.irfft(b1)
 
-    if 'rfft_object' not in globals().keys():
+    if "rfft_object" not in globals().keys():
         global rfft_object
         rfft_object = _alloc_fftw_r2c(shape, (shape[0], shape[1] // 2 + 1))
-    if 'irfft_object' not in globals().keys():
+    if "irfft_object" not in globals().keys():
         global irfft_object
         irfft_object = _alloc_fftw_c2r((shape[0], shape[1] // 2 + 1), shape)
 
@@ -43,4 +44,3 @@ if __name__ == "__main__":
     print(timeit.timeit(callable4, number=1000))
     print(timeit.timeit(callable5, number=1000))
     print(timeit.timeit(callable6, number=1000))
-

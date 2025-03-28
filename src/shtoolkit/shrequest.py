@@ -38,3 +38,6 @@ def download_technical_notes():
 
 if __name__ == "__main__":
     download_technical_notes()
+    # import certifi
+    # r = requests.get(ICE6G_D_URL, verify=certifi.where())
+    # print(r.status_code)

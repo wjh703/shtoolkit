@@ -1,5 +1,5 @@
 from .ssa_fill import ssa_gap_filling
-from .tsanalysis import cosine_fitting, lstsq_map, sine_fitting
+from .tsanalysis import calc_residual, cosine_fitting, lstsq_map, sine_fitting
 from .tsgenerator import (
     date_to_decimal_year,
     generate_time_series,
@@ -8,7 +8,9 @@ from .tsgenerator import (
     time_uniform,
     year_month_to_decimal_year,
 )
-from .variance_component_estimate import helmert, vce
+from .uncertainty import btch, btch_map, gtch, gtch_map
+from .variance_component_estimate import helmert, vce, vce3
+from .wavelet_decompose import wl_decompose
 
 # from . import lstsq_seasonal_trend
 
@@ -24,5 +26,12 @@ __all__ = [
     "generate_time_series",
     "helmert",
     "vce",
+    "vce3",
     "lstsq_map",
+    "wl_decompose",
+    "calc_residual",
+    "btch",
+    "gtch",
+    "btch_map",
+    "gtch_map",
 ]

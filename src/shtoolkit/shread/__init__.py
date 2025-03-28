@@ -1,3 +1,4 @@
+from .read_eam import read_eam
 from .read_gia import read_gia_model
 from .read_icgem import read_icgem, read_non_icgem
 from .read_lln import read_load_love_num
@@ -12,4 +13,5 @@ __all__ = [
     "read_technical_note_c20_c30",
     "read_slr_5x5",
     "read_load_love_num",
+    "read_eam",
 ]
