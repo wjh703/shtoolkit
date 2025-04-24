@@ -8,7 +8,7 @@ from ..shtype import SHSmoothKind
 from .sea_level_equation import uniform
 
 
-def foward_modeling(
+def forward_modeling(
     load_data: np.ndarray,
     loadmask: np.ndarray,
     oceanmask: np.ndarray,
@@ -23,7 +23,7 @@ def foward_modeling(
     resol = load_data.shape[0] // 2 - 1
     if lmax is None:
         lmax = resol
-    smooth_coef_func = {"gs": gauss_smooth, "fs": fan_smooth}
+    smooth_coef_func = {"gauss": gauss_smooth, "fan": fan_smooth}
     coeffg = smooth_coef_func[smooth](lmax, radius)
     # 将真值进行一次截断和滤波作为循环初
     obs = load_data

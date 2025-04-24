@@ -9,7 +9,7 @@ from .tsgenerator import (
     year_month_to_decimal_year,
 )
 from .uncertainty import btch, btch_map, gtch, gtch_map
-from .variance_component_estimate import helmert, vce, vce3
+from .variance_component_estimate import LS_VCE, helmert, rvce, rvce_improve, vce, vce3
 from .wavelet_decompose import wl_decompose
 
 # from . import lstsq_seasonal_trend
@@ -32,6 +32,9 @@ __all__ = [
     "calc_residual",
     "btch",
     "gtch",
-    "btch_map",
     "gtch_map",
+    "btch_map",
+    "rvce",
+    "rvce_improve",
+    "LS_VCE",
 ]

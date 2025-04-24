@@ -338,7 +338,7 @@ def cosine_fitting(
     )
 
 
-@jit(nopython=True, cache=True)
+# @jit(nopython=True, cache=True)
 def calc_residual(dtime: np.ndarray, data: np.ndarray, reference_time: float = 2002.0014):
     """fitting a1cos(2pit-phi) + a2cos(4pit-phi) + kt + b by the least square"""
     if dtime.size != data.size:
@@ -403,7 +403,11 @@ def calc_residual(dtime: np.ndarray, data: np.ndarray, reference_time: float = 2
 
     # 计算残差
     res = data - b @ x
-    return res
+
+    # 计算季节项
+    seasonal = b[:, 2:] @ x[2:]
+    non_seasonal = data - seasonal
+    return res, seasonal, non_seasonal
     # 计算单位权方差
     # uni_var = res.T @ res / (len(t) - 6)
     # # 观测值方差=单位权方差*协因数矩阵
