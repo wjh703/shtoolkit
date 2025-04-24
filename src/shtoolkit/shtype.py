@@ -11,7 +11,7 @@ class LoadLoveNumDict(TypedDict):
 
 
 class LeakCorrMethod(TypedDict):
-    method: Literal["buf", "buf_gs", "buf_fs", "FM_gs", "FM_fs"]
+    method: Literal["buf", "buf_gauss", "buf_fan", "FM_gauss", "FM_fan"]
     radius: int | None
 
 

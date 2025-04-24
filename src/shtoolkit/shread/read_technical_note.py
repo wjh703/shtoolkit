@@ -61,3 +61,38 @@ def read_technical_note_deg1(filepath: str | Path):
         epochs[i] = epoch
 
     return epochs, deg1, deg1_std
+
+
+def read_gsfc_c20_long_term(filepath: str | Path):
+    with open(filepath, "r") as f:
+        content = f.read()
+    "1976.4454 -4.8416978090E-04      -3.7222       0.5119 -4.8416965988E-04      -2.5120       0.3656"
+    """
+        Column  1: Year and fraction of year of solution mid-point
+        Column  2: TSVD C20
+        Column  3: TSVD C20 - mean C20 (1.0E-10)
+        Column  4: TSVD C20 Sigma (1.0E-10)
+        Column  5: TSVD MM C20
+        Column  6: TSVD MM TSVD C20 - mean C20 (1.0E-10)
+        Column  7: TSVD MM TSVD C20 Sigma (1.0E-10)
+        Column  8: AOD1B 28-day mean (1.0E-10)
+    """
+
+    regex = r"\s+".join([r"(-?\d+\.\d+(?:[eE][+-]?\d+)?)"] * 8)
+
+    regex = (
+        r"(\d+\.\d+)\s+(\-?\d+\.\d+E\-\d+)\s+(\-?\d+\.\d+)\s+(\-?\d+\.\d+)\s+"
+        r"(\-?\d+\.\d+E\-\d+)\s+(\-?\d+\.\d+)\s+(\-?\d+\.\d+)\s+(\-?\d+\.\d+)"
+    )
+
+    epochs, c20_tsvd, c20_tsvd_delta, c20_tsvd_sigma, c20_mm, c20_mm_delta, c20_mm_sigma, aod1b = map(
+        lambda x: np.array(x, dtype=float), zip(*re.findall(regex, content), strict=True)
+    )
+
+    c20_tsvd_delta *= 1e-10
+    c20_tsvd_sigma *= 1e-10
+    c20_mm_delta *= 1e-10
+    c20_mm_sigma *= 1e-10
+    aod1b *= 1e-10
+
+    return epochs, c20_tsvd, c20_tsvd_delta, c20_tsvd_sigma, c20_mm, c20_mm_delta, c20_mm_sigma, aod1b

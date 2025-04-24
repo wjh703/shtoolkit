@@ -116,6 +116,11 @@ class SpharmCoeff(Harmonic):
         sphcoef_new = self.copy(coeffs=coeffs)
         return sphcoef_new
 
+    def remove_field(self, field: npt.ArrayLike):
+        coeffs = self.coeffs - field[:, : self.lmax + 1, : self.lmax + 1]  # type: ignore
+        sphcoef_new = self.copy(coeffs=coeffs)
+        return sphcoef_new
+
     def smooth(self, kind: SHSmoothKind = "gauss", radius: int = 300):
         if kind == "gauss":
             weight = gauss_smooth(self.lmax, radius)
