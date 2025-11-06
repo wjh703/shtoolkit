@@ -74,7 +74,7 @@ def _read_file(filepath: Path, lmax: int | None):
                 ecilm = np.zeros((2, lmax + 1, lmax + 1))
                 for line in f:
                     ls = line.lower().strip().lower().replace("d", "e").split()
-                    if "gfc" not in ls:
+                    if "gfc" not in ls and 'grcof2' not in ls:
                         continue
                     l, m = int(ls[1]), int(ls[2])
                     if m > lmax:
@@ -92,7 +92,7 @@ def _read_file(filepath: Path, lmax: int | None):
 def _parse_epoch_from_filename(filename: str):
     """Parse the epoch from the filename of an icgem file"""
     centers_valid = (
-        r"UTCSR|GFZOP|JPLEM|COSTG|GRGS|AIUB|ITSG|HUST|Tongji|"
+        r"UTCSR|GFZOP|JPLEM|COSTG|GRGS|CNESG|AIUB|ITSG|HUST|Tongji|"
         r"IGG-SLR-HYBRID|IGG_SLRS|HLSST_SLR|Tongji-LEO|IGG-SLR-HYBRID"
     )
     center_match = re.findall(centers_valid, filename)
@@ -102,7 +102,7 @@ def _parse_epoch_from_filename(filename: str):
         msg = "Do not match any valid center in the icgem filename."
         raise ValueError(msg)
 
-    if center in ("UTCSR", "GFZOP", "JPLEM", "COSTG"):
+    if center in ("UTCSR", "GFZOP", "JPLEM", "COSTG", "GRGS", "CNESG"):
         epoch_pattern = r"_(\d{4})(\d{3})-(\d{4})(\d{3})_"
         epoch_match = re.search(epoch_pattern, filename)
         if epoch_match:

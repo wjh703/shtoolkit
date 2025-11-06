@@ -4,7 +4,7 @@ import numpy as np
 import numpy.typing as npt
 
 from ..shtype import SpharmUnit
-
+from ..shtrans import cilm2vector, vector2cilm
 
 class Harmonic:
     def __init__(
@@ -18,8 +18,8 @@ class Harmonic:
         """
         Base class for time-varying spherical harmonic coefficients.
         """
-        coeffs_ndarray = np.array(coeffs)
-        epochs_ndarray = np.array(epochs)
+        coeffs_ndarray = np.array(coeffs).squeeze()
+        epochs_ndarray = np.array(epochs).squeeze()
         if errors is not None:
             errors_ndarray = np.array(errors)
             if coeffs_ndarray.shape != errors_ndarray.shape:
@@ -32,12 +32,18 @@ class Harmonic:
         if coeffs_ndarray.ndim == 3:
             self.coeffs = coeffs_ndarray.copy()[np.newaxis]
             self.errors = errors_ndarray.copy()[np.newaxis] if errors is not None else None
+            self.coeffs_format = "cilm"
         elif coeffs_ndarray.ndim == 1:
-            self.coeffs = coeffs_ndarray.copy()[:, np.newaxis]
-            self.errors = errors_ndarray.copy()[:, np.newaxis] if errors is not None else None
-        elif coeffs_ndarray.ndim in [2, 4]:
             self.coeffs = coeffs_ndarray.copy()
             self.errors = errors_ndarray.copy() if errors is not None else None
+            self.coeffs_format = "single"
+        elif coeffs_ndarray.ndim in (2, 4):
+            self.coeffs = coeffs_ndarray.copy()
+            self.errors = errors_ndarray.copy() if errors is not None else None
+            if coeffs_ndarray.ndim == 2:
+                self.coeffs_format = "vector"
+            else:
+                self.coeffs_format = "cilm"
         else:
             msg = f"Invalid ndim of 'coeffs', (expected 1, 2, 3 or 4, got {coeffs_ndarray.ndim})"
             raise ValueError(msg)
@@ -53,6 +59,21 @@ class Harmonic:
         self.unit: SpharmUnit = unit
         self.info = info if info is not None else dict()
 
+    def format_convert(self, to_format: str):
+        if to_format == self.coeffs_format:
+            return self.copy()
+        if all(fm in ("vector", "cilm") for fm in (self.coeffs_format, to_format)):
+            if to_format == "vector":
+                coeffs = np.array([cilm2vector(c) for c in self.coeffs])
+                errors = np.array([cilm2vector(e) for e in self.errors]) if self.errors is not None else None
+            else:
+                coeffs = np.array([vector2cilm(c) for c in self.coeffs])
+                errors = np.array([vector2cilm(e) for e in self.errors]) if self.errors is not None else None
+            return self.copy(coeffs=coeffs, errors=errors)
+        else:
+            msg = f"Invalid format conversion from '{self.coeffs_format}' to '{to_format}'"
+            raise ValueError(msg)
+        
     def resample(self, resample_epochs):
         current_epochs = self.epochs.copy()
         boolean = np.zeros_like(current_epochs, dtype=bool)

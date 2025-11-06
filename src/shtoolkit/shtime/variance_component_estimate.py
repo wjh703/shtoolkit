@@ -114,12 +114,14 @@ def vce3(
     L3: np.ndarray,
 ):
     n1, n2, n3 = len(L1), len(L2), len(L1)
-
+    epsilon = 0.001
+    chi1 = chi2 = chi3 = 3 * epsilon
+    chi = np.array([chi1, chi2, chi3])
     # rms1 = np.sqrt((L1**2).sum())
     # rms2 = np.sqrt((L2**2).sum())
     # var1, var2 = rms1 / rms1, rms1 / rms2
     var1, var2, var3 = 1, 1, 1
-    while True:
+    while (chi > epsilon).any():
         N1 = (A1.T * P1 @ A1) / var1
         W1 = (A1.T * P1 @ L1) / var1
 
@@ -148,17 +150,23 @@ def vce3(
         var2_new = (v2.T * P2 @ v2) / (n2 - r2)
         var3_new = (v3.T * P3 @ v3) / (n3 - r3)
 
+        chi1 = np.abs((var1_new - var1) / var1)
+        chi2 = np.abs((var2_new - var2) / var2)
+        chi3 = np.abs((var3_new - var3) / var3)
+        chi = np.array([chi1, chi2, chi3])
         var = np.array([var1, var2, var3])
         var_new = np.array([var1_new, var2_new, var3_new])
-        norm = np.linalg.norm(var - var_new)
-        if norm < 1e-5:
-            break
-        # # if any(var_new < 0):
-        # #     breakpoint()
-        # if np.allclose(var, var_new, rtol=0.01):
+        var1, var2, var3 = var1_new, var2_new, var3_new
+
+        # norm = np.linalg.norm(var - var_new)
+        # if norm < 1e-5:
         #     break
-        else:
-            var1, var2, var3 = var1_new, var2_new, var3_new
+        # # # if any(var_new < 0):
+        # # #     breakpoint()
+        # # if np.allclose(var, var_new, rtol=0.01):
+        # #     break
+        # else:
+        #     var1, var2, var3 = var1_new, var2_new, var3_new
     return x, var
 
 
@@ -311,7 +319,7 @@ DTYPE = np.float64  # if you want to accelerate, you can use np.float32, but it 
 
 
 def rvce_improve(
-    d: NDArray[DTYPE], reg: Literal["mytd", "mydd", "mysd"] = "mytd", epsilon: float = 0.001
+    d: NDArray[DTYPE], reg: Literal["mytd", "mydd", "mysd"] = "mytd", epsilon: float = 0.001, max_iters: int = 10
 ) -> tuple[NDArray[DTYPE], NDArray[DTYPE]]:
     if reg not in ["mytd", "mydd", "mysd"]:
         raise ValueError(f"Invalid regularization option: {reg}")
@@ -360,7 +368,7 @@ def rvce_improve(
     # calculate variance components for each dataset and pseudo-observations iteratively
     # meanwhile generate regularized solution x
     variance_components = np.ones(k + 1, dtype=DTYPE)
-    for _ in range(15):
+    for _ in range(max_iters):
         N = np.zeros((n, n))
         W = np.zeros(n)
         for i in range(k + 1):
@@ -368,6 +376,7 @@ def rvce_improve(
             if i < k:
                 nonzero_mask = d[:, i].nonzero()[0]
                 W += A_matrices[i].T @ d[nonzero_mask, i] / variance_components[i]
+        
         invN = np.linalg.inv(N)
         x = invN @ W
 

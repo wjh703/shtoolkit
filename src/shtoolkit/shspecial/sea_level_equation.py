@@ -66,11 +66,13 @@ def non_uniform(
         chi = np.abs((np.square(S_cilm_new).sum() - np.square(S_cilm).sum()) / np.square(S_cilm).sum())
         S_cilm = S_cilm_new.copy()
         k += 1
+        # breakpoint()
 
     sea_level_fingerprint = cilm2grid(S_cilm, resol, lmax) * oceanmask
     geo_conserve = cilm2grid(T_geo_cilm, resol, lmax)
     upl_conserve = cilm2grid(T_upl_cilm, resol, lmax)
-    load_conserve = cilm2grid(unitconvert(S_cilm, "mewh", unit, lln), resol, lmax) + load_data
+    # load_conserve = cilm2grid(unitconvert(S_cilm, "mewh", unit, lln), resol, lmax) + load_data
+    load_conserve = cilm2grid(unitconvert(T_cilm_h, "mewh", unit, lln), resol, lmax)
     return sea_level_fingerprint, geo_conserve, upl_conserve, load_conserve
 
 

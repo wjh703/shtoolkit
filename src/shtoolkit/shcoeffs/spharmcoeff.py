@@ -33,7 +33,7 @@ class SpharmCoeff(Harmonic):
         lmax: int,
         is_icgem: bool = True,
     ):
-        files = [file for file in Path(folder).iterdir()]
+        files = [file for file in Path(folder).iterdir() if 'TSVD' not in file.name]
 
         if is_icgem:
             data = [read_icgem(file, lmax) for file in files]
@@ -146,6 +146,7 @@ class SpharmCoeff(Harmonic):
     def copy(self, **kwargs):
         copy_dict = copy.deepcopy(self.__dict__)
         copy_dict.pop("lmax")
+        copy_dict.pop("coeffs_format")
         if kwargs:
             for k, val in kwargs.items():
                 copy_dict[k] = val
