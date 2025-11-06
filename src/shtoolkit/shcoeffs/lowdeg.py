@@ -30,19 +30,22 @@ def lodtoc20(lod: npt.ArrayLike):
     factor = -(1 + k2e + kan) / (20**0.5 * m_e * a**2) * (3 * moi_cm / 0.997) / (1 + 1.125 * (k2e + kan))
     # factor = -2/3*M_e*a**2/moi_Cm
     c20 = lod * factor / 86400 / 1000
+    print(f'{factor:.4f}')
     return c20
 
 
 def cs21topm(cs21: npt.ArrayLike):
     cs21 = np.array(cs21)
-    factor = -(1 + k2e) * (3 / 5) ** 0.5 * cmina / (1.098 * m_e * a**2)
+    # factor = -(1 + k2e) * (3 / 5) ** 0.5 * cmina / (1.098 * m_e * a**2)
+    factor = - (3 / 5) ** 0.5 * cmina / (1.608 * m_e * a**2)
     pm = cs21 / factor * 206265 * 1000
     return pm
 
 
 def pmtocs21(pm: npt.ArrayLike):
     pm = np.array(pm)
-    factor = -(1 + k2e) * (3 / 5) ** 0.5 * cmina / (1.098 * m_e * a**2)
+    # factor = -(1 + k2e) * (3 / 5) ** 0.5 * cmina / (1.098 * m_e * a**2)
+    factor = - (3 / 5) ** 0.5 * cmina / (1.608 * m_e * a**2)
     cs21 = pm * factor / 206265 / 1000
     return cs21
 
@@ -96,13 +99,14 @@ class C20(ReplaceableCoeff):
         lod = c20tolod(self.coeffs)
         return lod
 
-    def copy(self, **kwargs):
-        copy_dict = copy.deepcopy(self.__dict__)
-        copy_dict.pop("indice")
-        if kwargs:
-            for k, val in kwargs.items():
-                copy_dict[k] = val
-        return C20(**copy_dict)
+    # def copy(self, **kwargs):
+    #     copy_dict = copy.deepcopy(self.__dict__)
+    #     copy_dict.pop("indice")
+    #     breakpoint()
+    #     if kwargs:
+    #         for k, val in kwargs.items():
+    #             copy_dict[k] = val
+    #     return C20(**copy_dict)
 
 
 class C30(ReplaceableCoeff):

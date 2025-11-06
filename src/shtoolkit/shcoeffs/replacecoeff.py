@@ -58,7 +58,7 @@ class ReplaceableCoeff(Harmonic):
             raise ValueError(msg)
 
         gia_trend = read_gia_model(filepath, 2, modelname)[*self.indice]
-        gia_coeffs = np.array([epoch * gia_trend for epoch in self.epochs])[:, np.newaxis]
+        gia_coeffs = np.array([epoch * gia_trend for epoch in self.epochs])
         gia_coeffs -= gia_coeffs.mean(axis=0)
 
         if mode == "subtract":
@@ -72,8 +72,8 @@ class ReplaceableCoeff(Harmonic):
         # m1_gia = 5.5e-2 + 1.677e-3 * (self.dtime - reference_time)
         # m2_gia = -0.3205 - 3.46e-3 * (self.dtime - reference_time)
 
-        m1_gia = 1.677e-3 * (self.epochs - reference_time)[:, np.newaxis]
-        m2_gia = -3.46e-3 * (self.epochs - reference_time)[:, np.newaxis]
+        m1_gia = 1.677e-3 * (self.epochs - reference_time)
+        m2_gia = -3.46e-3 * (self.epochs - reference_time)
 
         if self.indice == (0, 2, 1):
             gia_pole_tide = -1.551e-9 * m1_gia - 0.012e-9 * m2_gia
@@ -101,6 +101,7 @@ class ReplaceableCoeff(Harmonic):
         if issubclass(self.__class__, ReplaceableCoeff):
             # if self.__class__ in ReplaceableCoeff.__subclasses__():
             copy_dict.pop("indice")
+            copy_dict.pop("coeffs_format")
         if kwargs:
             for k, val in kwargs.items():
                 copy_dict[k] = val

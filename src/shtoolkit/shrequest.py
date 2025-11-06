@@ -18,7 +18,7 @@ TN13_GFZ_URL = (
 ICE6G_D_URL = r"https://agupubs.onlinelibrary.wiley.com/action/downloadSupplement?doi=10.1002%2F2016JB013844&file=jgrb52450-sup-0003-Data_S3.txt"
 
 
-DOWNLOAD_LIST = [TN11E_URL, TN14_URL, TN13_CSR_URL, TN13_JPL_URL, TN13_GFZ_URL]
+DOWNLOAD_LIST = [TN14_URL, TN13_CSR_URL, TN13_JPL_URL, TN13_GFZ_URL]
 
 
 def download_technical_notes():
