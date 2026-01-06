@@ -25,7 +25,7 @@ def non_uniform(
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     k = 0
     k_max = 10
-    epsilon = 1e-5
+    epsilon = 1e-8
     chi = 3 * epsilon
 
     resol = load_data.shape[0] // 2 - 1
@@ -74,6 +74,145 @@ def non_uniform(
     # load_conserve = cilm2grid(unitconvert(S_cilm, "mewh", unit, lln), resol, lmax) + load_data
     load_conserve = cilm2grid(unitconvert(T_cilm_h, "mewh", unit, lln), resol, lmax)
     return sea_level_fingerprint, geo_conserve, upl_conserve, load_conserve
+
+
+def non_uniform_v2(
+    load_data: np.ndarray,
+    oceanmask: np.ndarray,
+    lln: LoadLoveNumDict,
+    lmax: int,
+    unit: SpharmUnit,
+    rot: bool = True,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    k = 0
+    k_max = 10
+    epsilon = 1e-8
+    chi = 3 * epsilon
+
+    resol = load_data.shape[0] // 2 - 1
+
+    load_cilm = grid2cilm(load_data, lmax)
+    load_cilm = unitconvert(load_cilm, unit, "mewh", lln)
+
+    oc_cilm = grid2cilm(oceanmask, lmax)
+
+    S_cilm = -load_cilm[0, 0, 0] / oc_cilm[0, 0, 0] * oc_cilm
+
+    ewh2mass_coef = 1000
+    # mass2geo_coef = mass2geo(lmax, lln)
+    # mass2upl_coef = mass2upl(lmax, lln)
+
+    k_el = lln["k_el"]
+    rho_w = SH_CONST["rho_w"]
+    rho_e = SH_CONST["rho_e"]
+    m2g = np.zeros((lmax + 1, lmax + 1))
+    factor = (1 + k_el[2]) / (SH_CONST["klf"] - SH_CONST["k2e_t"])
+    for i in range(lmax + 1):
+        j = np.arange(i + 1)
+        m2g[i, j] = 3.0 / rho_e * (1.0 + k_el[i]) / (2.0 * i + 1.0)
+        if i == 2 and rot:
+            m2g[i, 1] += 3.0 / rho_e * (1 + SH_CONST['k2e_t']) * factor / (2.0 * i + 1.0)
+    mass2geo_coef = np.array([m2g, m2g])
+
+    h_el = lln["h_el"]
+    m2u = np.zeros((lmax + 1, lmax + 1))
+    for i in range(lmax + 1):
+        j = np.arange(i + 1)
+        m2u[i, j] = 3.0 / rho_e * h_el[i] / (2.0 * i + 1.0)
+        if i == 2 and rot:
+            m2u[i, 1] += 3.0 / rho_e * SH_CONST['h2e_t'] * factor / (2.0 * i + 1.0)
+        
+    mass2upl_coef = np.array([m2u, m2u])
+
+
+
+    while chi >= epsilon and k < k_max:
+        T_cilm_h = load_cilm + S_cilm
+        T_cilm = T_cilm_h * ewh2mass_coef
+        T_geo_cilm = T_cilm * mass2geo_coef
+        T_upl_cilm = T_cilm * mass2upl_coef
+
+
+        T_rsl_cilm = T_geo_cilm - T_upl_cilm
+        T_rsl = cilm2grid(T_rsl_cilm, resol, lmax)
+
+        RO = T_rsl * oceanmask
+        RO_cilm = grid2cilm(RO, lmax)
+
+        delPhi_g = -(load_cilm[0, 0, 0] + RO_cilm[0, 0, 0]) / oc_cilm[0, 0, 0]
+
+        S_cilm_new = RO_cilm + delPhi_g * oc_cilm
+        chi = np.abs((np.square(S_cilm_new).sum() - np.square(S_cilm).sum()) / np.square(S_cilm).sum())
+        S_cilm = S_cilm_new.copy()
+        k += 1
+
+    sea_level_fingerprint_v2 = cilm2grid(S_cilm, resol, lmax) * oceanmask
+    geo_conserve_v2 = cilm2grid(T_geo_cilm, resol, lmax)
+    upl_conserve_v2 = cilm2grid(T_upl_cilm, resol, lmax)
+    load_conserve_v2 = cilm2grid(unitconvert(T_cilm_h, "mewh", unit, lln), resol, lmax)
+    return sea_level_fingerprint_v2, geo_conserve_v2, upl_conserve_v2, load_conserve_v2
+
+def non_uniform_ice(
+    load_data: np.ndarray,
+    oceanmask: np.ndarray,
+    lln: LoadLoveNumDict,
+    lmax: int,
+    unit: SpharmUnit,
+    rot: bool = True,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    k = 0
+    k_max = 10
+    epsilon = 1e-5
+    chi = 3 * epsilon
+
+    ewh2mass_coef1 = 1025
+    ewh2mass_coef2 = 917
+
+    resol = load_data.shape[0] // 2 - 1
+
+    load_cilm = grid2cilm(load_data, lmax)
+    # load_cilm /= ewh2mass_coef2
+    
+
+    oc_cilm = grid2cilm(oceanmask, lmax)
+
+    S_cilm = -load_cilm[0, 0, 0] / oc_cilm[0, 0, 0] * oc_cilm
+
+    mass2geo_coef = mass2geo(lmax, lln)
+    mass2upl_coef = mass2upl(lmax, lln)
+
+    while chi >= epsilon and k < k_max:
+        T_cilm = load_cilm + S_cilm
+        T_geo_cilm = T_cilm * mass2geo_coef
+        T_upl_cilm = T_cilm * mass2upl_coef
+        # T_geo_cilm = unitconvert(T_cilm, 'kgm2mass', 'mgeo', lln)
+        # T_upl_cilm = unitconvert(T_cilm, 'kgm2mass', 'mupl', lln)
+
+        if rot:
+            rot_geo_cilm, rot_upl_cilm = _calc_rot(T_cilm)
+            T_geo_cilm += rot_geo_cilm
+            T_upl_cilm += rot_upl_cilm
+
+        T_rsl_cilm = T_geo_cilm - T_upl_cilm
+        T_rsl = cilm2grid(T_rsl_cilm, resol, lmax)
+
+        RO = T_rsl * oceanmask
+        RO_cilm = grid2cilm(RO, lmax)
+
+        delPhi_g = -(load_cilm[0, 0, 0] + RO_cilm[0, 0, 0] * ewh2mass_coef1) / oc_cilm[0, 0, 0]
+
+        S_cilm_new = RO_cilm * ewh2mass_coef1 + delPhi_g * oc_cilm
+        chi = np.abs((np.square(S_cilm_new).sum() - np.square(S_cilm).sum()) / np.square(S_cilm).sum())
+        S_cilm = S_cilm_new.copy()
+        k += 1
+        # breakpoint()
+
+    sea_level_fingerprint = cilm2grid(S_cilm, resol, lmax) * oceanmask
+    geo_conserve = cilm2grid(T_geo_cilm, resol, lmax)
+    upl_conserve = cilm2grid(T_upl_cilm, resol, lmax)
+    # load_conserve = cilm2grid(unitconvert(S_cilm, "mewh", unit, lln), resol, lmax) + load_data
+    load_conserve = cilm2grid(T_cilm, resol, lmax)
+    return sea_level_fingerprint, T_geo_cilm, upl_conserve, load_conserve
 
 
 def _calc_rot(L_cilm_real: np.ndarray) -> tuple[np.ndarray, np.ndarray]:

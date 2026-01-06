@@ -29,7 +29,6 @@ def forward_modeling(
     # 将真值进行一次截断和滤波作为循环初
     obs = load_data
     m_tru = np.copy(obs)
-
     for i in range(100):
         glo_grid = uniform(m_tru, oceanmask)
         glo_cilm = grid2cilm(glo_grid, lmax)

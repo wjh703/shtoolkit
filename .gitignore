@@ -1,5 +1,6 @@
 .mypy_cache/
 venv/
+.venv/
 shtoolkit.egg-info/
 FPA/
 build/
@@ -9,6 +10,7 @@ data/
 .vscode/
 cstudy/
 test/test.py
+scripts/
 
 src/shtoolkit/shcoeffs/__pycache__/
 src/shtoolkit/shtrans1/
@@ -17,6 +19,7 @@ src/shtoolkit/shtrans/*.c
 src/shtoolkit/shtrans/*.pyd
 src/shtoolkit/shtrans/*.html
 src/shtoolkit/shtrans/*.txt
+src/shtoolkit/shtrans/*.so
 src/shtoolkit.egg-info/
 src/shtoolkit/__pycache__/
 src/shtoolkit/shtime/__pycache__/
@@ -38,3 +41,6 @@ test/improved_rec_new_new.py
 test/compare_with_ldc_first_paper.py
 test/test_graceobp_diff_slr.py
 src/shtoolkit/shtrans/test.py
+
+*.npy
+*.png

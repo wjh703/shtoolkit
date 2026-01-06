@@ -30,7 +30,7 @@ def lodtoc20(lod: npt.ArrayLike):
     factor = -(1 + k2e + kan) / (20**0.5 * m_e * a**2) * (3 * moi_cm / 0.997) / (1 + 1.125 * (k2e + kan))
     # factor = -2/3*M_e*a**2/moi_Cm
     c20 = lod * factor / 86400 / 1000
-    print(f'{factor:.4f}')
+    # print(f'{factor:.4f}')
     return c20
 
 

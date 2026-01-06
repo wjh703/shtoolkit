@@ -15,6 +15,7 @@ dependencies = [
     "tqdm",
     "pyfftw",
     "PyWavelets",
+    "pyshtools>=4.13.1",
 ]
 requires-python = ">=3.12"
 
@@ -32,3 +33,13 @@ line-length = 120
 line-length = 120
 lint = {select = ["E", "F", "B", "I"], ignore = ["E741", "B006"]}
 format = {quote-style = "double"}
+
+[dependency-groups]
+dev = [
+    "cartopy>=0.23.0",
+    "eofs>=2.0.0",
+    "matplotlib>=3.10.7",
+    "netcdf4>=1.7.3",
+    "regionmask>=0.13.0",
+    "xarray>=2025.10.1",
+]

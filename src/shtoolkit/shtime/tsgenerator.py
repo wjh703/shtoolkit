@@ -44,7 +44,7 @@ def time_uniform(
     # gdata = np.zeros(len(ut))
     for i, t in enumerate(inputime):
         residual = np.abs(ut - t)
-        if any(residual < 0.050):
+        if any(residual < 0.06):
             argmin = np.argmin(residual)
             gdata[argmin] = data[i]
             ut[argmin] = np.inf

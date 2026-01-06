@@ -100,8 +100,10 @@ cpdef cnp.ndarray[double, ndim=2] fnALF(double rad_colat, int lmax):
     t = cos(rad_colat)
     u = sin(rad_colat)
     plm[0, 0] = 1.0
-    plm[1, 0] = sqrt(3.0) * t
-    plm[1, 1] = sqrt(3.0) * u
+    if lmax >= 1:
+        plm[1, 0] = sqrt(3.0) * t
+        plm[1, 1] = sqrt(3.0) * u
+
     for l in range(2, lmax + 1):
         for m in range(l + 1):
             ivec = plmidx(l, m)
@@ -129,8 +131,9 @@ cpdef cnp.ndarray[double, ndim=3] fnALFs(double[:] rad_colat, int lmax):
         t = cos(rad_colat[i])
         u = sin(rad_colat[i])
         pilm[i, 0, 0] = 1.0
-        pilm[i, 1, 0] = sqrt(3.0) * t
-        pilm[i, 1, 1] = sqrt(3.0) * u
+        if lmax >= 1:
+            pilm[i, 1, 0] = sqrt(3.0) * t
+            pilm[i, 1, 1] = sqrt(3.0) * u
         for l in range(2, lmax + 1):
             for m in range(l + 1):
                 ivec = plmidx(l, m)
@@ -158,8 +161,9 @@ cpdef cnp.ndarray[double, ndim=3] fnALFs_refined(double[:] rad_colat, int lmax):
         t = cos(rad_colat[i])
         u = sin(rad_colat[i])
         pilm[i, 0, 0] = 1.0
-        pilm[i, 1, 0] = sqrt(3.0) * t
-        pilm[i, 1, 1] = sqrt(3.0) * u
+        if lmax >= 1:
+            pilm[i, 1, 0] = sqrt(3.0) * t
+            pilm[i, 1, 1] = sqrt(3.0) * u
         for l in range(2, lmax + 1):
             pilm[i, l, 0] = rc.al[l] * t * pilm[i, l-1, 0] - rc.bl[l] * (u / 2) * pilm[i, l-1, 1]
             pilm[i, l, l] = u * rc.elm[plmidx(l, l)] * pilm[i, l-1, l-1]
